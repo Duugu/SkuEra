@@ -1,5 +1,4 @@
 ## Interface: 11403
-## Interface-Classic: 11403
 ## Title: Sku (32.16)
 ## SavedVariables: SkuOptionsDB, SkuTranslatedData
 ## Dependencies: SkuBeaconSoundsets
