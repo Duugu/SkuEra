@@ -415,8 +415,6 @@ function SkuVoice:OutputStringBTtts(aString, aOverwrite, aWait, aLength, aDoNotO
 		return
 	end
 
-	--SkuNav:NavigationModeWoCoordinatesCheckTaskTrigger(aString)
-
 	if SkuVoice:CheckIgnore(aString) then
 		aIgnoreLinks = true
 	end

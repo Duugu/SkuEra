@@ -907,92 +907,6 @@ local function MacrosMenuBuilder(aParentEntry)
 end
 
 ---------------------------------------------------------------------------------------------------------------------------------------
-local function EquipmentSetActionMenuBuilder(aParentEntry)
-	local tNewMenuSubEntry = SkuOptions:InjectMenuItems(aParentEntry, {L["Equipment sets"]}, SkuGenericMenuItem)
-	tNewMenuSubEntry.dynamic = true
-	tNewMenuSubEntry.filterable = true
-	tNewMenuSubEntry.OnEnter = function(self, aValue, aName)
-		self.selectTarget.equipmentSetID = nil
-	end
-	tNewMenuSubEntry.BuildChildren = function(self)
-		local tHasEntries = false
-		for x = 0, C_EquipmentSet.GetNumEquipmentSets() do
-			local name, iconFileID, setID, isEquipped, numItems, numEquipped, numInInventory, numLost, numIgnored = C_EquipmentSet.GetEquipmentSetInfo(x)
-			if name then
-				local tNewMenuSubSubEntry = SkuOptions:InjectMenuItems(self, {name}, SkuGenericMenuItem)
-				tNewMenuSubSubEntry.OnEnter = function(self, aValue, aName)
-					self.selectTarget.equipmentSetID = x
-					_G["SkuScanningTooltip"]:ClearLines()
-					_G["SkuScanningTooltip"]:SetEquipmentSet(name)
-					if TooltipLines_helper(_G["SkuScanningTooltip"]:GetRegions()) ~= "asd" then
-						if TooltipLines_helper(_G["SkuScanningTooltip"]:GetRegions()) ~= "" then
-							local tText = SkuChat:Unescape(TooltipLines_helper(_G["SkuScanningTooltip"]:GetRegions()))
-							SkuOptions.currentMenuPosition.textFirstLine, SkuOptions.currentMenuPosition.textFull = SkuCore:ItemName_helper(tText)
-						end
-					end
-				end
-				tHasEntries = true
-			end
-		end
-
-		if tHasEntries == false then
-			SkuOptions:InjectMenuItems(self, {L["Menu empty"]}, SkuGenericMenuItem)
-		end
-	end
-end
-
----------------------------------------------------------------------------------------------------------------------------------------
-local function CompanionMenuBuilder(aParentEntry)
-	local tNewMenuSubEntry = SkuOptions:InjectMenuItems(aParentEntry, {L["Companions"]}, SkuGenericMenuItem)
-	tNewMenuSubEntry.dynamic = true
-	tNewMenuSubEntry.filterable = true
-	tNewMenuSubEntry.OnEnter = function(self, aValue, aName)
-		self.selectTarget.companionType = nil
-		self.selectTarget.companionID = nil
-	end
-	tNewMenuSubEntry.BuildChildren = function(self)
-		local tCompanionTypes = {
-			["CRITTER"] = L["Pets"],
-			["MOUNT"] = L["Mounts"],
-		}
-
-		for i, v in pairs(tCompanionTypes) do
-			local tNewMenuSubSubEntry = SkuOptions:InjectMenuItems(self, {v}, SkuGenericMenuItem)
-			tNewMenuSubSubEntry.dynamic = true
-			tNewMenuSubSubEntry.filterable = true
-			tNewMenuSubSubEntry.BuildChildren = function(self)
-
-				local tHasEntries = false
-				local tNumComp = GetNumCompanions(i)
-
-				for x = 1, tNumComp do
-					local creatureID, creatureName, creatureSpellID, icon, issummoned, mountType = GetCompanionInfo(i, x)
-					local tNewMenuSubSubEntry = SkuOptions:InjectMenuItems(self, {creatureName}, SkuGenericMenuItem)
-					tNewMenuSubSubEntry.OnEnter = function(self, aValue, aName)
-						self.selectTarget.companionType = i
-						self.selectTarget.companionID = x
-						self.selectTarget.companionSpellId = creatureSpellID
-						_G["SkuScanningTooltip"]:ClearLines()
-						_G["SkuScanningTooltip"]:SetSpellByID(creatureSpellID)
-						if TooltipLines_helper(_G["SkuScanningTooltip"]:GetRegions()) ~= "asd" then
-							if TooltipLines_helper(_G["SkuScanningTooltip"]:GetRegions()) ~= "" then
-								local tText = SkuChat:Unescape(TooltipLines_helper(_G["SkuScanningTooltip"]:GetRegions()))
-								SkuOptions.currentMenuPosition.textFirstLine, SkuOptions.currentMenuPosition.textFull = SkuCore:ItemName_helper(tText)
-							end
-						end
-					end
-					tHasEntries = true
-				end
-
-				if tHasEntries == false then
-					SkuOptions:InjectMenuItems(self, {L["Menu empty"]}, SkuGenericMenuItem)
-				end
-			end
-		end
-	end
-end
-
----------------------------------------------------------------------------------------------------------------------------------------
 local function ItemsMenuBuilder(aParentEntry)
 	local tNewMenuSubEntry = SkuOptions:InjectMenuItems(aParentEntry, {L["Items"]}, SkuGenericMenuItem)
 	tNewMenuSubEntry.dynamic = true
@@ -1114,70 +1028,6 @@ local function SpellBookMenuBuilder(aParentEntry, aBooktype, aIsPet, aButtonsWit
 end
 
 ---------------------------------------------------------------------------------------------------------------------------------------
-local function EquipmentSetsManagerMenuBuilder(aParentEntry, aSetId)
-	if not aParentEntry then return end
-
-	local tNewMenuSubSubEntry
-	if aSetId then
-		tNewMenuSubSubEntry = SkuOptions:InjectMenuItems(aParentEntry, {L["Equip"]}, SkuGenericMenuItem)
-		tNewMenuSubSubEntry.OnAction = function(self, aValue, aName)
-			C_EquipmentSet.UseEquipmentSet(aSetId) 
-			C_Timer.After(0.001, function()
-				SkuOptions.currentMenuPosition.parent:OnUpdate(SkuOptions.currentMenuPosition.parent)						
-			end)
-		end
-
-		tNewMenuSubSubEntry = SkuOptions:InjectMenuItems(aParentEntry, {L["Update"]}, SkuGenericMenuItem)
-	else
-		tNewMenuSubSubEntry = SkuOptions:InjectMenuItems(aParentEntry, {L["erstellen"]}, SkuGenericMenuItem)
-	end
-
-	tNewMenuSubSubEntry.OnAction = function(self, aValue, aName)
-		if aSetId then
-			--saved
-			C_EquipmentSet.SaveEquipmentSet(aSetId)
-			C_Timer.After(0.001, function()
-				SkuOptions.currentMenuPosition.parent:OnUpdate(SkuOptions.currentMenuPosition.parent)						
-			end)
-		else
-			PlaySound(89)
-			SkuOptions.Voice:OutputStringBTtts(L["Enter name and press ENTER key"], true, true, 0.2, true, nil, nil, 2)
-			SkuOptions:EditBoxShow("", function(self)
-				PlaySound(89)
-				local tText = self:GetText()
-				if tText and tText ~= "" then
-					local tExistingEquipmentSetID = C_EquipmentSet.GetEquipmentSetID(tText)
-					if not tExistingEquipmentSetID then
-						--created
-						C_EquipmentSet.CreateEquipmentSet(tText)
-						C_Timer.After(0.001, function()
-							SkuOptions.currentMenuPosition.parent:OnUpdate(SkuOptions.currentMenuPosition.parent)						
-						end)
-					else
-						--already exists
-						C_Timer.After(0.001, function()
-							SkuOptions.Voice:OutputStringBTtts(L["name already exists"], true, true, 0.2, true, nil, nil, 2)
-						end)
-					end
-				end
-			end)
-		end
-	end
-
-	if aSetId then
-		tNewMenuSubSubEntry = SkuOptions:InjectMenuItems(aParentEntry, {L["Delete"]}, SkuGenericMenuItem)
-		tNewMenuSubSubEntry.isSelect = true
-		tNewMenuSubSubEntry.OnAction = function(self, aValue, aName)
-			--deleted
-			C_EquipmentSet.DeleteEquipmentSet(aSetId)
-			C_Timer.After(0.001, function()
-				SkuOptions.currentMenuPosition.parent:OnUpdate(SkuOptions.currentMenuPosition.parent)						
-			end)
-		end
-	end
-end
-
----------------------------------------------------------------------------------------------------------------------------------------
 local function ActionBarMenuBuilder(aParentEntry, aActionBarName, aBooktype)
 	if not aParentEntry or not aActionBarName then return end
 
@@ -1292,8 +1142,8 @@ local function ActionBarMenuBuilder(aParentEntry, aActionBarName, aBooktype)
 					SpellBookMenuBuilder(self, aBooktype)
 				end
 				ItemsMenuBuilder(self)
-				CompanionMenuBuilder(self)
-				EquipmentSetActionMenuBuilder(self)
+				
+				
 				MacrosMenuBuilder(self)
 				local tNewMenuSubEntry = SkuOptions:InjectMenuItems(self, {L["Bind key"]}, SkuGenericMenuItem)
 			end
@@ -1855,40 +1705,6 @@ function SkuCore:MenuBuilder(aParentEntry)
 					local tNewMenuParentEntrySub = SkuOptions:InjectMenuItems(self, {L["Delete"]}, SkuGenericMenuItem)
 					--tNewMenuParentEntrySub.dynamic = true
 					--tNewMenuParentEntrySub.ttsEngine = 2
-				end
-			end
-		end
-	end
-
-	local tNewMenuParentEntry =  SkuOptions:InjectMenuItems(aParentEntry, {L["Achievements"]}, SkuGenericMenuItem)
-	tNewMenuParentEntry.dynamic = true
-	tNewMenuParentEntry.filterable = true
-	tNewMenuParentEntry.BuildChildren = SkuCore.AchievementsMenuBuilder
-
-	local tNewMenuParentEntry =  SkuOptions:InjectMenuItems(aParentEntry, {L["Equipment manager"]}, SkuGenericMenuItem)
-	tNewMenuParentEntry.dynamic = true
-	tNewMenuParentEntry.BuildChildren = function(self)
-		local tNewMenuEntry = SkuOptions:InjectMenuItems(self, {L["New set"]}, SkuGenericMenuItem)
-		tNewMenuEntry.dynamic = true
-		tNewMenuEntry.filterable = true
-		tNewMenuEntry.BuildChildren = function(self)
-			EquipmentSetsManagerMenuBuilder(self)
-		end
-		local tNumSets = C_EquipmentSet.GetNumEquipmentSets()
-		if tNumSets > 0 then
-			for x = 0, tNumSets do
-				local name, iconFileID, setID, isEquipped, numItems, numEquipped, numInInventory, numLost, numIgnored = C_EquipmentSet.GetEquipmentSetInfo(x)
-				if name then
-					local tise = ""
-					if isEquipped == true then
-						tise = " ("..L["Equipped"]..")"
-					end
-					local tNewMenuEntry = SkuOptions:InjectMenuItems(self, {name..tise}, SkuGenericMenuItem)
-					tNewMenuEntry.dynamic = true
-					tNewMenuEntry.filterable = true
-					tNewMenuEntry.BuildChildren = function(self)
-						EquipmentSetsManagerMenuBuilder(self, x)
-					end
 				end
 			end
 		end
@@ -2476,16 +2292,6 @@ function SkuCore:MenuBuilder(aParentEntry)
 	tNewMenuParentEntry.dynamic = true
 	tNewMenuParentEntry.filterable = true
 	tNewMenuParentEntry.BuildChildren = SkuCore.MacroMenuBuilder
-
-	local tNewMenuParentEntry =  SkuOptions:InjectMenuItems(aParentEntry, {L["Best In Slot"]}, SkuGenericMenuItem)
-	tNewMenuParentEntry.dynamic = true
-	tNewMenuParentEntry.filterable = true
-	tNewMenuParentEntry.BuildChildren = SkuCore.bisMenuBuilder
-
-	local tNewMenuParentEntry =  SkuOptions:InjectMenuItems(aParentEntry, {L["Atlas Loot"]}, SkuGenericMenuItem)
-	tNewMenuParentEntry.dynamic = true
-	tNewMenuParentEntry.filterable = true
-	tNewMenuParentEntry.BuildChildren = SkuCore.alIntegrationMenuBuilder
 
 	local tNewMenuEntry =  SkuOptions:InjectMenuItems(aParentEntry, {L["Options"]}, SkuGenericMenuItem)
 	tNewMenuEntry.filterable = true

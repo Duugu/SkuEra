@@ -77,11 +77,6 @@ SkuOptions.skuDefaultKeyBindings = {
 
    ["SKU_KEY_DOMONITORPARTYHEALTH2CONTI"] = {key = "", object = "SkuCoreControlOption1", func = "OnHide",},
 
-   ["SKU_KEY_ENABLESOFTTARGETINGENEMY"] = {key = "", object = "SkuOptions", func = "CreateMainFrame",},
-   ["SKU_KEY_ENABLESOFTTARGETINGFRIENDLY"] = {key = "", object = "SkuOptions", func = "CreateMainFrame",},
-   ["SKU_KEY_ENABLESOFTTARGETINGINTERACT"] = {key = "CTRL-SHIFT-N", object = "SkuOptions", func = "CreateMainFrame",},
-   ["SKU_KEY_OUTPUTHARDTARGET"] = {key = "", object = "SkuOptions", func = "CreateMainFrame",},
-   ["SKU_KEY_OUTPUTSOFTTARGET"] = {key = "", object = "SkuOptions", func = "CreateMainFrame",},
 
 
    --["SKU_KEY_CHAT_LINEPREV"] = {key = "UP", object = "SkuChat", func = "OnEnable",},

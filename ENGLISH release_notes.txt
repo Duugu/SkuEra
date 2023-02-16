@@ -2,8 +2,14 @@
 - Sku Era Addon Release Notes
 -------------------------------------------------------------------------------------------------------	
 
+
 -------------------------------------------------------------------------------------------------------
-Changes in Sku Era r32.15
-	- 
+Changes in Sku Era r32.17
+	- First working version with all known bugs fixed. Talent frame not implemented yet.
+
+
+-------------------------------------------------------------------------------------------------------
+Changes in Sku Era r32.16
+	- Initial release
 
 

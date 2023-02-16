@@ -1,8 +1,8 @@
 ## Interface-Classic: 11403
-## Title: Sku (32.16)
+## Title: Sku (32.17)
 ## SavedVariables: SkuOptionsDB, SkuTranslatedData
 ## Dependencies: SkuBeaconSoundsets
-## Version: 32.16
+## Version: 32.17
 
 SkuAudioData\assets\SkuAudioFileIndex.lua
 SkuAudioData\assets\SkuAudioDataLenIndex.lua
@@ -38,15 +38,10 @@ SkuCore\UIErrors.lua
 SkuCore\RangeCheck.lua
 SkuCore\auctionHouse.lua
 SkuCore\friends.lua
-SkuCore\Achievements.lua
-SkuCore\tutorial.lua
-SkuCore\itemRating.lua
 SkuCore\mail.lua
 SkuCore\aq.lua
 SkuCore\dialogkey.lua
 SkuCore\damageMeter.lua
-SkuCore\alIntegration.lua
-SkuCore\bis.lua
 SkuCore\Options.lua
 SkuCore\Macro.lua
 

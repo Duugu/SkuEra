@@ -61,21 +61,6 @@ function SkuMob:OnEnable()
 		if ttime > 0.25 then 
 			
 
-			if SkuOptions.db.profile["SkuOptions"].softTargeting.interact.enabled == true then
-				if UnitExists("target") == true then
-					if SkuOptions.db.profile["SkuOptions"].softTargeting.matchLocked == 1 or (SkuOptions.db.profile["SkuOptions"].softTargeting.matchLocked == 2 and UnitCanAttack("player", "target") == true) then
-						SkuMob.interactTempDisabled = true
-						SkuOptions:UpdateSoftTargetingSettings("all")
-					else
-						SkuMob.interactTempDisabled = nil
-						SkuOptions:UpdateSoftTargetingSettings("all")
-					end
-				else
-					SkuMob.interactTempDisabled = nil
-					SkuOptions:UpdateSoftTargetingSettings("all")
-				end
-			end
-
 
 
 
@@ -179,129 +164,13 @@ function SkuMob:GetTtsAwareUnitName(aUnitId)
 	end
 end
 
----------------------------------------------------------------------------------------------------------------------------------------
-function SkuMob:PLAYER_SOFT_ENEMY_CHANGED(arg1, arg2)
-	if not UnitGUID("softenemy") then
-		return
-	end
-	if SkuOptions.db.profile["SkuOptions"].softTargeting.enemy.enabled ~= true then
-		return
-	end
 
-	if UnitGUID("softenemy") ~= UnitGUID("target") then
-		if SkuOptions.db.profile["SkuOptions"].softTargeting.enemy.forPlayers == false and (UnitIsPlayer("softenemy") == true and UnitIsEnemy("player", "softenemy") == true) then
-			return
-		end
-		if SkuOptions.db.profile["SkuOptions"].softTargeting.enemy.forPets == false and (UnitIsPlayer("softenemy") == false and UnitIsEnemy("player", "softenemy") == true and UnitPlayerControlled("softenemy") == true) then
-			return
-		end
-		if SkuOptions.db.profile["SkuOptions"].softTargeting.enemy.forPassive == false and (UnitReaction("player", "softenemy") >= 4 and UnitCanAttack("player", "softenemy") == true) then
-			return
-		end
-		if SkuOptions.db.profile["SkuOptions"].softTargeting.enemy.sound ~= " " then
-			SkuOptions.Voice:OutputString(SkuOptions.db.profile["SkuOptions"].softTargeting.enemy.sound, true, true, 0.3, true)
-		end
-		if SkuOptions.db.profile["SkuOptions"].softTargeting.enemy.outputName == true then
-			SkuMob:PLAYER_TARGET_CHANGED("PLAYER_TARGET_CHANGED", "softenemy")
-		end
-	end
-end
----------------------------------------------------------------------------------------------------------------------------------------
-function SkuMob:PLAYER_SOFT_FRIEND_CHANGED(aEvent, aGuid)
-	if not UnitGUID("softfriend") then
-		return
-	end
-
-	if UnitGUID("softfriend") ~= UnitGUID("target") then
-		if SkuOptions.db.profile["SkuOptions"].softTargeting.friend.forPlayers == false and (UnitIsPlayer("softfriend") == true and UnitIsFriend("player", "softfriend") == true) then
-			return
-		end
-		if SkuOptions.db.profile["SkuOptions"].softTargeting.friend.forPets == false and (UnitIsPlayer("softfriend") == false and UnitIsFriend("player", "softfriend") == true and UnitPlayerControlled("softfriend") == true) then
-			return
-		end
-		if SkuOptions.db.profile["SkuOptions"].softTargeting.friend.sound ~= " " then
-			SkuOptions.Voice:OutputString(SkuOptions.db.profile["SkuOptions"].softTargeting.friend.sound, true, true, 0.3, true)
-		end
-		if SkuOptions.db.profile["SkuOptions"].softTargeting.friend.outputName == true then
-			SkuMob:PLAYER_TARGET_CHANGED("PLAYER_TARGET_CHANGED", "softfriend")
-		end
-	end
-end
----------------------------------------------------------------------------------------------------------------------------------------
-function SkuMob:PLAYER_SOFT_INTERACT_CHANGED(aEvent, aGuid)
-	if not UnitGUID("softinteract") then
-		return
-	end
-
-	if SkuOptions.db.profile["SkuOptions"].softTargeting.interact.enabled ~= true then
-		return
-	end
-	if UnitGUID("softinteract") ~= UnitGUID("target") then
-		--print("SkuMob:PLAYER_SOFT_INTERACT_CHANGED(aEvent, ", aGuid, UnitGUID("softinteract"))
-		if ((SkuOptions.db.profile["SkuOptions"].softTargeting.interact.soundfor == 2 and UnitExists("softinteract") == false) 
-			or (
-					(SkuOptions.db.profile["SkuOptions"].softTargeting.interact.soundfor == 3 and UnitExists("softinteract") == true and UnitIsDead("softinteract") == true) 
-						or 
-					UnitExists("softinteract") == false
-				)
-			or SkuOptions.db.profile["SkuOptions"].softTargeting.interact.soundfor == 4) and SkuOptions.db.profile["SkuOptions"].softTargeting.interact.soundfor > 1
-		then			
-			if SkuOptions.db.profile["SkuOptions"].softTargeting.interact.sound ~= " " then
-				SkuOptions.Voice:OutputString(SkuOptions.db.profile["SkuOptions"].softTargeting.interact.sound, true, true, 0.3, true)
-			end
-		end
-		if ((SkuOptions.db.profile["SkuOptions"].softTargeting.interact.unitNameFor == 2 and UnitExists("softinteract") == false) 
-			or ((SkuOptions.db.profile["SkuOptions"].softTargeting.interact.unitNameFor == 3 and UnitExists("softinteract") == true and UnitIsDead("softinteract") == true) or UnitExists("softinteract") == false) 
-			or SkuOptions.db.profile["SkuOptions"].softTargeting.interact.unitNameFor == 4) and SkuOptions.db.profile["SkuOptions"].softTargeting.interact.unitNameFor > 1
-		then
-			if SkuOptions.db.profile["SkuOptions"].softTargeting.interact.outputBTTS == true then
-				local tName = UnitName("softinteract")
-				if tName then
-					C_Timer.After(0.1, function()
-						local hp = math.floor(UnitHealth("softinteract") / (UnitHealthMax("softinteract") / 100))
-						if UnitHealthMax("softinteract") == 0 then
-							hp = 100
-						end
-						if hp == 0 then
-							SkuOptions.Voice:OutputStringBTtts(L["dead"].." "..tName, true, true, 0.2, true, nil, nil, 2)
-						else
-							SkuOptions.Voice:OutputStringBTtts(tName, true, true, 0.2, true, nil, nil, 2)
-						end
-					end)
-				end
-			else
-				SkuMob:PLAYER_TARGET_CHANGED("PLAYER_SOFT_INTERACT_CHANGED", "softinteract")
-			end
-		end
-	end
-end
 
 ---------------------------------------------------------------------------------------------------------------------------------------
 function SkuMob:PLAYER_TARGET_CHANGED(event, aUnitId)
 	aUnitId = aUnitId or "target"
 
 	--print("mob PLAYER_TARGET_CHANGED(event, ", event, aUnitId)
-
-	if aUnitId == "target" then
-		if SkuOptions.db.profile["SkuOptions"].softTargeting.interact.enabled == true then
-			if UnitExists("target") == true then
-				if SkuOptions.db.profile["SkuOptions"].softTargeting.matchLocked == 1 or (SkuOptions.db.profile["SkuOptions"].softTargeting.matchLocked == 2 and UnitCanAttack("player", "target") == true) then
-					SkuMob.interactTempDisabled = true
-					SkuOptions:UpdateSoftTargetingSettings("all")
-				else
-					SkuMob.interactTempDisabled = nil
-					SkuOptions:UpdateSoftTargetingSettings("all")
-				end
-			else
-				SkuMob.interactTempDisabled = nil
-				SkuOptions:UpdateSoftTargetingSettings("all")
-			end
-		end
-	end
-
-	if not UnitExists(aUnitId) and aUnitId ~= "softinteract" then
-		return
-	end
 
 	local tUnitName = GetUnitName(aUnitId, false)
 	local tUnitLevel = UnitLevel(aUnitId)

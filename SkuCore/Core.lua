@@ -102,12 +102,8 @@ SkuCore.interactFramesListManual = {
 	["QuestFrame"] = function(...) SkuCore:QuestFrame(...) end,
 	["ItemTextFrame"] = function(...) SkuCore:ItemTextFrame(...) end,
 	["ClassTrainerFrame"] = function(...) SkuCore:Build_ClassTrainerFrame(...) end,
-	["ItemSocketingFrame"] = function(...) SkuCore:Build_ItemSocketingFrame(...) end,
 	["CharacterFrame"] = function(...) SkuCore:Build_CharacterFrame(...) end,
-	["BarberShopFrame"] = function(...) SkuCore:Build_BarberShopFrame(...) end,
 	["PlayerTalentFrame"] = function(...) SkuCore:Build_TalentFrame(...) end,
-	["LFGListingFrame"] = function(...) SkuCore:Build_LfgFrame(...) end,
-	["LFGBrowseFrame"] = function(...) SkuCore:Build_LfgFrame(...) end,
 	["RolePollPopup"] = function(...) SkuCore:Build_RolePollPopup(...) end,
 	
 }
@@ -133,14 +129,11 @@ SkuCore.interactFramesList = {
 	--"AuctionFrame",
 	"ClassTrainerFrame",
 	"CharacterFrame",
-	"BarberShopFrame",
 	"ReputationFrame",
 	"SkillFrame",
 	"HonorFrame",
 	"PlayerTalentFrame",
 	"InspectFrame",
-	--"BagnonInventoryFrame1",
-	--"BagnonBankFrame1",
 	"GuildBankFrame",
 	--"BankFrame",
 	"CraftFrame",
@@ -155,12 +148,8 @@ SkuCore.interactFramesList = {
 	--"MultiBarRight",
 	--"MultiBarBottomLeft",
 	--"MultiBarBottomRight",
-	--"BagnonGuildFrame1",
 	--"MainMenuBar",
 	"ReadyCheckFrame",
-	"ItemSocketingFrame",
-	"LFGListingFrame",
-	"LFGBrowseFrame",
 	"RolePollPopup",
 }
 
@@ -211,14 +200,6 @@ function SkuCore:OnInitialize()
 	--SkuCore:RegisterEvent("PET_STABLE_CLOSED")
 
 	SkuCore:RegisterEvent("GOSSIP_SHOW")
-	--SkuCore:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
-	--SkuCore:RegisterEvent("PLAYER_TALENT_UPDATE")
-	--SkuCore:RegisterEvent("GLYPH_ADDED")
-	--SkuCore:RegisterEvent("GLYPH_REMOVED")
-	--SkuCore:RegisterEvent("GLYPH_UPDATED")
-
-	SkuCore:RegisterEvent("LFG_LIST_SEARCH_RESULTS_RECEIVED")
-	SkuCore:RegisterEvent("LFG_LIST_SEARCH_RESULT_UPDATED")
 
 	SkuCore:RegisterEvent("TRADE_SHOW")
 	SkuCore:RegisterEvent("TRADE_CLOSED")
@@ -231,9 +212,7 @@ function SkuCore:OnInitialize()
 	SkuCore:DamageMeterOnInitialize()
 	SkuCore:AuctionHouseOnInitialize()
 	SkuCore:FriendsOnInitialize()
-	SkuCore:AchievementsOnInitialize()
 	SkuCore:GameWorldObjectsOnInitialize()
-	SkuCore:TutorialOnInitialize()
 end
 
 ---------------------------------------------------------------------------------------------------------------------------------------
@@ -1938,13 +1917,9 @@ function SkuCore:PLAYER_ENTERING_WORLD(...)
 			end
 		end
 
-		SkuCore:ItemRatingOnLogin()
 		SkuCore:AuctionHouseOnLogin()
-		SkuCore:AchievementsOnLogin()
 		SkuCore:MinimapScannerOnLogin()
 		SkuCore:DialogKeyLogin()
-		SkuCore:alItegrationLogin()
-		SkuCore:bisLogin()
 
 		if not SkuOptions.db.char[MODULE_NAME] then
 			SkuOptions.db.char[MODULE_NAME] = {}
@@ -2331,18 +2306,14 @@ local friendlyFrameNames = {
 	["TalentFrame"] = L["Talents"],
 	["SendMailFrame"] = L["Send Mail"],
 	["AuctionFrame"] = L["Auction house"],
-	["AchievementFrame"] = L["Achievements"],
 	["ClassTrainerFrame"] = L["Class Trainer"],
 	["CharacterFrame"] = L["Character"],
-	["BarberShopFrame"] = L["Barber Shop"],
 	["ReputationFrame"] = L["Reputation"],
 	["SkillFrame"] = L["Skills"],
 	["HonorFrame"] = L["Honor"],
-	["BagnonInventoryFrame1"] = L["Bagnon Taschen"],
+	--["BagnonInventoryFrame1"] = L["Bagnon Taschen"],
 	["SpellBookFrame"] = L["Spellbook"],
 	["PlayerTalentFrame"] = L["Talents"],
-	["LFGListingFrame"] = L["Looking for group"],
-	["LFGBrowseFrame"] = L["Looking for group"],
 	["RolePollPopup"] = L["Role Poll"],
 	["FriendsFrame"] = L["Social"],
 	["TradeFrame"] = L["Trade"],
@@ -2352,13 +2323,10 @@ local friendlyFrameNames = {
 	--["MultiBarRight"] = "",
 	--["MultiBarBottomLeft"] = "",
 	--["MultiBarBottomRight"] = "",
-	--["BagnonGuildFrame1"] = L["Bagnon Guild"],
-	["BagnonBankFrame1"] = L["Bagnon Bank"],
 	["BankFrame"] = L["Bank"],
 	["GuildBankFrame"] = L["Guild Bank"],
 	["TradeSkillFrame"] = L["Trade skill"],
 	["ReadyCheckFrame"] = L["Bereitschaft check"],
-	["ItemSocketingFrame"] = L["Socketing"],
 	[""] = "",
 }
 --[[
@@ -2949,7 +2917,9 @@ end
 -------------------------------------------------------------------------------------------------
 function SkuCore:GetBinding(aIndex)
 	local aBindingSet = GetCurrentBindingSet()
+	print(aIndex, aBindingSet)
 	local tCommand, tCategory, tKey1, tKey2 = GetBinding(aIndex, aBindingSet)
+	print(tCommand, tCategory, tKey1, tKey2)
 
 	return tCommand, tCategory, tKey1, tKey2
 end
