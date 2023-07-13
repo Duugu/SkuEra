@@ -3907,7 +3907,9 @@ function SkuOptions:EditBoxShow(aText, aOkScript, aMultilineFlag)
 
 		-- Resizable
 		f:SetResizable(true)
-      f:SetResizeBounds(150, 100)
+      --f:SetResizeBounds(150, 100)
+		f:SetMinResize(150,100)
+      f:SetMaxResize(500,500)
 
 		local rb = CreateFrame("Button", "SkuOptionsEditBoxResizeButton", SkuOptionsEditBox)
 		rb:SetPoint("BOTTOMRIGHT", -6, 7)

@@ -702,7 +702,10 @@ function SkuNav:SkuNavMMOpen()
 			-- Resizable
 			MainFrameObj:SetResizable(true)
 			local tW, tH = _G["UIParent"]:GetSize()
-			MainFrameObj:SetResizeBounds(200, 200 , tW - 100, tH - 100)
+			--MainFrameObj:SetResizeBounds(200, 200 , tW - 100, tH - 100)
+			MainFrameObj:SetMinResize(200, 200)
+			MainFrameObj:SetMaxResize(tW - 100, tH - 100)
+	
 			local rb = CreateFrame("Button", "SkuNavMMMainFrameResizeButton", _G["SkuNavMMMainFrame"])
 			rb:SetPoint("BOTTOMRIGHT", 0, 0)
 			rb:SetSize(16, 16)

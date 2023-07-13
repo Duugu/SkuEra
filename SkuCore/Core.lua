@@ -800,21 +800,29 @@ function SkuCore:OnEnable()
 		tSkuCoreSecureTabButtonTime = 0
 	end)
 
+
+	local tTrainerSkillsUpdated
 	local ttime = 0
 	local f = _G["SkuCoreControl"] or CreateFrame("Frame", "SkuCoreControl", UIParent)
 	f:SetScript("OnUpdate", function(self, time)
 		if ClassTrainerFrame then
-			if ClassTrainerFrame:IsShown() == true and DropDownList1Button2 then
-				if DropDownList1Button2.checked == 1 or DropDownList1Button2.checked == nil then 
+			if ClassTrainerFrame:IsShown() == true and tTrainerSkillsUpdated == nil then
+				tTrainerSkillsUpdated = true
+				C_Timer.After(0.2, function() 
 					ClassTrainerFrameFilterDropDownButton:Click()
-					C_Timer.After(0.01, function() DropDownList1Button2:Click() end)
-					C_Timer.After(0.05, function() ClassTrainerFrameFilterDropDownButton:Click() end)
-				end
-				if DropDownList1Button3.checked == 1 or DropDownList1Button2.checked == nil then 
-					ClassTrainerFrameFilterDropDownButton:Click()
-					DropDownList1Button3:Click()
-					ClassTrainerFrameFilterDropDownButton:Click()
-				end
+					C_Timer.After(0.2, function() 
+						if DropDownList1Button1.checked ~= 1 then 
+							DropDownList1Button1:Click()
+						end
+						if DropDownList1Button2.checked == 1 then 
+							DropDownList1Button2:Click()
+						end
+						if DropDownList1Button3.checked == 1 then 
+							DropDownList1Button3:Click()
+						end
+						ClassTrainerFrameFilterDropDownButton:Click()
+					end)
+				end)
 			end
 		end
 

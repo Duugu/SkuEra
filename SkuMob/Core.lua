@@ -64,9 +64,8 @@ function SkuMob:OnEnable()
 
 
 
-
 			if UnitGUID("target") then
-				if UnitCanAttack("player","target") ~= false then
+				if UnitCanAttack("player","target") ~= false  and UnitIsDeadOrGhost("target") ~= true then
 					local hp = math.floor(UnitHealth("target") / (UnitHealthMax("target") / 100))
 					local hpPer = math.floor(((hp / 10)) + 1) * 10
 					if hpPer < 100 and hpPer > 0 then
@@ -362,21 +361,12 @@ function SkuMob:PLAYER_TARGET_CHANGED(event, aUnitId)
 
 	if tRaidTargetString == "" or SkuOptions.db.profile["SkuMob"].vocalizeRaidTargetOnly == false then
 		if tUnitLevel then
-			if tUnitLevel ~= -1 then
+			if tUnitLevel ~= -1 and tUnitLevel ~= 0 then
 				if tIsPlayerControled == false or SkuOptions.db.profile[MODULE_NAME].vocalizePlayerNamePlaceholdersSkuTts == true then
 					SkuOptions.Voice:OutputString(L["level"], false, true, 0.2)
 					SkuOptions.Voice:OutputString(string.format("%02d", tUnitLevel).." "..tClassifications[tClassification], false, true, 0.3)
 				else
 					SkuOptions.Voice:OutputStringBTtts(L["level"].." "..string.format("%02d", tUnitLevel), false, true, 0.2, nil, nil, nil, 1)
-				end
-			else
-				if aUnitId ~= "softinteract" then
-					if tIsPlayerControled == false or SkuOptions.db.profile[MODULE_NAME].vocalizePlayerNamePlaceholdersSkuTts == true then
-						SkuOptions.Voice:OutputString(L["level"], false, true, 2.2)
-						SkuOptions.Voice:OutputString(L["Unknown"], false, true, 0.3)
-					else
-						SkuOptions.Voice:OutputStringBTtts(L["level"].." "..L["Unknown"], false, true, 2.2, nil, nil, nil, 1)
-					end
 				end
 			end
 		end

@@ -3,6 +3,15 @@
 -------------------------------------------------------------------------------------------------------	
 
 -------------------------------------------------------------------------------------------------------
+Changes in Sku Era r32.19
+	- Auction house fixed
+	- Send mail fixed
+	- New chat tab fixed
+	- Trainer frame fixed
+	- Incorrect unit level on dead targets fixed
+
+
+-------------------------------------------------------------------------------------------------------
 Changes in Sku Era r32.18
 	- Fixed bugs with the local menu
 

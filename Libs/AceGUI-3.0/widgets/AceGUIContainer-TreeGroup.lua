@@ -570,7 +570,10 @@ local methods = {
 		if maxtreewidth > 100 and status.treewidth > maxtreewidth then
 			self:SetTreeWidth(maxtreewidth, status.treesizable)
 		end
-		treeframe:SetResizeBounds(1, 1, maxtreewidth, 1600)
+		--treeframe:SetResizeBounds(1, 1, maxtreewidth, 1600)
+		treeframe:SetMinResize(1,1)
+		treeframe:SetMaxResize(maxtreewidth, 1600)
+	
 	end,
 
 	["OnHeightSet"] = function(self, height)
