@@ -1,3 +1,5 @@
+--' > ’ 
+
 local VANILLA = string.byte(GetBuildInfo(), 1) == 49
 
 --[[
@@ -9823,7 +9825,7 @@ SkuDB.objectLookup = {
       [148420] = "Ewige Flamme",
       [148421] = "Ewige Flamme",
       [148498] = "Altar von Suntara",
-      [148499] = "Felix' Kasten",
+      [148499] = "Felix’ Kasten",
       [148504] = "Ein verdächtiger Grabstein",
       [148506] = "Schattenhammerartefakt",
       [148512] = "Essenz-Born",
@@ -10201,8 +10203,8 @@ SkuDB.objectLookup = {
       [177927] = "Tammras Gaeaschössling",
       [177929] = "Gaeaerdhügel",
       [177964] = "Tiefenstein",
-      [178084] = "Felix' Truhe",
-      [178085] = "Felix' Bolzeneimer",
+      [178084] = "Felix’ Truhe",
+      [178085] = "Felix’ Bolzeneimer",
       [178087] = "Thazz'rils Hacke",
       [178090] = "Marlas Grab",
       [178104] = "Resonitkristall",

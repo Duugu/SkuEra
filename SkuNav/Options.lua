@@ -1,6 +1,9 @@
 local MODULE_NAME = "SkuNav"
 local L = Sku.L
 
+local ssub = string.sub
+local slen = string.len
+
 SkuNav.ClickClackSoundsets = {}
 
 SkuNav.StandardWpReachedRanges = {
@@ -223,10 +226,10 @@ SkuNav.options = {
 			type = "toggle",
 			OnAction = function(self, info, val)
 				local t = SkuDB.routedata["global"]["Waypoints"]
-				SkuOptions.db.global["SkuNav"].Waypoints = t
+				SkuDB.SessionRouteData.Waypoints = t
 
 				local tl = SkuDB.routedata["global"]["Links"]
-				SkuOptions.db.global["SkuNav"].Links = tl
+				SkuDB.SessionRouteData.Links = tl
 				SkuNav:CreateWaypointCache()
 
 				for x = 1, 4 do
@@ -289,7 +292,7 @@ SkuNav.defaults = {
 	includeDefaultPostboxWaypoints = true,
 	includeDefaultTaxiWaypoints = true,
 	]]
-	beaconVolume = 100,
+	beaconVolume = 35,
 	beaconSoundSetNarrow = "Beacon 2",
 	beaconSoundSetWide = "Beacon 4",
 	vocalizeFullDirectionDistance = true,
@@ -301,9 +304,9 @@ SkuNav.defaults = {
 	standardWpReachedRange = 4,
 	clickClackEnabled = true,
 	clickClackRange = 5,
-	clickClackSoundset = "beep",
+	clickClackSoundset = "click",
 	autoGlobalDirection = false,
-	showGlobalDirectionInWaypointLists = false,
+	showGlobalDirectionInWaypointLists = true,
 	trackVisited = true,
 	timeForVisitedToExpire = 6, -- 5 minutes
 	showGatherWaypoints = false,
@@ -334,11 +337,18 @@ end
 ---------------------------------------------------------------------------------------------------------------------------------------
 -- (string, optional<string>) -> string
 function SkuNav:getAnnotatedWaypointLabel(originalLabel, id)
+	--print("getAnnotatedWaypointLabel", originalLabel, id)
+
+	local tSkuWpName = id or ssub(originalLabel, string.find(originalLabel, "#") + 1)
+
+	--layer
+	local tLayerText = SkuNav:GetLayerText(SkuNav:GetNonAutoLevel(nil, nil, tSkuWpName, nil))
+
 	-- annotate with "visited" if visited
-	local wpID = id or string.sub(originalLabel, string.find(originalLabel, "#") + 1)
-	if SkuNav:waypointWasVisited(wpID) then
-		return L["visited"].." " .. originalLabel
-	else return originalLabel
+	if SkuNav:waypointWasVisited(tSkuWpName) then
+		return L["visited"]..";"..tLayerText..originalLabel
+	else 
+		return tLayerText..originalLabel
 	end
 end
 
@@ -365,7 +375,7 @@ local function SkuNav_MenuBuilder_WaypointSelectionMenu(aParent, aSortedWaypoint
 				local tPlayX, tPlayY = UnitPosition("player")
 				local tRoutesInRange = SkuNav:GetAllLinkedWPsInRangeToCoords(tPlayX, tPlayY, SkuNav.MaxMetaEntryRange)--SkuOptions.db.profile["SkuNav"].nearbyWpRange)
 				if string.find(SkuOptions.SkuNav_MenuBuilder_WaypointSelectionMenu_NPC, "#") then
-					SkuOptions.SkuNav_MenuBuilder_WaypointSelectionMenu_NPC = string.sub(SkuOptions.SkuNav_MenuBuilder_WaypointSelectionMenu_NPC, string.find(SkuOptions.SkuNav_MenuBuilder_WaypointSelectionMenu_NPC, "#") + 1)
+					SkuOptions.SkuNav_MenuBuilder_WaypointSelectionMenu_NPC = ssub(SkuOptions.SkuNav_MenuBuilder_WaypointSelectionMenu_NPC, string.find(SkuOptions.SkuNav_MenuBuilder_WaypointSelectionMenu_NPC, "#") + 1)
 				end
 				local wpTable = {SkuOptions.SkuNav_MenuBuilder_WaypointSelectionMenu_NPC}
 				local tCoveredWps = {}
@@ -480,7 +490,7 @@ function SkuNav:MenuBuilder(aParentEntry)
 			end
 
 			if sfind(aName, L["Selected"]..";") > 0 then
-				aName = string.sub(aName, string.len(L["Selected"]..";") + 1)
+				aName = ssub(aName, slen(L["Selected"]..";") + 1)
 			end
 			if SkuNav:GetWaypointData2(aName) then
 				SkuOptions.Voice:OutputStringBTtts(L["nicht erstellt"], false, true, 0.3, true)
@@ -516,7 +526,7 @@ function SkuNav:MenuBuilder(aParentEntry)
 				if SkuOptions.db.profile["SkuNav"].metapathFollowingStart then
 					if SkuOptions.db.profile["SkuNav"].metapathFollowingMetapaths then
 						if string.find(SkuOptions.db.profile["SkuNav"].metapathFollowingStart, "#") then
-							SkuOptions.db.profile["SkuNav"].metapathFollowingStart = string.sub(SkuOptions.db.profile["SkuNav"].metapathFollowingStart, string.find(SkuOptions.db.profile["SkuNav"].metapathFollowingStart, "#") + 1)
+							SkuOptions.db.profile["SkuNav"].metapathFollowingStart = ssub(SkuOptions.db.profile["SkuNav"].metapathFollowingStart, string.find(SkuOptions.db.profile["SkuNav"].metapathFollowingStart, "#") + 1)
 						end
 						SkuOptions.db.profile["SkuNav"].metapathFollowingMetapaths = SkuNav:GetAllMetaTargetsFromWp4(SkuOptions.db.profile["SkuNav"].metapathFollowingStart, SkuNav.MaxMetaRange, SkuNav.MaxMetaWPs, SkuOptions.db.profile["SkuNav"].metapathFollowingTarget, true)--
 						SkuOptions.db.profile["SkuNav"].metapathFollowingMetapaths[#SkuOptions.db.profile["SkuNav"].metapathFollowingMetapaths+1] = SkuOptions.db.profile["SkuNav"].metapathFollowingEndTarget
@@ -528,6 +538,7 @@ function SkuNav:MenuBuilder(aParentEntry)
 						SkuNav:SelectWP(SkuOptions.db.profile["SkuNav"].metapathFollowingStart, true)
 						SkuOptions.Voice:OutputStringBTtts(L["Metaroute folgen gestartet"], false, true, 0.2)
 						SkuOptions:CloseMenu()
+						SkuDispatcher:TriggerSkuEvent("SKU_CLOSEROUTE_STARTED")
 					end
 				end
 			else
@@ -537,7 +548,7 @@ function SkuNav:MenuBuilder(aParentEntry)
 					local tCleanValue = SkuOptions.SkuNav_MenuBuilder_WaypointSelectionMenu_NPC
 					local tPos = string.find(tUncleanValue, "#")
 					if tPos then
-						tCleanValue = string.sub(tUncleanValue,  tPos + 1)
+						tCleanValue = ssub(tUncleanValue,  tPos + 1)
 					end
 					aName = tCleanValue
 				end
@@ -555,6 +566,7 @@ function SkuNav:MenuBuilder(aParentEntry)
 					--lastDirection = SkuNav:GetDirectionTo(worldx, worldy, SkuNav:GetWaypointData2(SkuOptions.db.profile[MODULE_NAME].selectedWaypoint).worldX, SkuNav:GetWaypointData2(SkuOptions.db.profile[MODULE_NAME].selectedWaypoint).worldY)
 					--PlaySound(835)
 					SkuOptions:CloseMenu()
+					SkuDispatcher:TriggerSkuEvent("SKU_WAYPOINT_STARTED")
 				else
 					SkuOptions.Voice:OutputStringBTtts(L["Error"], false, true, 0.3, true)
 					SkuOptions.Voice:OutputStringBTtts(L["Wegpunkt nicht ausgewählt"], false, true, 0.3, true)
@@ -581,6 +593,7 @@ function SkuNav:MenuBuilder(aParentEntry)
 			end
 
 			--wps in current map sortet by range
+			local tAutoLen = slen(L["auto"]) + 1
 			local tNewMenuEntry = SkuOptions:InjectMenuItems(self, {L["Aktuelle Karte Entfernung"]}, SkuGenericMenuItem)
 			tNewMenuEntry.dynamic = true
 			tNewMenuEntry.filterable = true
@@ -597,7 +610,8 @@ function SkuNav:MenuBuilder(aParentEntry)
 						local tWayP = SkuNav:GetWaypointData2(v)
 						if tWayP then
 							if tSubAreaIds[tonumber(tWayP.areaId)] then
-								if not sfind(v, L["auto"]..";") then
+								if ssub(v, 1, tAutoLen) ~= L["auto"].." " then
+								--if not sfind(v, L["auto"]..";") then
 								--if not sfind(v, L["Quick waypoint"]) and not sfind(v, "auto;") then
 									local tWpX, tWpY = tWayP.worldX, tWayP.worldY
 									local tPlayX, tPlayY = UnitPosition("player")
@@ -718,6 +732,7 @@ function SkuNav:MenuBuilder(aParentEntry)
 					SkuOptions.Voice:OutputStringBTtts(L["Wegpunkt abgewählt"], false, true, 0.3, true)
 					--SkuOptions.db.profile["SkuNav"].selectedWaypoint = ""
 					SkuNav:SelectWP("", true)
+					SkuDispatcher:TriggerSkuEvent("SKU_NAVIGATION_STOPPED")
 				end
 				--PlaySound(835)
 			end
@@ -904,7 +919,7 @@ function SkuNav:MenuBuilder(aParentEntry)
 			end
 
 			if string.find(aName, ";") then
-				SkuOptions.db.profile[MODULE_NAME].metapathFollowingTargetName = string.sub(aName, 1, string.find(aName, ";") - 1)
+				SkuOptions.db.profile[MODULE_NAME].metapathFollowingTargetName = ssub(aName, 1, string.find(aName, ";") - 1)
 			end
 			
 			SkuOptions.db.profile[MODULE_NAME].metapathFollowingStart = L["Einheiten;Route;"].."1"
@@ -951,11 +966,12 @@ function SkuNav:MenuBuilder(aParentEntry)
 			SkuNav:SelectWP(SkuOptions.db.profile[MODULE_NAME].metapathFollowingStart, true)
 			SkuOptions.Voice:OutputStringBTtts(L["Einheiten Route folgen gestartet"], false, true, 0.2)
 			SkuOptions:CloseMenu()
+			SkuDispatcher:TriggerSkuEvent("SKU_UNITROUTE_STARTED")
 			return
 		elseif SkuOptions.db.profile[MODULE_NAME].metapathFollowingStart then
 			if SkuOptions.db.profile[MODULE_NAME].metapathFollowingMetapaths then
 				if string.find(SkuOptions.db.profile[MODULE_NAME].metapathFollowingStart, "#") then
-					SkuOptions.db.profile[MODULE_NAME].metapathFollowingStart = string.sub(SkuOptions.db.profile[MODULE_NAME].metapathFollowingStart, string.find(SkuOptions.db.profile[MODULE_NAME].metapathFollowingStart, "#") + 1)
+					SkuOptions.db.profile[MODULE_NAME].metapathFollowingStart = ssub(SkuOptions.db.profile[MODULE_NAME].metapathFollowingStart, string.find(SkuOptions.db.profile[MODULE_NAME].metapathFollowingStart, "#") + 1)
 				end
 				SkuOptions.db.profile[MODULE_NAME].metapathFollowingMetapaths = SkuNav:GetAllMetaTargetsFromWp4(SkuOptions.db.profile[MODULE_NAME].metapathFollowingStart, SkuNav.MaxMetaRange, SkuNav.MaxMetaWPs, aName)--
 				SkuOptions.db.profile[MODULE_NAME].metapathFollowingTarget = aName
@@ -966,6 +982,7 @@ function SkuNav:MenuBuilder(aParentEntry)
 				SkuOptions.Voice:OutputStringBTtts(L["Metaroute folgen gestartet"], false, true, 0.2)
 
 				SkuOptions:CloseMenu()
+				SkuDispatcher:TriggerSkuEvent("SKU_ROUTE_STARTED")
 			end
 		end
 	end
@@ -994,34 +1011,32 @@ function SkuNav:MenuBuilder(aParentEntry)
 				end
 			end
 
-			for q = 2, #tSortedWaypointList do
-				tSortedWaypointList[q] = nil
-			end
-
 			if #tSortedWaypointList == 0 then
 				local tNewMenuEntry = SkuOptions:InjectMenuItems(self, {L["Empty;list"]}, SkuGenericMenuItem)
 			else
 				local tCount = 0
 				for k, v in SkuSpairs(tSortedWaypointList) do
 					if tCount < 10 then
-						local tNewMenuEntry = SkuOptions:InjectMenuItems(self, {v}, SkuGenericMenuItem)
+
+						local tSkuWpName = ssub(v, string.find(v, "#") + 1)
+						local tLayerText = SkuNav:GetLayerText(SkuNav:GetNonAutoLevel(nil, nil, tSkuWpName, nil))
+
+						local tNewMenuEntry = SkuOptions:InjectMenuItems(self, {L["Entry point: "]..tLayerText..v}, SkuGenericMenuItem)
 						tNewMenuEntry.dynamic = true
 						tNewMenuEntry.filterable = true
 						tNewMenuEntry.BuildChildren = function(self)
 							SkuOptions.db.profile[MODULE_NAME].metapathFollowingStartTMP = v
-							local tMetapaths = SkuNav:GetAllMetaTargetsFromWp4(string.sub(v, string.find(v, "#") + 1), SkuNav.MaxMetaRange, SkuNav.MaxMetaWPs)--
+							local tMetapaths = SkuNav:GetAllMetaTargetsFromWp4(ssub(v, string.find(v, "#") + 1), SkuNav.MaxMetaRange, SkuNav.MaxMetaWPs)--
 							SkuMetapathFollowingMetapathsTMP = tMetapaths
-
 							local tData = {}
 							for i, v in pairs(tMetapaths) do--
-								tData[i] = tMetapaths[i].distance--
-							end--
+								tData[i] = tMetapaths[i].distance
+							end
 
 							local tSortedList = {}
 							for k,v in SkuSpairs(tData, function(t,a,b) return t[b] > t[a] end) do
 								table.insert(tSortedList, k)
 							end
-
 							if #tSortedList == 0 then
 								local tNewMenuEntry = SkuOptions:InjectMenuItems(self, {L["Empty;list"]}, SkuGenericMenuItem)
 							else
@@ -1050,6 +1065,8 @@ function SkuNav:MenuBuilder(aParentEntry)
 			
 								end
 							end
+--print("filled", debugprofilestop() - beginTime)
+
 						end
 						tCount = tCount + 1
 					end
@@ -1124,7 +1141,7 @@ function SkuNav:MenuBuilder(aParentEntry)
 					tNewMenuEntrySub.OnEnter = function(self)
 						local tClearedName = self.name
 						if sfind(tClearedName, "#") then
-							tClearedName = string.sub(tClearedName, string.find(tClearedName, "#") + 1)
+							tClearedName = ssub(tClearedName, string.find(tClearedName, "#") + 1)
 						end
 						if tUnitDbWaypointData[tClearedName] then
 							SkuOptions.db.profile[MODULE_NAME].metapathFollowingUnitDbWaypoint = true
@@ -1168,8 +1185,8 @@ function SkuNav:MenuBuilder(aParentEntry)
 				SkuOptions.Voice:OutputStringBTtts(L["Active waypoint or route or recording"], false, true, 0.3, true)
 				return
 			end
-			SkuOptions.db.global["SkuNav"].Waypoints = {}
-			SkuOptions.db.global["SkuNav"].Links = {}
+			SkuDB.SessionRouteData.Waypoints = {}
+			SkuDB.SessionRouteData.Links = {}
 			SkuOptions.db.global["SkuNav"].hasCustomMapData = nil
 			--SkuNav:CreateWaypointCache()
 			SkuNav:PLAYER_ENTERING_WORLD()

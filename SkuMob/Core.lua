@@ -167,9 +167,13 @@ end
 
 ---------------------------------------------------------------------------------------------------------------------------------------
 function SkuMob:PLAYER_TARGET_CHANGED(event, aUnitId)
+	--print("mob PLAYER_TARGET_CHANGED(event, ", event, aUnitId)
 	aUnitId = aUnitId or "target"
 
-	--print("mob PLAYER_TARGET_CHANGED(event, ", event, aUnitId)
+	if UnitName(aUnitId) == nil then
+		return
+	end
+
 
 	local tUnitName = GetUnitName(aUnitId, false)
 	local tUnitLevel = UnitLevel(aUnitId)

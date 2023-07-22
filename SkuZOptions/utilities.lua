@@ -9,6 +9,14 @@ local band, bor, bxor, bnot = bit.band, bit.bor, bit.bxor, bit.bnot
 local lshift, rshift, arshift = bit.lshift, bit.rshift, bit.arshift
 
 ---------------------------------------------------------------------------------------------------------------------------------------
+function SkuGetItemIdFromItemLink(aLink)
+	if not aLink then return end
+	local tr = 0
+	local a, b, c, d, e = strsplit("%:", aLink)
+	return b
+end
+
+---------------------------------------------------------------------------------------------------------------------------------------
 function SkuTableToString(aTable, aCallback)
 	local tStr = "{"
 	local tPartString = ""
@@ -120,11 +128,13 @@ end
 function TooltipLines_helper(...)
    local tQualityString = nil
 
-	local itemName, ItemLink = _G["SkuScanningTooltip"]:GetItem()
+	local itemName, ItemLink
+	itemName, ItemLink = _G["SkuScanningTooltip"]:GetItem()
+
 	local tEffectiveILvl
 
 	if not ItemLink then
-		itemName, ItemLink = GameTooltip:GetItem()
+		itemName, ItemLink = _G["GameTooltip"]:GetItem()
 	end
 
 	if ItemLink then
@@ -164,6 +174,8 @@ function TooltipLines_helper(...)
 			end
 		end
 	end
+
+	--_G["SkuScanningTooltip"]:ClearLines()
 	return rText
 end
 
@@ -1136,8 +1148,8 @@ end
 local tSkuCoroutineControlFrameOnUpdateTimer = 0
 local tCounter = 0
 function SkuRtWpDataDeToEnNEW()--Tal!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	SkuOptions.db.global["SkuNav"].Waypoints = {}
-	SkuOptions.db.global["SkuNav"].Links = {}
+	SkuDB.SessionRouteData.Waypoints = {}
+	SkuDB.SessionRouteData.Links = {}
 	SkuNav:CreateWaypointCache({"enUS"})
 
 	tCounter = 0
@@ -1237,8 +1249,8 @@ end
 local tSkuCoroutineControlFrameOnUpdateTimer = 0
 local tCounter = 0
 function SkutmpTrans()--Tal!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	--SkuOptions.db.global["SkuNav"].Waypoints = {}
-	--SkuOptions.db.global["SkuNav"].Links = {}
+	--SkuDB.SessionRouteData.Waypoints = {}
+	--SkuDB.SessionRouteData.Links = {}
 
 	SkuOptions.db.global["SkuNav"].IdWaypoints = {}
 
@@ -1246,21 +1258,21 @@ function SkutmpTrans()--Tal!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 	local co = coroutine.create(function ()
 		local tNumberDone = 0
-		for i, v in ipairs(SkuOptions.db.global["SkuNav"].Waypoints) do
-			--print(i, v, SkuOptions.db.global["SkuNav"].Waypoints[v], SkuOptions.db.global["SkuNav"].Waypoints[v].names["deDE"])
+		for i, v in ipairs(SkuDB.SessionRouteData.Waypoints) do
+			--print(i, v, SkuDB.SessionRouteData.Waypoints[v], SkuDB.SessionRouteData.Waypoints[v].names["deDE"])
 			--if type(v) == "table" then
 			
-				if SkuOptions.db.global["SkuNav"].Waypoints[v].names["deDE"] ~= "" then
-					--print(SkuOptions.db.global["SkuNav"].Waypoints[v].names["deDE"])
-					SkuOptions.db.global["SkuNav"].Waypoints[v].names["enUS"] = SkuTranslateStringDeToEn(SkuOptions.db.global["SkuNav"].Waypoints[v].names["deDE"])
-					SkuOptions.db.global["SkuNav"].Waypoints[v].lComments = {
+				if SkuDB.SessionRouteData.Waypoints[v].names["deDE"] ~= "" then
+					--print(SkuDB.SessionRouteData.Waypoints[v].names["deDE"])
+					SkuDB.SessionRouteData.Waypoints[v].names["enUS"] = SkuTranslateStringDeToEn(SkuDB.SessionRouteData.Waypoints[v].names["deDE"])
+					SkuDB.SessionRouteData.Waypoints[v].lComments = {
 						["deDE"] = {},
 						["enUS"] = {},
 					}
-					if SkuOptions.db.global["SkuNav"].Waypoints[v].comments then
-						for x = 1, #SkuOptions.db.global["SkuNav"].Waypoints[v].comments do
-							SkuOptions.db.global["SkuNav"].Waypoints[v].lComments["deDE"][#SkuOptions.db.global["SkuNav"].Waypoints[v].lComments["deDE"] + 1] = SkuOptions.db.global["SkuNav"].Waypoints[v].comments[x]
-							SkuOptions.db.global["SkuNav"].Waypoints[v].lComments["enUS"][#SkuOptions.db.global["SkuNav"].Waypoints[v].lComments["enUS"] + 1] = SkuTranslateStringDeToEn(SkuOptions.db.global["SkuNav"].Waypoints[v].comments[x])
+					if SkuDB.SessionRouteData.Waypoints[v].comments then
+						for x = 1, #SkuDB.SessionRouteData.Waypoints[v].comments do
+							SkuDB.SessionRouteData.Waypoints[v].lComments["deDE"][#SkuDB.SessionRouteData.Waypoints[v].lComments["deDE"] + 1] = SkuDB.SessionRouteData.Waypoints[v].comments[x]
+							SkuDB.SessionRouteData.Waypoints[v].lComments["enUS"][#SkuDB.SessionRouteData.Waypoints[v].lComments["enUS"] + 1] = SkuTranslateStringDeToEn(SkuDB.SessionRouteData.Waypoints[v].comments[x])
 			
 						end
 					end
@@ -1270,7 +1282,7 @@ function SkutmpTrans()--Tal!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 				end
 			--end
 
-			local t = SkuOptions.db.global["SkuNav"].Waypoints[v]
+			local t = SkuDB.SessionRouteData.Waypoints[v]
 			SkuOptions.db.global["SkuNav"].IdWaypoints[#SkuOptions.db.global["SkuNav"].IdWaypoints + 1] = t
 
 			tCounter = tCounter + 1
@@ -1321,17 +1333,17 @@ end
 local tSkuCoroutineControlFrameOnUpdateTimer = 0
 local tCounter = 0
 function SkutmpLinks()--Tal!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	--SkuOptions.db.global["SkuNav"].Waypoints = {}
-	--SkuOptions.db.global["SkuNav"].Links = {}
+	--SkuDB.SessionRouteData.Waypoints = {}
+	--SkuDB.SessionRouteData.Links = {}
 
-	SkuOptions.db.global["SkuNav"].IdLinks = {}
+	SkuDB.SessionRouteData.IdLinks = {}
 
 	tCounter = 0
 
 	local co = coroutine.create(function ()
 		local tNumberDone = 0
 
-		for tSourceWpName, tSourceWpLinks in pairs(SkuOptions.db.global["SkuNav"].Links) do
+		for tSourceWpName, tSourceWpLinks in pairs(SkuDB.SessionRouteData.Links) do
 			local tSourceWpId = tGet(tSourceWpName)
 			if not tSourceWpId then
 				if WaypointCache[WaypointCacheLookupAll[tSourceWpName]].typeId == 2 then
@@ -1362,7 +1374,7 @@ function SkutmpLinks()--Tal!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 						tLinksIds[tTargetWpId] = v
 					end
 				end
-				SkuOptions.db.global["SkuNav"].IdLinks[tSourceWpId] = tLinksIds
+				SkuDB.SessionRouteData.IdLinks[tSourceWpId] = tLinksIds
 			end
 
 			tCounter = tCounter + 1

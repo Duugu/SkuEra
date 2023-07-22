@@ -18,7 +18,7 @@ end
 
 ---------------------------------------------------------------------------------------------------------------------------------------
 function SkuCore:GameWorldObjectsOnInitialize()
-   --SkuCore:RegisterEvent("CURSOR_UPDATE")
+   SkuCore:RegisterEvent("CURSOR_UPDATE")
    --SkuCore:RegisterEvent("CURSOR_CHANGED")
    SkuCore:RegisterEvent("UPDATE_MOUSEOVER_UNIT")
 
@@ -49,8 +49,8 @@ function SkuCore:GameWorldObjectsOnLogin()
 end
 
 ---------------------------------------------------------------------------------------------------------------------------------------
---function SkuCore:CURSOR_UPDATE()
-function SkuCore:CURSOR_CHANGED(aEvent, isDefault, newCursorType, oldCursorType, oldCursorVirtualID)
+function SkuCore:CURSOR_UPDATE()
+--function SkuCore:CURSOR_CHANGED(aEvent, isDefault, newCursorType, oldCursorType, oldCursorVirtualID)
    --print("CURSOR_CHANGED", aEvent, isDefault, newCursorType, oldCursorType, oldCursorVirtualID)
    if SkuCore.gameWorldObjectsScanFrame and SkuCore.gameWorldObjectsScanFrame.isScanningActive == true and SkuCore.gameWorldObjectsScanFrame.isScanningPaused == false then
       

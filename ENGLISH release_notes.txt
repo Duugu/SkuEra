@@ -3,6 +3,21 @@
 -------------------------------------------------------------------------------------------------------	
 
 -------------------------------------------------------------------------------------------------------
+Changes in Sku Era r32.20
+	- Scanning fixed
+	- Updates for upcoming Classic HC realms
+	- Updated routes and waypoints data to Classic (including Stormwind)
+	- Updated German creature names database to the old ones from Classic (partly untranslated)
+	- Tradeskills/professions frame fixed
+	- Friends list fixed (bnet friends are disabled for now)
+	- Talent frame fixed
+	- Updated the internal routes and waypoints data structure to the current Wrath version
+	- Fixed a bug in sku libraries that were causing bugs in other addons (like the hardcore addon)
+	- Fixed a lot of internal errors
+	- Fixed tooltips of Felix' belongings
+
+
+-------------------------------------------------------------------------------------------------------
 Changes in Sku Era r32.19
 	- Auction house fixed
 	- Send mail fixed

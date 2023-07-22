@@ -103,7 +103,7 @@ SkuCore.interactFramesListManual = {
 	["ItemTextFrame"] = function(...) SkuCore:ItemTextFrame(...) end,
 	["ClassTrainerFrame"] = function(...) SkuCore:Build_ClassTrainerFrame(...) end,
 	["CharacterFrame"] = function(...) SkuCore:Build_CharacterFrame(...) end,
-	["PlayerTalentFrame"] = function(...) SkuCore:Build_TalentFrame(...) end,
+	--["PlayerTalentFrame"] = function(...) SkuCore:Build_TalentFrame(...) end,
 	["RolePollPopup"] = function(...) SkuCore:Build_RolePollPopup(...) end,
 	
 }
@@ -2925,9 +2925,9 @@ end
 -------------------------------------------------------------------------------------------------
 function SkuCore:GetBinding(aIndex)
 	local aBindingSet = GetCurrentBindingSet()
-	print(aIndex, aBindingSet)
+	--print(aIndex, aBindingSet)
 	local tCommand, tCategory, tKey1, tKey2 = GetBinding(aIndex, aBindingSet)
-	print(tCommand, tCategory, tKey1, tKey2)
+	--print(tCommand, tCategory, tKey1, tKey2)
 
 	return tCommand, tCategory, tKey1, tKey2
 end

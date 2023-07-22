@@ -1650,8 +1650,10 @@ function SkuCore:Build_TradeSkillFrame(aParentChilds)
 		childs = {},
 	}
 
+	--[[
+
 	local tFrameName = ""
-	local tSearchText = TradeSkillFrameEditBox:GetText() or ""
+	--local tSearchText = TradeSkillFrameEditBox:GetText() or ""
 	local tFriendlyName = L["Filter"]
 	local tLabel = tFriendlyName
 	if tSearchText ~= "" and tSearchText ~= L["Search"] then
@@ -1692,7 +1694,9 @@ function SkuCore:Build_TradeSkillFrame(aParentChilds)
 		end,            
 		click = true,
 	}
+	]]
 
+	--[[
 	local tFrameName = "TradeSkillFrameAvailableFilterCheckButton"
 	if _G[tFrameName] then
 		if _G[tFrameName]:IsVisible() == true and _G[tFrameName]:IsEnabled() == true then --IsMouseClickEnabled()
@@ -1723,6 +1727,7 @@ function SkuCore:Build_TradeSkillFrame(aParentChilds)
 			}   
 		end
 	end
+	]]
 
 	local tFrameName = "TradeSkillListScrollFrameScrollBarScrollUpButton"
 	if _G[tFrameName] then
@@ -1771,11 +1776,13 @@ function SkuCore:Build_TradeSkillFrame(aParentChilds)
 					end
 				end
 
-				local tCountText = _G[tFrameName.."Count"]:GetText()
+				--local tCountText = _G[tFrameName.."Count"]:GetText()
 				local tFriendlyName = SkuChat:Unescape(_G[tFrameName].text:GetText())
+				--[[
 				if tCountText then
 					tFriendlyName = tFriendlyName.." "..tCountText
 				end
+				]]
 
 				if tDifficulty == "subheader" or tDifficulty == "header" then
 					tFriendlyName = tFriendlyName.." ("..L["category"]..")"
@@ -2353,62 +2360,154 @@ end
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 function SkuCore:GossipFrame(aParentChilds)
 
-
-	local dtc = { _G["GossipGreetingScrollChildFrame"]:GetRegions() }
-	for x = 1, #dtc do
-		if dtc[x].GetText then
-			local tText = dtc[x]:GetText()
-			if tText then
-				local tFrameName = "GossipText"
-				local tFriendlyName = tText
-				local tFrst, tFll = ItemName_helper(tText)
-				table.insert(aParentChilds, tFriendlyName)
-				aParentChilds[tFriendlyName] = {
-					frameName = tFrameName,
-					RoC = "Child",
-					type = "FontString",
-					obj = _G[tFrameName],
-					textFirstLine = tFrst,
-					textFull = tFll,
-					childs = {},
-				}  
+	if _G["GossipGreetingScrollChildFrame"] then
+		local dtc = { _G["GossipGreetingScrollChildFrame"]:GetRegions() }
+		for x = 1, #dtc do
+			if dtc[x].GetText then
+				local tText = dtc[x]:GetText()
+				if tText then
+					local tFrameName = "GossipText"
+					local tFriendlyName = tText
+					local tFrst, tFll = ItemName_helper(tText)
+					table.insert(aParentChilds, tFriendlyName)
+					aParentChilds[tFriendlyName] = {
+						frameName = tFrameName,
+						RoC = "Child",
+						type = "FontString",
+						obj = _G[tFrameName],
+						textFirstLine = tFrst,
+						textFull = tFll,
+						childs = {},
+					}  
+				end
 			end
 		end
-	end
 
 
-	local tIconStrings = {
-		[132048] = L["Accepted Quest"],
-		[132049] = L["Available Quest"],
-	}
+		local tIconStrings = {
+			[132048] = L["Accepted Quest"],
+			[132049] = L["Available Quest"],
+		}
 
-	for x = 1, GossipFrame.buttonIndex - 1 do
-		local tFrameName = "GossipTitleButton"..x
-		if _G[tFrameName] then
-			if _G[tFrameName]:IsShown() == true  then
-				if _G[tFrameName]:GetText() then
-					local tFriendlyName = unescape(_G[tFrameName]:GetText())
-					if _G["GossipTitleButton"..x.."GossipIcon"]:IsShown() == true then
-						tFriendlyName = (tIconStrings[_G["GossipTitleButton"..x.."GossipIcon"]:GetTextureFileID()] or "").." "..unescape(_G[tFrameName]:GetText())
-					end
-					local tText, tFullText = "", ""
-					if _G[tFrameName]:IsEnabled() == true then --IsMouseClickEnabled()
-						table.insert(aParentChilds, tFriendlyName)
-						aParentChilds[tFriendlyName] = {
-							frameName = tFrameName,
-							RoC = "Child",
-							type = "Button",
-							obj = _G[tFrameName],
-							textFirstLine = tFriendlyName,
-							textFull = "",
-							childs = {},
-							func = _G[tFrameName]:GetScript("OnClick"),
-							click = true,
-						} 
+		for x = 1, GossipFrame.buttonIndex - 1 do
+			local tFrameName = "GossipTitleButton"..x
+			if _G[tFrameName] then
+				if _G[tFrameName]:IsShown() == true  then
+					if _G[tFrameName]:GetText() then
+						local tFriendlyName = unescape(_G[tFrameName]:GetText())
+						if _G["GossipTitleButton"..x.."GossipIcon"]:IsShown() == true then
+							tFriendlyName = (tIconStrings[_G["GossipTitleButton"..x.."GossipIcon"]:GetTextureFileID()] or "").." "..unescape(_G[tFrameName]:GetText())
+						end
+						local tText, tFullText = "", ""
+						if _G[tFrameName]:IsEnabled() == true then --IsMouseClickEnabled()
+							table.insert(aParentChilds, tFriendlyName)
+							aParentChilds[tFriendlyName] = {
+								frameName = tFrameName,
+								RoC = "Child",
+								type = "Button",
+								obj = _G[tFrameName],
+								textFirstLine = tFriendlyName,
+								textFull = "",
+								childs = {},
+								func = _G[tFrameName]:GetScript("OnClick"),
+								click = true,
+							} 
+						end
 					end
 				end
 			end
 		end
+
+	else
+			
+		local dtc
+
+		local tIconStrings = {
+			[132048] = L["Accepted Quest"],
+			[132049] = L["Available Quest"],
+		}
+
+
+		local gossipText = C_GossipInfo.GetText()
+		if gossipText and gossipText ~= "" then
+			table.insert(aParentChilds, gossipText)
+			aParentChilds[gossipText] = {
+				frameName = tFrameName,
+				RoC = "Child",
+				type = "string",
+				--obj = nil,
+				textFirstLine = gossipText,
+				textFull = gossipText,
+				childs = {},
+			} 
+		end
+
+		local info = C_GossipInfo.GetOptions()
+		for i, v in pairs(info) do
+			local tFriendlyName = (tIconStrings[v.icon] or "").." "..v.name
+			table.insert(aParentChilds, tFriendlyName)
+			aParentChilds[tFriendlyName] = {
+				frameName = _G["GossipFrame"],
+				RoC = "Child",
+				type = "Button",
+				obj = _G["GossipFrame"],
+				textFirstLine = tFriendlyName,
+				textFull = "",
+				childs = {},
+				func = function()
+					C_GossipInfo.SelectOption(v.gossipOptionID)
+				end,
+				click = true,
+			} 
+		end
+		
+		local info = C_GossipInfo.GetAvailableQuests()
+		for i, v in pairs(info) do
+			local tBl = ""
+			if SkuDB.questDataTBC[v.questID] ~= nil and SkuDB.questDataTBC[v.questID][SkuDB.questKeys.skuData] ~= nil and SkuDB.questDataTBC[v.questID][SkuDB.questKeys.skuData][1] and SkuDB.questDataTBC[v.questID][SkuDB.questKeys.skuData][1][1] == true then
+				tBl = L["Blacklisted"]
+			end
+
+			local tFriendlyName = L["Available Quest"].." "..v.title.." "..tBl
+			table.insert(aParentChilds, tFriendlyName)
+			aParentChilds[tFriendlyName] = {
+				frameName = _G["GossipFrame"],
+				RoC = "Child",
+				type = "Button",
+				obj = _G["GossipFrame"],
+				textFirstLine = tFriendlyName,
+				textFull = "",
+				childs = {},
+				func = function()
+					C_GossipInfo.SelectAvailableQuest(v.questID)
+				end,
+				click = true,
+			} 
+		end		
+
+		local info = C_GossipInfo.GetActiveQuests()
+		for i, v in pairs(info) do
+			local tBl = ""
+			if SkuDB.questDataTBC[v.questID] ~= nil and SkuDB.questDataTBC[v.questID][SkuDB.questKeys.skuData] ~= nil and SkuDB.questDataTBC[v.questID][SkuDB.questKeys.skuData][1] and SkuDB.questDataTBC[v.questID][SkuDB.questKeys.skuData][1][1] == true then
+				tBl = L["Blacklisted"]
+			end
+
+			local tFriendlyName = L["Accepted Quest"].." "..v.title.." "..tBl
+			table.insert(aParentChilds, tFriendlyName)
+			aParentChilds[tFriendlyName] = {
+				frameName = _G["GossipFrame"],
+				RoC = "Child",
+				type = "Button",
+				obj = _G["GossipFrame"],
+				textFirstLine = tFriendlyName,
+				textFull = "",
+				childs = {},
+				func = function()
+					C_GossipInfo.SelectActiveQuest(v.questID)
+				end,
+				click = true,
+			} 
+		end	
 	end
 
 end

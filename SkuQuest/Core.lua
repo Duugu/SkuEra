@@ -1018,6 +1018,7 @@ function SkuQuest:PLAYER_LOGIN(...)
 		end
 	end
 
+	--[[
 	--take stormwind creatues from wrath data due to changed coordinates
 	for i, v in pairs(SkuDB.WotLK.NpcData.Data) do
 		if SkuDB.NpcData.Data[i][SkuDB.NpcData.Keys.spawns] then
@@ -1034,8 +1035,14 @@ function SkuQuest:PLAYER_LOGIN(...)
 			end
 		end
 	end
+	]]
 
-	SkuDB.NpcData.Names = SkuDB.WotLK.NpcData.Names
+	--SkuDB.NpcData.Names = SkuDB.WotLK.NpcData.Names
+	for i, v in pairs(SkuDB.WotLK.NpcData.Names.deDE) do
+		if not SkuDB.NpcData.Names.deDE[i] then
+			SkuDB.NpcData.Names.deDE[i] = v
+		end
+	end	
 	--print("NpcData", tcount)
 
 	--merge items dbs
@@ -1046,7 +1053,12 @@ function SkuQuest:PLAYER_LOGIN(...)
 			tcount = tcount + 1
 		end
 	end	
-	SkuDB.itemLookup = SkuDB.WotLK.itemLookup
+	--SkuDB.itemLookup = SkuDB.WotLK.itemLookup
+	for i, v in pairs(SkuDB.WotLK.itemLookup.deDE) do
+		if not SkuDB.itemLookup.deDE[i] then
+			SkuDB.itemLookup.deDE[i] = v
+		end
+	end		
 	--print("itemDataTBC", tcount)
 
 	--merge object dbs
@@ -1058,6 +1070,7 @@ function SkuQuest:PLAYER_LOGIN(...)
 		end
 	end	
 
+	--[[
 	--take stormwind objects from wrath data due to changed coordinates
 	for i, v in pairs(SkuDB.WotLK.objectDataTBC) do
 		if SkuDB.objectDataTBC[i][SkuDB.objectKeys.spawns] then
@@ -1074,6 +1087,7 @@ function SkuQuest:PLAYER_LOGIN(...)
 			end
 		end
 	end
+	]]
 
 	--SkuDB.objectResourceNames = SkuDB.WotLK.objectResourceNames
 
@@ -1099,7 +1113,12 @@ function SkuQuest:PLAYER_LOGIN(...)
 			tcount = tcount + 1
 		end
 	end
-	SkuDB.questLookup = SkuDB.WotLK.questLookup
+	--SkuDB.questLookup = SkuDB.WotLK.questLookup
+	for i, v in pairs(SkuDB.WotLK.questLookup.deDE) do
+		if not SkuDB.questLookup.deDE[i] then
+			SkuDB.questLookup.deDE[i] = v
+		end
+	end	
 	--print("questDataTBC", tcount)
 
 

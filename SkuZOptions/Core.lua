@@ -127,10 +127,22 @@ function SkuOptions:SlashFunc(input, aSilent)
 	if fields then
 		if fields[1] == "version" then
 			local name, title, notes, enabled, loadable, reason, security = GetAddOnInfo("Sku")
-			print("Era", title)
+			print(title)
 		end
 
-		
+		if fields[1] == "devmode" then
+			-- Oh, hai there. You've found the secrect dev mode switch. Good boy. :P
+			-- I would suggest to not use it, if you don't know what that is leading to.
+			-- If you are ignoring this advice, I will not help you to fix any damage that may result from its use. :)
+			SkuOptions.db.global["SkuOptions"] = SkuOptions.db.global["SkuOptions"] or {}
+			if not SkuOptions.db.global["SkuOptions"].devmode or SkuOptions.db.global["SkuOptions"].devmode == false then
+				SkuOptions.db.global["SkuOptions"].devmode = true
+			else
+				SkuOptions.db.global["SkuOptions"].devmode = false
+			end
+			print("Sku devmode", (SkuOptions.db.global["SkuOptions"].devmode == true and "on" or "off"))
+		end
+
 		if fields[1] == "errors" then
 			SkuOptions:PrintLastBugsackErrors(fields[2])
 		end
@@ -212,6 +224,12 @@ function SkuOptions:SlashFunc(input, aSilent)
 			SkuOptions.db.profile["SkuNav"].showRoutesOnMinimap = SkuOptions.db.profile["SkuNav"].showRoutesOnMinimap ~= true
 		end
 		]]
+
+		if fields[1] == "menuselect" then
+			local tIndexString, tBreadString = SkuOptions:GetMenuIndexAndBreadString(SkuOptions.currentMenuPosition)
+			SkuDispatcher:TriggerSkuEvent("SKU_SLASH_MENU_ITEM_SELECTED", tIndexString, tBreadString)
+		end
+
 
 		if fields[1] == "mon" then
 			SkuCore:AqSlashHandler(fields)
@@ -304,8 +322,8 @@ function SkuOptions:SlashFunc(input, aSilent)
 
 		elseif fields[1] == "rdatareset" then
 			dprint("/sku rdatareset")
-			SkuOptions.db.global["SkuNav"].Waypoints = {}
-			SkuOptions.db.global["SkuNav"].Links = {}
+			SkuDB.SessionRouteData.Waypoints = {}
+			SkuDB.SessionRouteData.Links = {}
 			SkuOptions.db.global["SkuNav"].hasCustomMapData = nil
 			--SkuNav:CreateWaypointCache()
 			SkuNav:PLAYER_ENTERING_WORLD()
@@ -405,10 +423,10 @@ function SkuOptions:OnProfileReset()
 	SkuOptions.db.profile["SkuNav"].Routes = nil
 
 	local t = SkuDB.routedata["global"]["Waypoints"]
-	SkuOptions.db.global["SkuNav"].Waypoints = t
+	SkuDB.SessionRouteData.Waypoints = t
 
 	local tl = SkuDB.routedata["global"]["Links"]
-	SkuOptions.db.global["SkuNav"].Links = tl
+	SkuDB.SessionRouteData.Links = tl
 
 	SkuNav:CreateWaypointCache()
 
@@ -454,6 +472,8 @@ function SkuOptions:OnProfileReset()
 	end
 
 	SkuOptions:SkuKeyBindsUpdate()
+
+	SkuCore:UpdateCurrentTalentSet()
 
 	SkuOptions.Voice:OutputStringBTtts(L["Profil zurückgesetzt"], false, true, 0.2, nil, nil, nil, 2)
 end
@@ -4208,10 +4228,10 @@ function SkuOptions:ImportWpAndLinkData()
 
 			--do tWaypoints 
 			local tFullCounterWps = 0
-			SkuOptions.db.global["SkuNav"].Waypoints = {}
+			SkuDB.SessionRouteData.Waypoints = {}
 			for tIndex, tWpData in ipairs(tWaypoints) do
-				if not SkuOptions.db.global["SkuNav"].Waypoints[tIndex] then
-					table.insert(SkuOptions.db.global["SkuNav"].Waypoints, tWpData)
+				if not SkuDB.SessionRouteData.Waypoints[tIndex] then
+					table.insert(SkuDB.SessionRouteData.Waypoints, tWpData)
 					tImportCounterWps = tImportCounterWps + 1
 				else
 					tIgnoredCounterWps = tIgnoredCounterWps + 1
@@ -4224,8 +4244,8 @@ function SkuOptions:ImportWpAndLinkData()
 			for i, v in pairs(tLinks) do
 				tImportCounterLinks = tImportCounterLinks + 1
 			end
-			SkuOptions.db.global["SkuNav"].Links = {}
-			SkuOptions.db.global["SkuNav"].Links = tLinks
+			SkuDB.SessionRouteData.Links = {}
+			SkuDB.SessionRouteData.Links = tLinks
 
 			--done
 			print("Version:", tVersion)
@@ -4256,11 +4276,11 @@ function SkuOptions:ExportWpAndLinkData()
 	}
 
 	--build Links
-	tExportDataTable.links = SkuOptions.db.global["SkuNav"].Links
+	tExportDataTable.links = SkuDB.SessionRouteData.Links
 
 	--build Waypoints
-	for i, v in ipairs(SkuOptions.db.global["SkuNav"].Waypoints) do
-		local tWpData = SkuOptions.db.global["SkuNav"].Waypoints[i]
+	for i, v in ipairs(SkuDB.SessionRouteData.Waypoints) do
+		local tWpData = SkuDB.SessionRouteData.Waypoints[i]
 		if tWpData then
 			table.insert(tExportDataTable.waypoints, tWpData)
 		end

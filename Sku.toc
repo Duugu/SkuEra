@@ -1,8 +1,8 @@
 ## Interface-Classic: 11403
-## Title: SkuEra (32.19)
+## Title: SkuEra (32.20)
 ## SavedVariables: SkuOptionsDB, SkuTranslatedData
 ## Dependencies: SkuBeaconSoundsets
-## Version: 32.19
+## Version: 32.20
 
 SkuAudioData\assets\SkuAudioFileIndex.lua
 SkuAudioData\assets\SkuAudioDataLenIndex.lua
@@ -24,6 +24,8 @@ Core.lua
 Libs\SkuTTS-1.0\SkuTTS-1.0.lua
 Libs\SkuVoice-1.0\SkuVoice-1.0.lua
 Libs\SkuBeacon-1.0\SkuBeacon-1.0.lua
+
+SkuDispatcher\Core.lua
 
 SkuChat\Core.lua
 SkuChat\Options.lua

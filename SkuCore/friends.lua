@@ -149,6 +149,9 @@ end
 
 ---------------------------------------------------------------------------------------------------------------------------------------
 local function tAddBnetFriend(aParent, aIndex, aOnline)
+   if not C_BattleNet then
+      return
+   end
    local accountInfo = C_BattleNet.GetFriendAccountInfo(aIndex)
    --[[
    BNetAccountInfo?
