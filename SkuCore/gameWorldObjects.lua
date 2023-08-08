@@ -18,8 +18,12 @@ end
 
 ---------------------------------------------------------------------------------------------------------------------------------------
 function SkuCore:GameWorldObjectsOnInitialize()
-   SkuCore:RegisterEvent("CURSOR_UPDATE")
-   --SkuCore:RegisterEvent("CURSOR_CHANGED")
+   if Sku.toc > 11403 then
+      SkuCore:RegisterEvent("CURSOR_CHANGED")
+   else
+      SkuCore:RegisterEvent("CURSOR_UPDATE")
+   end
+   
    SkuCore:RegisterEvent("UPDATE_MOUSEOVER_UNIT")
 
    local tFrame = CreateFrame("Frame", "SkuCoregameWorldObjectsFrameCounter", _G["UIParent"])
@@ -49,9 +53,17 @@ function SkuCore:GameWorldObjectsOnLogin()
 end
 
 ---------------------------------------------------------------------------------------------------------------------------------------
-function SkuCore:CURSOR_UPDATE()
---function SkuCore:CURSOR_CHANGED(aEvent, isDefault, newCursorType, oldCursorType, oldCursorVirtualID)
+function SkuCore:CURSOR_CHANGED(aEvent, isDefault, newCursorType, oldCursorType, oldCursorVirtualID)
    --print("CURSOR_CHANGED", aEvent, isDefault, newCursorType, oldCursorType, oldCursorVirtualID)
+   if SkuCore.gameWorldObjectsScanFrame and SkuCore.gameWorldObjectsScanFrame.isScanningActive == true and SkuCore.gameWorldObjectsScanFrame.isScanningPaused == false then
+      
+      SkuCore.lastCursorUpdateFrame = SkuCore.gameWorldObjectsFrameCounter
+   end
+   SkuCore:MinimapScannerCURSOR_CHANGED(aEvent, isDefault, newCursorType, oldCursorType, oldCursorVirtualID)
+end
+   
+function SkuCore:CURSOR_UPDATE()
+   --print("CURSOR_UPDATE")
    if SkuCore.gameWorldObjectsScanFrame and SkuCore.gameWorldObjectsScanFrame.isScanningActive == true and SkuCore.gameWorldObjectsScanFrame.isScanningPaused == false then
       
       SkuCore.lastCursorUpdateFrame = SkuCore.gameWorldObjectsFrameCounter
