@@ -225,13 +225,6 @@ function SkuCore:ConfirmButtonShow(aText, aOkScript, aEscScript)
 
 		sf:SetScrollChild(eb)
 
-		-- Resizable
-		f:SetResizable(true)
-      --f:SetResizeBounds(150, 100)
-      f:SetMinResize(150,100)
-      f:SetMaxResize(500,500)
-
-
 		local rb = CreateFrame("Button", "SkuAuctionConfirmResizeButton", SkuAuctionConfirm)
 		rb:SetPoint("BOTTOMRIGHT", -6, 7)
 		rb:SetSize(16, 16)

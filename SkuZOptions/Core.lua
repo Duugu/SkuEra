@@ -3201,7 +3201,12 @@ local function SkuIterateGossipList(aGossipListTable, aParentMenuTable, aTab)
 					tNewMenuEntry.BuildChildren = function(self)
 						if ((aGossipListTable[index].isBag and CursorHasItem())) or not aGossipListTable[index].isBag or aGossipListTable[index].isPurchasable then
 							self.children = {}
-							if string.find(aGossipListTable[index].obj:GetName(), "MerchantItem") then
+							obj = aGossipListTable[index].obj
+							objName = ""
+							if obj and obj.getName then
+								objName = obj:getName() or ""
+							end
+							if string.find(objName, "MerchantItem") then
 								local tStock = 1000
 								if aGossipListTable[index].obj.numInStock and aGossipListTable[index].obj.numInStock ~= -1 then
 									tStock = aGossipListTable[index].obj.numInStock
@@ -3924,12 +3929,6 @@ function SkuOptions:EditBoxShow(aText, aOkScript, aMultilineFlag)
 		end)
 
 		sf:SetScrollChild(eb)
-
-		-- Resizable
-		f:SetResizable(true)
-      --f:SetResizeBounds(150, 100)
-		f:SetMinResize(150,100)
-      f:SetMaxResize(500,500)
 
 		local rb = CreateFrame("Button", "SkuOptionsEditBoxResizeButton", SkuOptionsEditBox)
 		rb:SetPoint("BOTTOMRIGHT", -6, 7)
