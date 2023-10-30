@@ -1,6 +1,10 @@
 local MODULE_NAME = "SkuMob"
 local L = Sku.L
 
+SkuMob.InCombatSounds = {
+	["Interface\\AddOns\\Sku\\SkuMob\\assets\\Target_in_combat_low.mp3"] = L["Default beep sound"],
+}
+
 SkuMob.options = {
 	name = MODULE_NAME,
 	type = "group",
@@ -16,6 +20,18 @@ SkuMob.options = {
 				return SkuOptions.db.profile[MODULE_NAME].vocalizeRaidTargetOnly
 			end
 		},
+		dontVocalizePlayerReactionAndLevelInCombat  = {
+			name = L["Don't vocalize reaction and level for players in combat"],
+			order = 2,
+			desc = "",
+			type = "toggle",
+			set = function(info, val) 
+				SkuOptions.db.profile[MODULE_NAME].dontVocalizePlayerReactionAndLevelInCombat  = val
+			end,
+			get = function(info) 
+				return SkuOptions.db.profile[MODULE_NAME].dontVocalizePlayerReactionAndLevelInCombat 
+			end
+		},				
 		vocalizePlayerNamePlaceholders  = {
 			name = L["Announce friendly and hostile players"],
 			desc = "",
@@ -49,16 +65,31 @@ SkuMob.options = {
 				return SkuOptions.db.profile[MODULE_NAME].repeatRaidTargetMarkers
 			end
 		},
-
+		InCombatSound={
+			name = L["Sound if target is in combat"],
+			order = 7,
+			desc = "",
+			type = "select",
+			values = SkuMob.InCombatSounds,
+			set = function(info,val)
+				SkuOptions.db.profile[MODULE_NAME].InCombatSound = val
+			end,
+			get = function(info)
+				return SkuOptions.db.profile[MODULE_NAME].InCombatSound
+			end
+		},
 	}
 }
 ---------------------------------------------------------------------------------------------------------------------------------------
 SkuMob.defaults = {
 	enable = true,
 	vocalizeRaidTargetOnly = false,
+	dontVocalizePlayerReactionAndLevelInCombat = true,
 	vocalizePlayerNamePlaceholders = true,
 	vocalizePlayerNamePlaceholdersSkuTts = false,
-	repeatRaidTargetMarkers = false,
+	repeatRaidTargetMarkers = true,
+	autoSetSkuRaidTargetsToInCombatCreatures = false,
+	InCombatSound = "Interface\\AddOns\\Sku\\SkuMob\\assets\\Target_in_combat_low.mp3",	
 }
 ---------------------------------------------------------------------------------------------------------------------------------------
 function SkuMob:MenuBuilder(aParentEntry)

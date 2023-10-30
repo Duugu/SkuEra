@@ -473,7 +473,7 @@ function SkuOptions:OnProfileReset()
 
 	SkuOptions:SkuKeyBindsUpdate()
 
-	SkuCore:UpdateCurrentTalentSet()
+	--SkuCore:UpdateCurrentTalentSet()
 
 	SkuOptions.Voice:OutputStringBTtts(L["Profil zurückgesetzt"], false, true, 0.2, nil, nil, nil, 2)
 end
@@ -1101,6 +1101,71 @@ function SkuOptions:CreateControlFrame()
 end
 
 ---------------------------------------------------------------------------------------------------------------------------------------
+function SkuOptions:UpdateSoftTargetingSettings(aKey)
+	dprint("UpdateSoftTargetingSettings()", aKey)
+	SetCVar("SoftTargetForce", SkuOptions.db.profile[MODULE_NAME].softTargeting.force)
+	if SkuOptions.db.profile[MODULE_NAME].softTargeting.matchLocked > 0 then
+		SetCVar("SoftTargetMatchLocked", 0)
+	else
+		SetCVar("SoftTargetMatchLocked", 0)
+	end
+
+	if aKey == "SKU_KEY_ENABLESOFTTARGETINGENEMY" or aKey == "all" then
+		dprint("enemy all")
+		if SkuOptions.db.profile[MODULE_NAME].softTargeting.enemy.enabled == true then
+			SetCVar("SoftTargetEnemy", 3)
+		else
+			SetCVar("SoftTargetEnemy", 0)
+		end
+		if aKey == "SKU_KEY_ENABLESOFTTARGETINGENEMY" and SkuOptions.db.profile[MODULE_NAME].softTargeting.enableDisableOutputInChat == true then
+			if SkuOptions.db.profile[MODULE_NAME].softTargeting.enemy.enabled == true then
+				print(L["Soft targeting"].." "..L["Enemies"].." "..L["Enabled"])
+			else
+				print(L["Soft targeting"].." "..L["Enemies"].." "..L["disabled"])
+			end
+		end
+		SetCVar("SoftTargetEnemyArc", SkuOptions.db.profile[MODULE_NAME].softTargeting.enemy.arc)
+		SetCVar("SoftTargetEnemyRange", SkuOptions.db.profile[MODULE_NAME].softTargeting.enemy.range)
+	end
+
+	if aKey == "SKU_KEY_ENABLESOFTTARGETINGFRIENDLY" or aKey == "all" then
+		dprint("friend all")
+		if SkuOptions.db.profile[MODULE_NAME].softTargeting.friend.enabled == true then
+			SetCVar("SoftTargetFriend", 3)
+		else
+			SetCVar("SoftTargetFriend", 0)
+		end
+		if aKey == "SKU_KEY_ENABLESOFTTARGETINGFRIENDLY" and SkuOptions.db.profile[MODULE_NAME].softTargeting.enableDisableOutputInChat == true then
+			if SkuOptions.db.profile[MODULE_NAME].softTargeting.friend.enabled == true then
+				print(L["Soft targeting"].." "..L["Friends"].." "..L["Enabled"])
+			else
+				print(L["Soft targeting"].." "..L["Friends"].." "..L["disabled"])
+			end			
+		end
+		SetCVar("SoftTargetFriendArc", SkuOptions.db.profile[MODULE_NAME].softTargeting.friend.arc)
+		SetCVar("SoftTargetFriendRange", SkuOptions.db.profile[MODULE_NAME].softTargeting.friend.range)
+	end
+
+	if aKey == "SKU_KEY_ENABLESOFTTARGETINGINTERACT" or aKey == "all" then
+		dprint("inter all")
+		if SkuOptions.db.profile[MODULE_NAME].softTargeting.interact.enabled == true and not SkuMob.interactTempDisabled then
+			SetCVar("SoftTargetInteract", 3)
+		else
+			SetCVar("SoftTargetInteract", 0)
+		end
+		if aKey == "SKU_KEY_ENABLESOFTTARGETINGINTERACT" and SkuOptions.db.profile[MODULE_NAME].softTargeting.enableDisableOutputInChat == true then
+			if SkuOptions.db.profile[MODULE_NAME].softTargeting.interact.enabled == true then
+				print(L["Soft targeting"].." "..L["Interact"].." "..L["Enabled"])
+			else
+				print(L["Soft targeting"].." "..L["Interact"].." "..L["disabled"])
+			end
+		end
+		SetCVar("SoftTargetInteractArc", SkuOptions.db.profile[MODULE_NAME].softTargeting.interact.arc)
+		SetCVar("SoftTargetInteractRange", SkuOptions.db.profile[MODULE_NAME].softTargeting.interact.range)
+	end
+end
+
+---------------------------------------------------------------------------------------------------------------------------------------
 local tCurrentOverviewPage
 function SkuOptions:CreateMainFrame()
 	local tFrame = CreateFrame("Button", "OnSkuOptionsMain", UIParent, "UIPanelButtonTemplate")
@@ -1126,6 +1191,29 @@ function SkuOptions:CreateMainFrame()
 				tCurrentOverviewPage = 4
 			]]
 			end
+		end
+
+		--soft targeting
+		if a == SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_ENABLESOFTTARGETINGENEMY"].key then
+			SkuOptions.db.profile["SkuOptions"].softTargeting.enemy.enabled = SkuOptions.db.profile["SkuOptions"].softTargeting.enemy.enabled == false
+			SkuOptions:UpdateSoftTargetingSettings("SKU_KEY_ENABLESOFTTARGETINGENEMY")
+		end
+		if a == SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_ENABLESOFTTARGETINGFRIENDLY"].key then
+			SkuOptions.db.profile["SkuOptions"].softTargeting.friend.enabled = SkuOptions.db.profile["SkuOptions"].softTargeting.friend.enabled == false
+			SkuOptions:UpdateSoftTargetingSettings("SKU_KEY_ENABLESOFTTARGETINGFRIENDLY")
+		end
+		if a == SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_ENABLESOFTTARGETINGINTERACT"].key then
+			SkuOptions.db.profile["SkuOptions"].softTargeting.interact.enabled = SkuOptions.db.profile["SkuOptions"].softTargeting.interact.enabled == false
+			SkuOptions:UpdateSoftTargetingSettings("SKU_KEY_ENABLESOFTTARGETINGINTERACT")
+		end
+
+		if a == SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_OUTPUTSOFTTARGET"].key then
+			SkuMob:PLAYER_SOFT_ENEMY_CHANGED()
+			SkuMob:PLAYER_SOFT_FRIEND_CHANGED()
+			SkuMob:PLAYER_SOFT_INTERACT_CHANGED()
+		end
+		if a == SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_OUTPUTHARDTARGET"].key then
+			SkuMob:PLAYER_TARGET_CHANGED()
 		end
 
 		--toggle mm warning background sound
@@ -1655,6 +1743,12 @@ function SkuOptions:CreateMainFrame()
 
 	--SetOverrideBindingClick(tFrame, true, "SHIFT-U", tFrame:GetName(), "SHIFT-U")
 	--SetOverrideBindingClick(tFrame, true, "SHIFT-J", tFrame:GetName(), "SHIFT-J")
+	SetOverrideBindingClick(tFrame, true, SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_ENABLESOFTTARGETINGENEMY"].key, tFrame:GetName(), SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_ENABLESOFTTARGETINGENEMY"].key)
+	SetOverrideBindingClick(tFrame, true, SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_ENABLESOFTTARGETINGFRIENDLY"].key, tFrame:GetName(), SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_ENABLESOFTTARGETINGFRIENDLY"].key)
+	SetOverrideBindingClick(tFrame, true, SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_ENABLESOFTTARGETINGINTERACT"].key, tFrame:GetName(), SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_ENABLESOFTTARGETINGINTERACT"].key)
+	SetOverrideBindingClick(tFrame, true, SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_OUTPUTHARDTARGET"].key, tFrame:GetName(), SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_OUTPUTHARDTARGET"].key)
+	SetOverrideBindingClick(tFrame, true, SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_OUTPUTSOFTTARGET"].key, tFrame:GetName(), SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_OUTPUTSOFTTARGET"].key)
+
 	SetOverrideBindingClick(tFrame, true, SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_DEBUGMODE"].key, tFrame:GetName(), SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_DEBUGMODE"].key)
 
 	SetOverrideBindingClick(tFrame, true, SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_QUESTSHARE"].key, tFrame:GetName(), SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_QUESTSHARE"].key)
@@ -2881,6 +2975,7 @@ function SkuOptions:PLAYER_ENTERING_WORLD(...)
 
 		SkuMob.interactTempDisabled = nil
 		SkuMob:PLAYER_TARGET_CHANGED()
+		SkuOptions:UpdateSoftTargetingSettings("all")
 	end
 end
 

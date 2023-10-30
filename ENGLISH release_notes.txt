@@ -2,6 +2,13 @@
 - Sku Era Addon Release Notes
 -------------------------------------------------------------------------------------------------------	
 
+-------------------------------------------------------------------------------------------------------
+Changes in Sku Era r32.22
+	- Chat tab, auction house, and bank errors fixed by Chaos
+	- Added soft targeting feature
+	- Added sound on falling feature
+	- Fixed several bugs leading to Fatality warnings
+
 
 -------------------------------------------------------------------------------------------------------
 Changes in Sku Era r32.21
