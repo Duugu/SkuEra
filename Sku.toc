@@ -1,8 +1,8 @@
-## Interface-Classic: 11403
-## Title: SkuEra (32.22)
+## Interface-Classic: 11500
+## Title: SkuEra (32.23)
 ## SavedVariables: SkuOptionsDB, SkuTranslatedData
 ## Dependencies: SkuBeaconSoundsets
-## Version: 32.22
+## Version: 32.23
 
 SkuAudioData\assets\SkuAudioFileIndex.lua
 SkuAudioData\assets\SkuAudioDataLenIndex.lua
@@ -73,6 +73,17 @@ SkuDB\assets\WotLK\items_fixes.lua
 SkuDB\assets\WotLK\objects.lua
 SkuDB\assets\WotLK\objects_fixes.lua
 SkuDB\assets\WotLK\enchantIDs.lua
+
+SkuDB\assets\SoD\quests.lua
+SkuDB\assets\SoD\quests_fixes.lua
+SkuDB\assets\SoD\creatures.lua
+SkuDB\assets\SoD\creatures_fixes.lua
+SkuDB\assets\SoD\items.lua
+SkuDB\assets\SoD\items_fixes.lua
+SkuDB\assets\SoD\objects.lua
+SkuDB\assets\SoD\objects_fixes.lua
+SkuDB\assets\SoD\spells.lua
+
 
 SkuMob\Core.lua
 SkuMob\Options.lua

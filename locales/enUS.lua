@@ -2904,3 +2904,7 @@ L["If unit was attacking you"] = "If unit was attacking you"
 L["Announce deaths"] = "Announce deaths"
 L["Voice volume"] = "Voice volume"
 L["Ignore dead party pets"] = "Ignore dead party pets"
+
+L["Runes"] = "Runes"
+L["Engrave"] = "Engrave"
+L["Engraving"] = "Engraving"

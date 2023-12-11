@@ -1046,7 +1046,11 @@ local function SpellBookMenuBuilder(aParentEntry, aBooktype, aIsPet, aButtonsWit
 					if spellName then
 						local tIsPassive = IsPassiveSpell(spellID)
 						local isKnown = IsSpellKnown(spellID, aIsPet)
-						if not tIsPassive and isKnown then
+						if name == L["Runes"] then
+							isKnown = isKnown == false
+						end
+
+						if not tIsPassive and isKnown == true then
 							local tNewMenuSubSubEntry = SkuOptions:InjectMenuItems(self, {spellName..";"..spellSubName}, SkuGenericMenuItem)
 							tNewMenuSubSubEntry.OnEnter = function(self, aValue, aName)
 								self.selectTarget.petDefaultControlId = nil
@@ -2357,6 +2361,15 @@ function SkuCore:MenuBuilder(aParentEntry)
 	tNewMenuParentEntry.dynamic = true
 	tNewMenuParentEntry.filterable = true
 	tNewMenuParentEntry.BuildChildren = SkuCore.MacroMenuBuilder
+
+	if Sku.IsEraSoD == true then
+		local tNewMenuParentEntry =  SkuOptions:InjectMenuItems(aParentEntry, {L["Runes"]}, SkuGenericMenuItem)
+		tNewMenuParentEntry.dynamic = true
+		tNewMenuParentEntry.filterable = true
+		tNewMenuParentEntry.BuildChildren = SkuCore.EngravingFrameMenuBuilder
+	end
+
+
 
 	local tNewMenuEntry =  SkuOptions:InjectMenuItems(aParentEntry, {L["Options"]}, SkuGenericMenuItem)
 	tNewMenuEntry.filterable = true

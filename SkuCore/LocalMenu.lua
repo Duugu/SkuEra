@@ -3228,3 +3228,51 @@ function SkuCore:QuestFrame(aParentChilds)
 		end
 	end
 end
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+function SkuCore:EngravingFrameMenuBuilder()
+   local tHasEntries = false
+
+	local categories = C_Engraving.GetRuneCategories(true, true);
+	for _, category in ipairs(categories) do
+		local tCatName = GetItemInventorySlotInfo(category)
+
+		tHasEntries = true
+
+      local tNewMenuEntry = SkuOptions:InjectMenuItems(self, {tCatName}, SkuGenericMenuItem)
+      tNewMenuEntry.dynamic = true
+      tNewMenuEntry.filterable = true
+      tNewMenuEntry.BuildChildren = function(self)       
+			local runes = C_Engraving.GetRunesForCategory(category, true);
+			for tindex, rune in ipairs(runes) do
+				local tNewMenuParentEntrySubSub = SkuOptions:InjectMenuItems(self, {rune.name}, SkuGenericMenuItem)
+				tNewMenuParentEntrySubSub.skillLineAbilityID = rune.skillLineAbilityID
+            tNewMenuParentEntrySubSub.OnEnter = function(self, aValue, aName)
+               _G["SkuScanningTooltip"]:ClearLines()
+               _G["SkuScanningTooltip"]:SetEngravingRune(rune.skillLineAbilityID)
+               if TooltipLines_helper(_G["SkuScanningTooltip"]:GetRegions()) ~= "asd" then
+                  if TooltipLines_helper(_G["SkuScanningTooltip"]:GetRegions()) ~= "" then
+                     local tText = SkuChat:Unescape(TooltipLines_helper(_G["SkuScanningTooltip"]:GetRegions()))
+                     SkuOptions.currentMenuPosition.textFirstLine, SkuOptions.currentMenuPosition.textFull = SkuCore:ItemName_helper(tText)
+                  end
+               end
+            end
+            tNewMenuParentEntrySubSub.BuildChildren = function(self)         
+               tNewMenuSubSubEntry = SkuOptions:InjectMenuItems(self, {L["Engrave"]}, SkuGenericMenuItem)
+               tNewMenuSubSubEntry.OnAction = function(self, aValue, aName)
+						C_Engraving.CastRune(rune.skillLineAbilityID)
+                  C_Timer.After(0.001, function()
+                     SkuOptions.currentMenuPosition.parent:OnUpdate(SkuOptions.currentMenuPosition.parent)						
+                  end)
+               end
+            end      
+         end
+      end
+   end
+
+   if tHasEntries == false then
+      SkuOptions:InjectMenuItems(self, {L["Empty"]}, SkuGenericMenuItem)
+   end
+
+   return tNewMenuEntry
+end

@@ -4,3 +4,4 @@ local _G = _G
 
 SkuDB = {}
 SkuDB.WotLK = {}
+SkuDB.SoD = {}

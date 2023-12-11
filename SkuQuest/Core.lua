@@ -1009,6 +1009,14 @@ function SkuQuest:PLAYER_LOGIN(...)
 	SkuDB:WotLKFixCreaturesDB(SkuDB.WotLK)
 	SkuDB:WotLKFixObjectsDB(SkuDB.WotLK)
 
+	--apply fixed on SoD dbs
+	SkuDB:SoDFixQuestDB(SkuDB.SoD)
+	SkuDB:SoDFixItemDB(SkuDB.SoD)
+	SkuDB:SoDFixCreaturesDB(SkuDB.SoD)
+	SkuDB:SoDFixObjectsDB(SkuDB.SoD)
+
+
+
 	--merge creature dbs
 	local tcount = 0
 	for i, v in pairs(SkuDB.WotLK.NpcData.Data) do
@@ -1018,32 +1026,35 @@ function SkuQuest:PLAYER_LOGIN(...)
 		end
 	end
 
-	--[[
-	--take stormwind creatues from wrath data due to changed coordinates
-	for i, v in pairs(SkuDB.WotLK.NpcData.Data) do
-		if SkuDB.NpcData.Data[i][SkuDB.NpcData.Keys.spawns] then
-			for areaid, spawndata in pairs(SkuDB.NpcData.Data[i][SkuDB.NpcData.Keys.spawns]) do
-				if areaid == SkuDB.zoneIDs.STORMWIND_CITY then
-					if v[SkuDB.NpcData.Keys.spawns] then
-						for wareaid, wspandata in pairs(v[SkuDB.NpcData.Keys.spawns]) do
-							if wareaid == SkuDB.zoneIDs.STORMWIND_CITY then
-								SkuDB.NpcData.Data[i][SkuDB.NpcData.Keys.spawns][wareaid] = wspandata
-							end
-						end
-					end
-				end
+	if Sku.IsEraSoD == true then
+		local tcount = 0
+		for i, v in pairs(SkuDB.SoD.NpcData.Data) do
+			if not SkuDB.NpcData.Data[i]	then
+				SkuDB.NpcData.Data[i] = v
+				tcount = tcount + 1
 			end
 		end
 	end
-	]]
 
 	--SkuDB.NpcData.Names = SkuDB.WotLK.NpcData.Names
+	--Wrath
 	for i, v in pairs(SkuDB.WotLK.NpcData.Names.deDE) do
 		if not SkuDB.NpcData.Names.deDE[i] then
 			SkuDB.NpcData.Names.deDE[i] = v
 		end
 	end	
-	--print("NpcData", tcount)
+
+	if Sku.IsEraSoD == true then
+		--SoD
+		for i, v in pairs(SkuDB.SoD.NpcData.Names.deDE) do
+			if not SkuDB.NpcData.Names.deDE[i] then
+				SkuDB.NpcData.Names.deDE[i] = v
+			end
+		end	
+		--print("NpcData", tcount)
+	end
+
+
 
 	--merge items dbs
 	local tcount = 0
@@ -1061,6 +1072,24 @@ function SkuQuest:PLAYER_LOGIN(...)
 	end		
 	--print("itemDataTBC", tcount)
 
+	if Sku.IsEraSoD == true then
+		local tcount = 0
+		for i, v in pairs(SkuDB.SoD.itemDataTBC) do
+			if not SkuDB.itemDataTBC[i]	then
+				SkuDB.itemDataTBC[i] = v
+				tcount = tcount + 1
+			end
+		end	
+		--SkuDB.itemLookup = SkuDB.WotLK.itemLookup
+		for i, v in pairs(SkuDB.SoD.itemLookup.deDE) do
+			if not SkuDB.itemLookup.deDE[i] then
+				SkuDB.itemLookup.deDE[i] = v
+			end
+		end		
+	end
+
+
+
 	--merge object dbs
 	local tcount = 0
 	for i, v in pairs(SkuDB.WotLK.objectDataTBC) do
@@ -1070,27 +1099,7 @@ function SkuQuest:PLAYER_LOGIN(...)
 		end
 	end	
 
-	--[[
-	--take stormwind objects from wrath data due to changed coordinates
-	for i, v in pairs(SkuDB.WotLK.objectDataTBC) do
-		if SkuDB.objectDataTBC[i][SkuDB.objectKeys.spawns] then
-			for areaid, spawndata in pairs(SkuDB.objectDataTBC[i][SkuDB.objectKeys.spawns]) do
-				if areaid == SkuDB.zoneIDs.STORMWIND_CITY then
-					if SkuDB.WotLK.objectDataTBC[i][SkuDB.objectKeys.spawns] then
-						for wareaid, wspandata in pairs(SkuDB.WotLK.objectDataTBC[i][SkuDB.objectKeys.spawns]) do
-							if wareaid == SkuDB.zoneIDs.STORMWIND_CITY then
-								SkuDB.objectDataTBC[i][SkuDB.objectKeys.spawns][wareaid] = wspandata
-							end
-						end
-					end
-				end
-			end
-		end
-	end
-	]]
-
 	--SkuDB.objectResourceNames = SkuDB.WotLK.objectResourceNames
-
 	for i, v in pairs(SkuDB.WotLK.objectLookup.deDE) do
 		if not SkuDB.objectLookup.deDE[i] then
 			SkuDB.objectLookup.deDE[i] = v
@@ -1102,9 +1111,38 @@ function SkuQuest:PLAYER_LOGIN(...)
 		SkuDB.objectLookup.enUS[i] = SkuDB.WotLK.objectLookup.enUS[i]
 	end
 
+
+	if Sku.IsEraSoD == true then
+		local tcount = 0
+		for i, v in pairs(SkuDB.SoD.objectDataTBC) do
+			if not SkuDB.objectDataTBC[i]	then
+				SkuDB.objectDataTBC[i] = v
+				tcount = tcount + 1
+			end
+		end	
+
+		
+		--SkuDB.objectResourceNames = SkuDB.WotLK.objectResourceNames
+		for i, v in pairs(SkuDB.SoD.objectLookup.deDE) do
+			if not SkuDB.objectLookup.deDE[i] then
+				SkuDB.objectLookup.deDE[i] = v
+			end
+		end
+
+		for i, v in pairs(SkuDB.SoD.objectLookup.enUS) do
+			if not SkuDB.objectLookup.enUS[i] then
+				SkuDB.objectLookup.enUS[i] = v
+			end
+		end
+	end
 	--SkuDB.objectLookup = SkuDB.WotLK.objectLookup
 	--print("objectDataTBC", tcount)
 	
+
+
+
+
+
 	--merge quest dbs
 	local tcount = 0
 	for i, v in pairs(SkuDB.WotLK.questDataTBC) do
@@ -1121,6 +1159,34 @@ function SkuQuest:PLAYER_LOGIN(...)
 	end	
 	--print("questDataTBC", tcount)
 
+
+	if Sku.IsEraSoD == true then
+		local tcount = 0
+		for i, v in pairs(SkuDB.SoD.questDataTBC) do
+			if not SkuDB.questDataTBC[i]	then
+				SkuDB.questDataTBC[i] = v
+				tcount = tcount + 1
+			end
+		end
+		--SkuDB.questLookup = SkuDB.WotLK.questLookup
+		for i, v in pairs(SkuDB.SoD.questLookup.deDE) do
+			if not SkuDB.questLookup.deDE[i] then
+				SkuDB.questLookup.deDE[i] = v
+			end
+		end	
+	end
+
+
+	if Sku.IsEraSoD == true then
+		--merge spell dbs
+		local tcount = 0
+		for i, v in pairs(SkuDB.SoD.SpellDataTBC) do
+			if not SkuDB.SpellDataTBC[i]	then
+				SkuDB.SpellDataTBC[i] = v
+				tcount = tcount + 1
+			end
+		end
+	end
 
 	-- do final stuff
 	SkuQuest:BuildQuestZoneCache()

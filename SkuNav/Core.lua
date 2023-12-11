@@ -3188,10 +3188,12 @@ function SkuNav:GetNpcRoles(aNpcName, aNpcId, aLocale)
 
 	for i, v in pairs(SkuNav.NPCRolesToRecognize[tTempLocale]) do
 		if SkuDB.NpcData.Data[aNpcId] then
-			if bit.band(i, SkuDB.NpcData.Data[aNpcId][SkuDB.NpcData.Keys["npcFlags"]]) > 0 then
-				--dprint(aNpcName, aNpcId, i, v)
-				rRoles[#rRoles+1] = v
-				break
+			if SkuDB.NpcData.Data[aNpcId][SkuDB.NpcData.Keys["npcFlags"]] then
+				if bit.band(i, SkuDB.NpcData.Data[aNpcId][SkuDB.NpcData.Keys["npcFlags"]]) > 0 then
+					--dprint(aNpcName, aNpcId, i, v)
+					rRoles[#rRoles+1] = v
+					break
+				end
 			end
 		end
 	end

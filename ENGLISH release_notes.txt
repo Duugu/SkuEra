@@ -3,6 +3,13 @@
 -------------------------------------------------------------------------------------------------------	
 
 -------------------------------------------------------------------------------------------------------
+Changes in Sku Era r32.23
+	- Added a runes menu: Core > Options > Runes. Select a rune and the Engrave submenu entry. That will highlight your mouse cursor with the engraving spell. Then do a left click on an appropiate item in your bags or character inventory to engrave that item. Just as with Enchanting.
+	- Added rune skills/spells to the F11 action bar config menu: Core > Action Bars > Action bar > Action button x > Runes. That menu has only spells if you are wearing engraved items that do provide spells/abilities.
+	- Added known Season of Discovery items, npcs, spells, etc. to the databases
+
+
+-------------------------------------------------------------------------------------------------------
 Changes in Sku Era r32.22
 	- Chat tab, auction house, and bank errors fixed by Chaos
 	- Added soft targeting feature

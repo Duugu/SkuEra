@@ -2895,3 +2895,7 @@ L["If unit was attacking you"] = "Wenn Einheit dich angegriffen hat"
 L["Announce deaths"] = "Tode ansagen"
 L["Voice volume"] = "Lautstärke Stimme"
 L["Ignore dead party pets"] = "Tote Gruppenbegleiter ignorieren"
+
+L["Runes"] = "Runen"
+L["Engrave"] = "Gravieren"
+L["Engraving"] = "Gravierungen"
