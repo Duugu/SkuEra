@@ -50,7 +50,7 @@ local tBlockedKeysParts = {
 	"PAGEDUP",
 }
 local tBlockedKeysBinds = {
-	"I",
+	--"I",
 }
 
 local tModifierKeys = {
@@ -204,6 +204,161 @@ SkuCore.options = {
 				return SkuOptions.db.profile[MODULE_NAME].interactMove
 			end
 		},
+		turnToUnit = {
+			name = L["Turn to unit"],
+			order = 5,
+			type = "group",
+			args = {
+				speed = {
+					order = 1,
+					name = L["Speed (higher is faster)"],
+					desc = "",
+					type = "range",
+					min = 1,
+					max = 10,
+					set = function(info,val)
+						SkuOptions.db.profile[MODULE_NAME].turnToUnit.speed = val
+					end,
+					get = function(info)
+						return SkuOptions.db.profile[MODULE_NAME].turnToUnit.speed
+					end
+				},
+				soundOnSuccess = {
+					order = 2,
+					name = L["Sound on success"],
+					desc = "",
+					type = "select",
+					values = SkuCore.outputSoundFiles,
+					set = function(info,val)
+						SkuOptions.db.profile[MODULE_NAME].turnToUnit.soundOnSuccess = val
+					end,
+					get = function(info)
+						return SkuOptions.db.profile[MODULE_NAME].turnToUnit.soundOnSuccess
+					end
+				},	
+				soundOnFail = {
+					order = 3,
+					name = L["Sound on fail"],
+					desc = "",
+					type = "select",
+					values = SkuCore.outputSoundFiles,
+					set = function(info,val)
+						SkuOptions.db.profile[MODULE_NAME].turnToUnit.soundOnFail = val
+					end,
+					get = function(info)
+						return SkuOptions.db.profile[MODULE_NAME].turnToUnit.soundOnFail
+					end
+				},	
+				targetSelection={
+					name = L["Unit selection"],
+					type = "group",
+					order = 4,
+					args= {
+						key1 = {
+							order = 1,
+							name = L["Key bind"].." "..1,
+							desc = "",
+							type = "select",
+							values = SkuCore.TurnToUnit.availableTargetsListNames,
+							set = function(info,val)
+								SkuOptions.db.profile[MODULE_NAME].turnToUnit.targetSelection.key1 = val
+							end,
+							get = function(info)
+								return SkuOptions.db.profile[MODULE_NAME].turnToUnit.targetSelection.key1
+							end
+						},
+						key2 = {
+							order = 2,
+							name = L["Key bind"].." "..2,
+							desc = "",
+							type = "select",
+							values = SkuCore.TurnToUnit.availableTargetsListNames,
+							set = function(info,val)
+								SkuOptions.db.profile[MODULE_NAME].turnToUnit.targetSelection.key2 = val
+							end,
+							get = function(info)
+								return SkuOptions.db.profile[MODULE_NAME].turnToUnit.targetSelection.key2
+							end
+						},
+						key3 = {
+							order = 3,
+							name = L["Key bind"].." "..3,
+							desc = "",
+							type = "select",
+							values = SkuCore.TurnToUnit.availableTargetsListNames,
+							set = function(info,val)
+								SkuOptions.db.profile[MODULE_NAME].turnToUnit.targetSelection.key3 = val
+							end,
+							get = function(info)
+								return SkuOptions.db.profile[MODULE_NAME].turnToUnit.targetSelection.key3
+							end
+						},
+						key4 = {
+							order = 4,
+							name = L["Key bind"].." "..4,
+							desc = "",
+							type = "select",
+							values = SkuCore.TurnToUnit.availableTargetsListNames,
+							set = function(info,val)
+								SkuOptions.db.profile[MODULE_NAME].turnToUnit.targetSelection.key4 = val
+							end,
+							get = function(info)
+								return SkuOptions.db.profile[MODULE_NAME].turnToUnit.targetSelection.key4
+							end
+						},
+						key5 = {
+							order = 5,
+							name = L["Key bind"].." "..5,
+							desc = "",
+							type = "select",
+							values = SkuCore.TurnToUnit.availableTargetsListNames,
+							set = function(info,val)
+								SkuOptions.db.profile[MODULE_NAME].turnToUnit.targetSelection.key5 = val
+							end,
+							get = function(info)
+								return SkuOptions.db.profile[MODULE_NAME].turnToUnit.targetSelection.key5
+							end
+						},
+						key6 = {
+							order = 6,
+							name = L["Key bind"].." "..6,
+							desc = "",
+							type = "select",
+							values = SkuCore.TurnToUnit.availableTargetsListNames,
+							set = function(info,val)
+								SkuOptions.db.profile[MODULE_NAME].turnToUnit.targetSelection.key6 = val
+							end,
+							get = function(info)
+								return SkuOptions.db.profile[MODULE_NAME].turnToUnit.targetSelection.key6
+							end
+						},
+
+					},
+				},
+
+				enhancedSettings={
+					name = L["Enhanced settings"],
+					type = "group",
+					order = 5,
+					args= {
+						delayOnPlate = {
+							order = 1,
+							name = L["Delay on found plate"],
+							desc = "",
+							type = "range",
+							min = 1,
+							max = 10,
+									set = function(info,val)
+								SkuOptions.db.profile[MODULE_NAME].turnToUnit.enhancedSettings.delayOnPlate = val
+							end,
+							get = function(info)
+								return SkuOptions.db.profile[MODULE_NAME].turnToUnit.enhancedSettings.delayOnPlate
+							end
+						},
+					},
+				},
+			},
+		},		
 		playNPCGreetings = {
 			name = L["Play NPC greetings"],
 			desc = "",
@@ -607,6 +762,22 @@ SkuCore.defaults = {
 	--autoFollow = false,
 	--endFollowOnCast = false,
 	interactMove = true,
+	turnToUnit = {
+		speed = 6,
+		soundOnSuccess = "sound-waterdrop5",
+		soundOnFail = "sound-waterdrop1",
+		targetSelection = {
+			key1 = 1,
+			key2 = 13,
+			key3 = 12,
+			key4 = 11,
+			key5 = 22,
+			key6 = 22,
+		},
+		enhancedSettings = {
+			delayOnPlate = 2,
+		},
+	},	
 	playNPCGreetings = false,
 	scanBackgroundSound = "tools-ratchet.mp3",
 	doNotHideTooltip = false,
@@ -2064,11 +2235,7 @@ function SkuCore:MenuBuilder(aParentEntry)
 					tFriendlyKey1 = gsub(tFriendlyKey1, "%-%-", "-"..L["Minus"])
 				end
 
-				local tFix = ""
-				if tBindingConst == "SKU_KEY_TURNTOBEACON" then
-					tFix = L["fixed"]
-				end
-				local tNewMenuEntryKey = SkuOptions:InjectMenuItems(self, {L[tBindingConst].." "..L["Taste"]..":"..(tFriendlyKey1 or L["nichts"]).." "..tFix}, SkuGenericMenuItem)
+				local tNewMenuEntryKey = SkuOptions:InjectMenuItems(self, {L[tBindingConst].." "..L["Taste"]..":"..(tFriendlyKey1 or L["nichts"])}, SkuGenericMenuItem)
 				tNewMenuEntryKey.isSelect = true
 				tNewMenuEntryKey.dynamic = true
 				tNewMenuEntryKey.OnAction = function(self, aValue, aName)
@@ -2194,12 +2361,8 @@ function SkuCore:MenuBuilder(aParentEntry)
 				--tNewMenuEntryKey.index = v1.index
 				
 				tNewMenuEntryKey.BuildChildren = function(self)
-					if tBindingConst ~= "SKU_KEY_TURNTOBEACON" then
-						local tNewMenuEntryKeyAction = SkuOptions:InjectMenuItems(self, {L["Neu belegen"]}, SkuGenericMenuItem)
-						local tNewMenuEntryKeyAction = SkuOptions:InjectMenuItems(self, {L["Belegung löschen"]}, SkuGenericMenuItem)
-					else
-						local tNewMenuEntryKeyAction = SkuOptions:InjectMenuItems(self, {L["fixed"]}, SkuGenericMenuItem)
-					end
+					local tNewMenuEntryKeyAction = SkuOptions:InjectMenuItems(self, {L["Neu belegen"]}, SkuGenericMenuItem)
+					local tNewMenuEntryKeyAction = SkuOptions:InjectMenuItems(self, {L["Belegung löschen"]}, SkuGenericMenuItem)
 				end
 			end
 		end
@@ -2362,13 +2525,14 @@ function SkuCore:MenuBuilder(aParentEntry)
 	tNewMenuParentEntry.filterable = true
 	tNewMenuParentEntry.BuildChildren = SkuCore.MacroMenuBuilder
 
+	--[[
 	if Sku.IsEraSoD == true then
 		local tNewMenuParentEntry =  SkuOptions:InjectMenuItems(aParentEntry, {L["Runes"]}, SkuGenericMenuItem)
 		tNewMenuParentEntry.dynamic = true
 		tNewMenuParentEntry.filterable = true
 		tNewMenuParentEntry.BuildChildren = SkuCore.EngravingFrameMenuBuilder
 	end
-
+	]]
 
 
 	local tNewMenuEntry =  SkuOptions:InjectMenuItems(aParentEntry, {L["Options"]}, SkuGenericMenuItem)

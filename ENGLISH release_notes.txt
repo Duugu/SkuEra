@@ -3,6 +3,22 @@
 -------------------------------------------------------------------------------------------------------	
 
 -------------------------------------------------------------------------------------------------------
+Changes in Sku Era r32.24
+	- Moved the runes menu to the character menu
+	- Fixed the talent menu. Should work now.
+	- The Turn to beacon hot key (default: I) is not longer fixed and can be set to any key. Starting the wow menu script isn't required anymore to use that feature.
+	- Added the Turn to Unit feature from Wrath
+		This is auto turning you to units like your target, party members, mobs with game markers like Skull, or mobs with sku markers like Blue.
+		The feature is not 100% accurate. Sometimes it is turning you straight to the unit. Sometimes it ends up left or right of the unit. It gets less accurate the closer the unit is. It gets less accurate the faster the speed setting is (see below). It depends on your machines speed/your fps. Faster is more accurate. Low fps can lead to completely inaccurate results.
+		It works reliably with units up to 41 meters away. If the unit is more than 41 meters away, the success rate will be quite worse. It works everywhere. Open world, dungeons, even battlegrounds. It works for all unit types. However, the unit must by on your physical level. Units above or below you, or units behind walls etc. won’t work.
+		There are 6 new keybindings to use this feature: Sku key binds > Turn to unit 1-6. They are are bound to no key by default. Each keybind is turning you to a different unit (see below). 1 is your target, 2 is skull, 3 is cross, 4 is square, and 5 & 6 are nothing
+		There are settings under Core > Options > Turn to target:
+		- Unit selection: This is where you set the units for the 6 key bindings. The default units for key 1-6 are: target, skull, cross, square, nothing, nothing
+		- Speed: the faster, the less accurate
+		- Enhanced settings: do not touch unless prompted	
+
+
+-------------------------------------------------------------------------------------------------------
 Changes in Sku Era r32.23
 	- Added a runes menu: Core > Options > Runes. Select a rune and the Engrave submenu entry. That will highlight your mouse cursor with the engraving spell. Then do a left click on an appropiate item in your bags or character inventory to engrave that item. Just as with Enchanting.
 	- Added rune skills/spells to the F11 action bar config menu: Core > Action Bars > Action bar > Action button x > Runes. That menu has only spells if you are wearing engraved items that do provide spells/abilities.

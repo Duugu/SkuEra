@@ -1153,16 +1153,147 @@ end
 ---------------------------------------------------------------------------------------------------------------------------------------
 function SkuCore:Build_TalentFrame(aParentChilds)
 
+	local tFrameName = "PlayerTalentFrameTitleText"
+	if _G["GlyphFrame"] and _G["GlyphFrame"]:IsVisible() == true then
+		tFrameName = "GlyphFrameTitleText"
+	end
+	local tFriendlyName = "Text: ".._G[tFrameName]:GetText()
+	table.insert(aParentChilds, tFriendlyName)
+	aParentChilds[tFriendlyName] = {
+		frameName = tFrameName,
+		RoC = "Child",
+		type = "Text",
+		obj = _G[tFrameName],
+		textFirstLine = tFriendlyName,
+		textFull = "",
+		childs = {},
+	}   
+
+	for x = 1, 4 do
+		local tFrameName = "PlayerTalentFrameTab"..x
+		if _G[tFrameName] and _G[tFrameName]:IsVisible() == true then
+			local tttFirst, tttFull = _G[tFrameName]:GetText()
+			local tFriendlyName = tttFirst
+			table.insert(aParentChilds, tFriendlyName)
+			aParentChilds[tFriendlyName] = {
+				frameName = tFrameName,
+				RoC = "Child",
+				type = "Button",
+				obj = _G[tFrameName],
+				textFirstLine = tFriendlyName,
+				textFull = tttFull,
+				childs = {},
+				func = _G[tFrameName]:GetScript("OnClick"),
+				click = true,
+			}   	
+			
+			local tSelected
+			for i, v in pairs({_G[tFrameName]:GetRegions()}) do
+				if v.GetText then
+					if v:GetText() == _G[tFrameName]:GetText() then
+						local r, g, b, a = v:GetTextColor()
+						if r > 0.9 and g > 0.9 and b > 0.9 then
+							tSelected = true
+						end
+					end
+				end
+			end
+			if tSelected then
+				aParentChilds[tFriendlyName].textFirstLine = aParentChilds[tFriendlyName].textFirstLine.." ("..L["selected"]..")"
+				aParentChilds[tFriendlyName].func = nil
+				aParentChilds[tFriendlyName].click = false
+			end
+			aParentChilds[tFriendlyName].textFirstLine = L["Tab"].." "..aParentChilds[tFriendlyName].textFirstLine
+		end
+	end		
 	
+	if not _G["GlyphFrame"] or _G["GlyphFrame"]:IsVisible() == false then
+
+		local tFrameName = "PlayerTalentFrameSpentPointsText"
+		if _G[tFrameName]:IsVisible() == true then
+			local tFriendlyName = SkuChat:Unescape("Text: "..L["Spent for"].." ".._G[tFrameName]:GetText())
+			table.insert(aParentChilds, tFriendlyName)
+			aParentChilds[tFriendlyName] = {
+				frameName = tFrameName,
+				RoC = "Child",
+				type = "Text",
+				obj = _G[tFrameName],
+				textFirstLine = tFriendlyName,
+				textFull = "",
+				childs = {},
+			}   
+		end
+		local tFrameName = "PlayerTalentFrameTalentPointsText"
+		if _G[tFrameName]:IsVisible() == true then
+			local tFriendlyName = SkuChat:Unescape("Text: ".._G[tFrameName]:GetText())
+			table.insert(aParentChilds, tFriendlyName)
+			aParentChilds[tFriendlyName] = {
+				frameName = tFrameName,
+				RoC = "Child",
+				type = "Text",
+				obj = _G[tFrameName],
+				textFirstLine = tFriendlyName,
+				textFull = "",
+				childs = {},
+			}   
+		end
 
 
+		local tTalentsUnsorted = {}
+		local tMax = 0
+		for x = 1, 100 do
+			local tFrameName = "PlayerTalentFrameTalent"..x
+			if _G[tFrameName] and _G[tFrameName]:IsVisible() == true then
+				local tttFirst, tttFull = GetTooltipLines(_G[tFrameName])
+				local p1, parent, p2, px, py = _G[tFrameName]:GetPoint(1)
+				local column = math.floor(px / 63) + 1
+				local tier = math.floor(py / 63) * -1
+				tMax = column + (tier * 4)
+				tTalentsUnsorted[tMax] = tFrameName
+			end
+		end
 
+		local tTalentsSorted = {}
+		local tCounter = 1
+		for x = 1, 10000 do
+			if tTalentsUnsorted[x] then
+				tTalentsSorted[tCounter] = tTalentsUnsorted[x]
+				tCounter = tCounter + 1
+			end
+		end
 
+		for i, v in ipairs(tTalentsSorted) do
+			local tFrameName = v
+			if _G[tFrameName] and _G[tFrameName]:IsVisible() == true then
+				local tttFirst, tttFull = GetTooltipLines(_G[tFrameName])
+				if _G[tFrameName.."Rank"] and _G[tFrameName.."Rank"].GetText then
+					tttFirst = tttFirst.." ("..(_G[tFrameName.."Rank"]:GetText() or "nil")..")"
+				end
+				local tFriendlyName = tttFirst
+				table.insert(aParentChilds, tFriendlyName)
+				aParentChilds[tFriendlyName] = {
+					frameName = tFrameName,
+					RoC = "Child",
+					type = "Button",
+					obj = _G[tFrameName],
+					textFirstLine = tFriendlyName,
+					textFull = tttFull,
+					childs = {},
+					func = _G[tFrameName]:GetScript("OnClick"),
+					click = true,
+				}  
+				
+				local tTexture = _G[tFrameName]:GetRegions()
+				if tTexture:GetDesaturation() > 0 then
+					aParentChilds[tFriendlyName].func = nil
+					aParentChilds[tFriendlyName].click = false
+					aParentChilds[tFriendlyName].textFirstLine = aParentChilds[tFriendlyName].textFirstLine.." ("..L["disabled"]..")"
+				end
+			end		
+		end
+	end
 
-
-
-
-
+	
 end
 
 
@@ -1229,6 +1360,87 @@ function SkuCore:Build_RolePollPopup(aParentChilds)
 
 end
 
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+function SkuCore:BuildEngravingFrame(aParentChilds)
+	local tFrameName = "EngravingFrame"
+	local tFriendlyName = L["Runes"]
+	table.insert(aParentChilds, tFriendlyName)
+	aParentChilds[tFriendlyName] = {
+		frameName = tFrameName,
+		RoC = "Child",
+		type = "Button",
+		obj = _G[tFrameName],
+		textFirstLine = tFriendlyName,
+		textFull = "",
+		childs = {},
+	}
+
+	local tParentEngravingFrame = aParentChilds[tFriendlyName].childs
+
+   local tHasEntries = false
+
+	local categories = C_Engraving.GetRuneCategories(true, true);
+	for _, category in ipairs(categories) do
+		local tCatName = GetItemInventorySlotInfo(category)
+
+		tHasEntries = true
+
+		local runes = C_Engraving.GetRunesForCategory(category, true);
+		for tindex, rune in ipairs(runes) do
+			local tFull = ""
+			_G["SkuScanningTooltip"]:ClearLines()
+			_G["SkuScanningTooltip"]:SetEngravingRune(rune.skillLineAbilityID)
+			if TooltipLines_helper(_G["SkuScanningTooltip"]:GetRegions()) ~= "asd" then
+				if TooltipLines_helper(_G["SkuScanningTooltip"]:GetRegions()) ~= "" then
+					local tText = SkuChat:Unescape(TooltipLines_helper(_G["SkuScanningTooltip"]:GetRegions()))
+					_, tFull = SkuCore:ItemName_helper(tText)
+				end
+			end
+		
+			local tFrameName = tindex
+			local tFriendlyName = SkuChat:Unescape(rune.name)
+			table.insert(tParentEngravingFrame, tFriendlyName)
+			tParentEngravingFrame[tFriendlyName] = {
+				frameName = tFrameName,
+				RoC = "Child",
+				type = "Button",
+				textFirstLine = tFriendlyName,
+				textFull = tFull,
+				childs = {},
+			}
+			
+			local tParentRuneFrame = tParentEngravingFrame[tFriendlyName].childs
+			table.insert(tParentRuneFrame, L["Engrave"])
+			tParentRuneFrame[L["Engrave"]] = {
+				frameName = nil,
+				RoC = "Child",
+				type = "Button",
+				obj = EngravingFrame,
+				textFirstLine = L["Engrave"],
+				textFull = "",
+				childs = {},
+				func = function(self, aButton)
+					C_Engraving.CastRune(rune.skillLineAbilityID)
+				end,            
+				click = true,
+			}
+		end
+   end
+
+   if tHasEntries == false then
+		local tFriendlyName = L["Empty"]
+		table.insert(tParentEngravingFrame, tFriendlyName)
+		tParentEngravingFrame[tFriendlyName] = {
+			frameName = nil,
+			RoC = "Child",
+			type = "Button",
+			textFirstLine = tFriendlyName,
+			textFull = "",
+			childs = {},
+		}
+   end
+end
+
 ---------------------------------------------------------------------------------------------------------------------------------------
 function SkuCore:Build_CharacterFrame(aParentChilds)
 	if _G["GearManagerToggleButton"] then
@@ -1291,20 +1503,21 @@ function SkuCore:Build_CharacterFrame(aParentChilds)
 		end
 		
 	--stats
-	local tFrameName = ""
-	local tFriendlyName = L["Stats"]
-	table.insert(aParentChilds, tFriendlyName)
-	aParentChilds[tFriendlyName] = {
-		frameName = tFrameName,
-		RoC = "Child",
-		type = "Button",
-		obj = _G[tFrameName],
-		textFirstLine = tFriendlyName,
-		textFull = "",
-		childs = {},
-		--click = true,
-	}   
-	local tParentStats = aParentChilds[tFriendlyName].childs
+	do
+		local tFrameName = ""
+		local tFriendlyName = L["Stats"]
+		table.insert(aParentChilds, tFriendlyName)
+		aParentChilds[tFriendlyName] = {
+			frameName = tFrameName,
+			RoC = "Child",
+			type = "Button",
+			obj = _G[tFrameName],
+			textFirstLine = tFriendlyName,
+			textFull = "",
+			childs = {},
+			--click = true,
+		}   
+		local tParentStats = aParentChilds[tFriendlyName].childs
 
 		local tStatFrames = {
 			"CharacterStatFrame1",
@@ -1373,6 +1586,11 @@ function SkuCore:Build_CharacterFrame(aParentChilds)
 				--click = true,
 			}
 		end
+	end
+
+	if Sku.IsEraSoD == true then
+		SkuCore:BuildEngravingFrame(aParentChilds)
+	end
 
 --[[
 	--Currency
@@ -3227,52 +3445,4 @@ function SkuCore:QuestFrame(aParentChilds)
 						
 		end
 	end
-end
-
------------------------------------------------------------------------------------------------------------------------------------------------------
-function SkuCore:EngravingFrameMenuBuilder()
-   local tHasEntries = false
-
-	local categories = C_Engraving.GetRuneCategories(true, true);
-	for _, category in ipairs(categories) do
-		local tCatName = GetItemInventorySlotInfo(category)
-
-		tHasEntries = true
-
-      local tNewMenuEntry = SkuOptions:InjectMenuItems(self, {tCatName}, SkuGenericMenuItem)
-      tNewMenuEntry.dynamic = true
-      tNewMenuEntry.filterable = true
-      tNewMenuEntry.BuildChildren = function(self)       
-			local runes = C_Engraving.GetRunesForCategory(category, true);
-			for tindex, rune in ipairs(runes) do
-				local tNewMenuParentEntrySubSub = SkuOptions:InjectMenuItems(self, {rune.name}, SkuGenericMenuItem)
-				tNewMenuParentEntrySubSub.skillLineAbilityID = rune.skillLineAbilityID
-            tNewMenuParentEntrySubSub.OnEnter = function(self, aValue, aName)
-               _G["SkuScanningTooltip"]:ClearLines()
-               _G["SkuScanningTooltip"]:SetEngravingRune(rune.skillLineAbilityID)
-               if TooltipLines_helper(_G["SkuScanningTooltip"]:GetRegions()) ~= "asd" then
-                  if TooltipLines_helper(_G["SkuScanningTooltip"]:GetRegions()) ~= "" then
-                     local tText = SkuChat:Unescape(TooltipLines_helper(_G["SkuScanningTooltip"]:GetRegions()))
-                     SkuOptions.currentMenuPosition.textFirstLine, SkuOptions.currentMenuPosition.textFull = SkuCore:ItemName_helper(tText)
-                  end
-               end
-            end
-            tNewMenuParentEntrySubSub.BuildChildren = function(self)         
-               tNewMenuSubSubEntry = SkuOptions:InjectMenuItems(self, {L["Engrave"]}, SkuGenericMenuItem)
-               tNewMenuSubSubEntry.OnAction = function(self, aValue, aName)
-						C_Engraving.CastRune(rune.skillLineAbilityID)
-                  C_Timer.After(0.001, function()
-                     SkuOptions.currentMenuPosition.parent:OnUpdate(SkuOptions.currentMenuPosition.parent)						
-                  end)
-               end
-            end      
-         end
-      end
-   end
-
-   if tHasEntries == false then
-      SkuOptions:InjectMenuItems(self, {L["Empty"]}, SkuGenericMenuItem)
-   end
-
-   return tNewMenuEntry
 end

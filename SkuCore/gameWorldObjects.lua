@@ -150,6 +150,8 @@ function SkuCore:GameWorldObjectsTurnToWp(aWaypointName)
          MoveViewRightStop()
          MoveViewLeftStop()
          SetCVar("cameraYawMoveSpeed", tOldCameraYawMoveSpeed)
+         MouselookStart()
+         MouselookStop() 
       end)
    end
 end

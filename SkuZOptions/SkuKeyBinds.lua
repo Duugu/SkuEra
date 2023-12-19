@@ -83,7 +83,14 @@ SkuOptions.skuDefaultKeyBindings = {
 
    ["SKU_KEY_DOMONITORPARTYHEALTH2CONTI"] = {key = "", object = "SkuCoreControlOption1", func = "OnHide",},
 
+   ["SKU_KEY_TURNTOUNIT1"] = {key = "", object = "SkuOptions", func = "CreateMainFrame",},
+   ["SKU_KEY_TURNTOUNIT2"] = {key = "", object = "SkuOptions", func = "CreateMainFrame",},
+   ["SKU_KEY_TURNTOUNIT3"] = {key = "", object = "SkuOptions", func = "CreateMainFrame",},
+   ["SKU_KEY_TURNTOUNIT4"] = {key = "", object = "SkuOptions", func = "CreateMainFrame",},
+   ["SKU_KEY_TURNTOUNIT5"] = {key = "", object = "SkuOptions", func = "CreateMainFrame",},
+   ["SKU_KEY_TURNTOUNIT6"] = {key = "", object = "SkuOptions", func = "CreateMainFrame",},
 
+   ["SKU_KEY_TURNTOUNITTURN180"] = {key = "", object = "SkuOptions", func = "CreateMainFrame",},
 
    --["SKU_KEY_CHAT_LINEPREV"] = {key = "UP", object = "SkuChat", func = "OnEnable",},
    --["SKU_KEY_CHAT_LINENEXT"] = {key = "DOWN", object = "SkuChat", func = "OnEnable",},
