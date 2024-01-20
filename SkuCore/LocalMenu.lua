@@ -2429,7 +2429,7 @@ function SkuCore:Build_PetStableFrame(aParentChilds)
 
 	for x = 1, 4 do
 		local tId, tName, tLevel, _, tType = GetStablePetInfo(x)
-		if _G["PetStableStabledPet"..x]:IsEnabled() == true then
+		if _G["PetStableStabledPet"..x] and _G["PetStableStabledPet"..x]:IsEnabled() == true then
 			local tFrame = _G["PetStableStabledPet"..x]
 			local tText, tFullText = GetButtonTooltipLines(tFrame)
 			if tId then

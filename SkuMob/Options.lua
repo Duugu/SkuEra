@@ -65,6 +65,18 @@ SkuMob.options = {
 				return SkuOptions.db.profile[MODULE_NAME].repeatRaidTargetMarkers
 			end
 		},
+		autoSetSkuRaidTargetsToInCombatCreatures = {
+			name = L["Auto set private Sku raid targets on in combat targets without a raid target"],
+			order = 6,
+			desc = "",
+			type = "toggle",
+			set = function(info, val) 
+				SkuOptions.db.profile[MODULE_NAME].autoSetSkuRaidTargetsToInCombatCreatures = val
+			end,
+			get = function(info) 
+				return SkuOptions.db.profile[MODULE_NAME].autoSetSkuRaidTargetsToInCombatCreatures
+			end
+		},		
 		InCombatSound={
 			name = L["Sound if target is in combat"],
 			order = 7,
@@ -88,6 +100,7 @@ SkuMob.defaults = {
 	vocalizePlayerNamePlaceholders = true,
 	vocalizePlayerNamePlaceholdersSkuTts = false,
 	repeatRaidTargetMarkers = true,
+	autoSetSkuRaidTargetsToInCombatCreatures = false,
 	autoSetSkuRaidTargetsToInCombatCreatures = false,
 	InCombatSound = "Interface\\AddOns\\Sku\\SkuMob\\assets\\Target_in_combat_low.mp3",	
 }

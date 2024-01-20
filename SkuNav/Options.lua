@@ -13,10 +13,20 @@ SkuNav.StandardWpReachedRanges = {
    [4] = L["Auto"],
 }
 
+SkuNav.RoutesMaxDistances = {
+   [2000] = "3000 "..L["meters"],
+   [4000] = "4000 "..L["meters"],
+   [5000] = "5000 "..L["meters"],
+   [6000] = "6000 "..L["meters"],
+   [8000] = "8000 "..L["meters"],
+   [20000] = L["Unlimited"],
+}
+
 local timeForVisitedToExpireValues = {L["disabled"], "1 "..L["minute"]}
 for i=2, 30 do
 	timeForVisitedToExpireValues[i+1] = i .. L[" Minuten"]
 end
+
 
 SkuNav.options = {
 	name = MODULE_NAME,
@@ -280,7 +290,51 @@ SkuNav.options = {
 			get = function(info)
 				return SkuOptions.db.profile[MODULE_NAME].tomtomWp
 			end
-		},			
+		},		
+		
+		autoNextWaypoint={
+			name = L["Auto switching to next similar waypoint"],
+			type = "group",
+			order = 20,
+			args= {
+				nonVocalized = {
+					order = 5,
+					name = L["Don't announce waypoint switching"],
+					desc = "",
+					type = "toggle",
+					set = function(info, val)
+						SkuOptions.db.profile[MODULE_NAME].autoNextWaypoint.nonVocalized = val
+					end,
+					get = function(info)
+						return SkuOptions.db.profile[MODULE_NAME].autoNextWaypoint.nonVocalized
+					end
+				},		
+				reachRange = {
+					order = 10,
+					name = L["Range for counting a waypoint as reached and switching to next waypoint"],
+					desc = "",
+					type = "range",
+					set = function(info,val)
+						SkuOptions.db.profile[MODULE_NAME].autoNextWaypoint.reachRange = val
+					end,
+					get = function(info)
+						return SkuOptions.db.profile[MODULE_NAME].autoNextWaypoint.reachRange
+					end
+				},
+			},
+		},
+		outputDistance = {
+			order = 2,
+			name = L["output Distance to next waypoint"],
+			desc = "",
+			type = "range",
+			set = function(info,val)
+				SkuOptions.db.profile[MODULE_NAME].outputDistance = val
+			end,
+			get = function(info)
+				return SkuOptions.db.profile[MODULE_NAME].outputDistance
+			end
+		},		
 	}
 }
 ---------------------------------------------------------------------------------------------------------------------------------------
@@ -310,6 +364,11 @@ SkuNav.defaults = {
 	trackVisited = true,
 	timeForVisitedToExpire = 6, -- 5 minutes
 	showGatherWaypoints = false,
+	autoNextWaypoint = {
+		nonVocalized = true,
+		reachRange = 3,
+	},
+	outputDistance = 0,
 }
 
 local slower = string.lower
@@ -763,7 +822,7 @@ function SkuNav:MenuBuilder(aParentEntry)
 								tCoords.y = tonumber(tText)
 								if SkuNav:GetCurrentAreaId() then
 									if SkuNav:GetUiMapIdFromAreaId(SkuNav:GetCurrentAreaId()) then
-										local tx, ty = SkuOptions.HBD:GetWorldCoordinatesFromZone(tCoords.x / 100, tCoords.y / 100, SkuNav:GetUiMapIdFromAreaId(SkuNav:GetCurrentAreaId()))
+										local tx, ty = SkuNav:GetWorldCoordinatesFromZone(tCoords.x / 100, tCoords.y / 100, SkuNav:GetUiMapIdFromAreaId(SkuNav:GetCurrentAreaId()))
 										SkuNav:UpdateQuickWP(L["Quick waypoint"]..";"..self.tQWPNumber, false, ty, tx)
 									end
 								end

@@ -3,6 +3,19 @@
 -------------------------------------------------------------------------------------------------------	
 
 -------------------------------------------------------------------------------------------------------
+Changes in Sku Era r32.25
+	- Fixed a bug that was breaking the loot roll feature. Should work again.
+	- Fixed the stable master.
+	- Fixed a bug that was causing empty lists from auction house full scans.
+	- Added/updated a bunch of features from Wrath version. That could have introduced unexpected errors. Please report if there are any.
+	- Added turn to unit feature from wrath
+	- Added all monitors from wrath
+	- Added sku makers from wrath
+	- Added sku auras from wrath
+	- Added the auto select next resource waypoint feature from Wrath
+
+
+-------------------------------------------------------------------------------------------------------
 Changes in Sku Era r32.24
 	- Moved the runes menu to the character menu
 	- Fixed the talent menu. Should work now.

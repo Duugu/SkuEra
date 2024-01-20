@@ -1,18 +1,14 @@
 ## Interface-Classic: 11500
-## Title: SkuEra (32.24)
+## Title: SkuEra (32.25)
 ## SavedVariables: SkuOptionsDB, SkuTranslatedData
 ## Dependencies: SkuBeaconSoundsets
-## Version: 32.24
+## Version: 32.25
 
 SkuAudioData\assets\SkuAudioFileIndex.lua
 SkuAudioData\assets\SkuAudioDataLenIndex.lua
 SkuAudioData\Core.lua
 
 embeds.xml
-
-Libs\HereBeDragons\HereBeDragons-2.0.lua
-Libs\HereBeDragons\HereBeDragons-Pins-2.0.lua
-Libs\HereBeDragons\HereBeDragons-Migrate.lua
 
 Libs\LibGearScore-1.0\LibGearScore.lua
 
@@ -42,11 +38,14 @@ SkuCore\auctionHouse.lua
 SkuCore\friends.lua
 SkuCore\mail.lua
 SkuCore\aq.lua
+SkuCore\aqCombat.lua
 SkuCore\dialogkey.lua
 SkuCore\damageMeter.lua
 SkuCore\turnToUnit.lua
 SkuCore\Options.lua
 SkuCore\Macro.lua
+SkuCore\skuFocus.lua
+
 
 SkuDB\Core.lua
 SkuDB\assets\maps.lua

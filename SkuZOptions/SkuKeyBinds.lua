@@ -5,6 +5,8 @@ local L = Sku.L
 SkuOptions = SkuOptions or LibStub("AceAddon-3.0"):NewAddon("SkuOptions", "AceConsole-3.0", "AceEvent-3.0")
 
 SkuOptions.skuDefaultKeyBindings = {
+   ["SKU_KEY_SELECTNEXTBASEWAYPOINT"] = {key = "", object = "SkuNav", func = "CreateSkuNavMain",},
+
    ["SKU_KEY_TARGETDISTANCE"] = {key = "", object = "SkuCoreControlOption1", script = "OnHide",},
    ["SKU_KEY_PANICMODE"] = {key = "CTRL-SHIFT-Y", object = "SkuCoreControlOption1", script = "OnHide",},
    ["SKU_KEY_MMSCANWIDE"] = {key = "CTRL-SHIFT-F", object = "SkuCoreControlOption1", script = "OnHide",},
@@ -73,16 +75,34 @@ SkuOptions.skuDefaultKeyBindings = {
    ["SKU_KEY_MENUQUICK10"] = {key = "", object = "SkuOptions", func = "CreateMainFrame",},
    ["SKU_KEY_MENUQUICK10SET"] = {key = "", object = "SkuOptions", func = "CreateMainFrame",},
    
+   ["SKU_KEY_NOTIFYONRESOURCES"] = {key = "", object = "SkuCoreControlOption1", func = "OnHide",},
+
+   ["SKU_KEY_DOMONITORPARTYHEALTH2CONTI"] = {key = "", object = "SkuCoreControlOption1", func = "OnHide",},
+
    ["SKU_KEY_ENABLESOFTTARGETINGENEMY"] = {key = "SHIFT-I", object = "SkuOptions", func = "CreateMainFrame",},
    ["SKU_KEY_ENABLESOFTTARGETINGFRIENDLY"] = {key = "SHIFT-P", object = "SkuOptions", func = "CreateMainFrame",},
    ["SKU_KEY_ENABLESOFTTARGETINGINTERACT"] = {key = "SHIFT-O", object = "SkuOptions", func = "CreateMainFrame",},
    ["SKU_KEY_OUTPUTHARDTARGET"] = {key = "", object = "SkuOptions", func = "CreateMainFrame",},
    ["SKU_KEY_OUTPUTSOFTTARGET"] = {key = "", object = "SkuOptions", func = "CreateMainFrame",},
 
-   ["SKU_KEY_NOTIFYONRESOURCES"] = {key = "", object = "SkuCoreControlOption1", func = "OnHide",},
 
-   ["SKU_KEY_DOMONITORPARTYHEALTH2CONTI"] = {key = "", object = "SkuCoreControlOption1", func = "OnHide",},
 
+
+
+   ["SKU_KEY_ENABLEPARTYRAIDHEALTHMONITOR"] = {key = "", object = "SkuOptions", func = "CreateMainFrame",},
+
+   ["SKU_KEY_GROUPMEMBERSRANGECHECK"] = {key = "", object = "SkuOptions", func = "CreateMainFrame",},
+
+   ["SKU_KEY_SKUMARKERSET1WHITE"] = {key = "", object = "SkuOptions", func = "CreateMainFrame",},
+   ["SKU_KEY_SKUMARKERSET2RED"] = {key = "", object = "SkuOptions", func = "CreateMainFrame",},
+   ["SKU_KEY_SKUMARKERSET3BLUE"] = {key = "", object = "SkuOptions", func = "CreateMainFrame",},
+   ["SKU_KEY_SKUMARKERSET4GREEN"] = {key = "", object = "SkuOptions", func = "CreateMainFrame",},
+   ["SKU_KEY_SKUMARKERSET5PURPLE"] = {key = "", object = "SkuOptions", func = "CreateMainFrame",},
+   ["SKU_KEY_SKUMARKERSET6YELLOW"] = {key = "", object = "SkuOptions", func = "CreateMainFrame",},
+   ["SKU_KEY_SKUMARKERSET7ORANGE"] = {key = "", object = "SkuOptions", func = "CreateMainFrame",},
+   ["SKU_KEY_SKUMARKERSET8GREY"] = {key = "", object = "SkuOptions", func = "CreateMainFrame",},
+   ["SKU_KEY_SKUMARKERCLEARALL"] = {key = "", object = "SkuOptions", func = "CreateMainFrame",},
+   
    ["SKU_KEY_TURNTOUNIT1"] = {key = "", object = "SkuOptions", func = "CreateMainFrame",},
    ["SKU_KEY_TURNTOUNIT2"] = {key = "", object = "SkuOptions", func = "CreateMainFrame",},
    ["SKU_KEY_TURNTOUNIT3"] = {key = "", object = "SkuOptions", func = "CreateMainFrame",},
@@ -91,6 +111,11 @@ SkuOptions.skuDefaultKeyBindings = {
    ["SKU_KEY_TURNTOUNIT6"] = {key = "", object = "SkuOptions", func = "CreateMainFrame",},
 
    ["SKU_KEY_TURNTOUNITTURN180"] = {key = "", object = "SkuOptions", func = "CreateMainFrame",},
+
+   ["SKU_KEY_COMBATMONSETFOLLOWTARGET"] = {key = "", object = "SkuOptions", func = "CreateMainFrame",},
+   ["SKU_KEY_COMBATMONOUTPUTNUMBERINCOMBAT"] = {key = "", object = "SkuOptions", func = "CreateMainFrame",},
+
+   ["SKU_KEY_TARGETHEALTH"] = {key = "", object = "SkuCoreControlOption1", script = "OnHide",},
 
    --["SKU_KEY_CHAT_LINEPREV"] = {key = "UP", object = "SkuChat", func = "OnEnable",},
    --["SKU_KEY_CHAT_LINENEXT"] = {key = "DOWN", object = "SkuChat", func = "OnEnable",},

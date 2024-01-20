@@ -28,26 +28,59 @@ local SkuMobDB = {
 		},
 	}
 
-local SkuMobRaidTargetStrings = {
-	[1] = L["Star"],
-	[2] = L["Circle"],
-	[3] = L["Diamond"],
-	[4] = L["Triangle"],
-	[5] = L["Moon"],
-	[6] = L["Square"],
-	[7] = L["Cross"],
-	[8] = L["Skull"],
-}
 
----------------------------------------------------------------------------------------------------------------------------------------
+	---------------------------------------------------------------------------------------------------------------------------------------
 function SkuMob:OnInitialize()
 	--dprint("SkuMob OnInitialize")
+	--SkuMob:RegisterEvent("PLAYER_ENTERING_WORLD")
 	SkuMob:RegisterEvent("VARIABLES_LOADED")
 	SkuMob:RegisterEvent("PLAYER_TARGET_CHANGED")
 	SkuMob:RegisterEvent("QUEST_TURNED_IN")
 	SkuMob:RegisterEvent("PLAYER_SOFT_ENEMY_CHANGED")
 	SkuMob:RegisterEvent("PLAYER_SOFT_FRIEND_CHANGED")
 	SkuMob:RegisterEvent("PLAYER_SOFT_INTERACT_CHANGED")
+end
+
+---------------------------------------------------------------------------------------------------------------------------------------
+function SkuMob:OutputTargetHealth(aForce)
+	if UnitGUID("target") then
+		if UnitCanAttack("player","target") ~= false then
+			if aForce then
+				SkuMobDB.lastAudioQ = ""
+			end
+
+			local hp = math.floor(UnitHealth("target") / (UnitHealthMax("target") / 100))
+			local hpPer = math.floor(((hp / 10)) + 1) * 10
+			if (hpPer < 100 and hpPer > 0) or aForce then
+				if hpPer > 100 then hpPer = 100 end
+				if hpPer < 10 then hpPer = 0 end
+				if hp == 0 then hpPer = 0 end
+
+				if (UnitGUID("target") ~= SkuMobDB.lastTargetGuid) then
+					SkuMobDB.nextAudioQ = hpPer--SkuMobDB.soundFiles[hpPer]
+				end
+				
+				if  (SkuMobDB.nextAudioQ ~= hpPer) then
+					SkuMobDB.nextAudioQ = hpPer
+				end
+				
+				if SkuMobDB.nextAudioQ ~= "" then
+					if (SkuMobDB.nextAudioQ ~= SkuMobDB.lastAudioQ) or (UnitGUID("target") ~= SkuMobDB.lastTargetGuid) then
+						SkuOptions.Voice:OutputString(SkuMobDB.nextAudioQ, false, false, 0.3)
+						SkuMobDB.lastAudioQ = SkuMobDB.nextAudioQ
+						SkuMobDB.nextAudioQ = ""
+					end
+				end
+			end
+				
+			SkuMobDB.lastTargetGuid = UnitGUID("target")
+		end
+	else
+		SkuMobDB.lastTargetGuid = 0
+		SkuMobDB.nextAudioQ = ""
+		SkuMobDB.lastAudioQ = ""
+	end
+
 end
 
 ---------------------------------------------------------------------------------------------------------------------------------------
@@ -74,39 +107,7 @@ function SkuMob:OnEnable()
 				end
 			end
 
-			if UnitGUID("target") then
-				if UnitCanAttack("player","target") ~= false then
-					local hp = math.floor(UnitHealth("target") / (UnitHealthMax("target") / 100))
-					local hpPer = math.floor(((hp / 10)) + 1) * 10
-					if hpPer < 100 and hpPer > 0 then
-						if hpPer > 100 then hpPer = 100 end
-						if hpPer < 10 then hpPer = 0 end
-						if hp == 0 then hpPer = 0 end
-
-						if (UnitGUID("target") ~= SkuMobDB.lastTargetGuid) then
-							SkuMobDB.nextAudioQ = hpPer--SkuMobDB.soundFiles[hpPer]
-						end
-						
-						if  (SkuMobDB.nextAudioQ ~= hpPer) then
-							SkuMobDB.nextAudioQ = hpPer
-						end
-						
-						if SkuMobDB.nextAudioQ ~= "" then
-							if (SkuMobDB.nextAudioQ ~= SkuMobDB.lastAudioQ) or (UnitGUID("target") ~= SkuMobDB.lastTargetGuid) then
-								SkuOptions.Voice:OutputString(SkuMobDB.nextAudioQ, false, false, 0.3)
-								SkuMobDB.lastAudioQ = SkuMobDB.nextAudioQ
-								SkuMobDB.nextAudioQ = ""
-							end
-						end
-					end
-						
-					SkuMobDB.lastTargetGuid = UnitGUID("target")
-				end
-			else
-				SkuMobDB.lastTargetGuid = 0
-				SkuMobDB.nextAudioQ = ""
-				SkuMobDB.lastAudioQ = ""
-			end
+			SkuMob:OutputTargetHealth()
 			
 			ttime = 0 
 		end 
@@ -125,9 +126,29 @@ function SkuMob:RefreshVisuals()
 end
 
 ---------------------------------------------------------------------------------------------------------------------------------------
+function SkuMob:PLAYER_ENTERING_WORLD(...)
+	
+
+end
+
+---------------------------------------------------------------------------------------------------------------------------------------
 function SkuMob:VARIABLES_LOADED(...)
-	-- process the event
-  --dprint(...)
+	SkuMob.InCombatSounds = {}
+	SkuMob.InCombatSounds["Interface\\AddOns\\Sku\\SkuMob\\assets\\Target_in_combat_low.mp3"] = L["Default beep sound"]
+	for i, v in pairs(SkuAuras.outputSoundFiles) do
+		if SkuAudioFileIndex[i] then
+			SkuMob.InCombatSounds["Interface\\AddOns\\"..Sku.AudiodataPath.."\\assets\\audio\\"..SkuAudioFileIndex[i]] = v
+		end
+	end
+	SkuMob.options.args.InCombatSound.values = SkuMob.InCombatSounds
+
+	if SkuOptions.db.profile[MODULE_NAME].InCombatSound == nil then
+		SkuOptions.db.profile[MODULE_NAME].InCombatSound = "Interface\\AddOns\\Sku\\SkuMob\\assets\\Target_in_combat_low.mp3"
+	end
+
+	if SkuMob.InCombatSounds[SkuOptions.db.profile[MODULE_NAME].InCombatSound] == nil then
+		SkuOptions.db.profile[MODULE_NAME].InCombatSound = "Interface\\AddOns\\Sku\\SkuMob\\assets\\Target_in_combat_low.mp3"
+	end
 end
 
 ---------------------------------------------------------------------------------------------------------------------------------------
@@ -454,7 +475,24 @@ function SkuMob:PLAYER_TARGET_CHANGED(event, aUnitId)
 		end
 		
 		local tUnitGUID = UnitGUID(aUnitId)
-
+		--sku raid target
+		if tRaidtarget == nil or tRaidtarget == "" then
+			if SkuCore:aqCombatGetSkuRaidTarget(tUnitGUID) ~= nil then
+				tRaidTargetString = SkuCore.RaidTargetValues[SkuCore:aqCombatGetSkuRaidTarget(tUnitGUID)].color..";"
+			else
+				if UnitCanAttack("player", aUnitId) and tIsPlayerControled == false and status then
+					if SkuOptions.db.profile[MODULE_NAME].autoSetSkuRaidTargetsToInCombatCreatures == true then
+						local tNewRaidTargetId = SkuCore:aqCombatSetSkuRaidTarget(tUnitGUID, 0)
+						if tNewRaidTargetId then
+							tRaidTargetString = SkuCore.RaidTargetValues[tNewRaidTargetId].color..";"
+						end
+					end
+				end
+			end
+			if SkuOptions.db.profile[MODULE_NAME].repeatRaidTargetMarkers == true then
+				tRaidTargetString = tRaidTargetString..tRaidTargetString
+			end
+		end
 
 		--for passive but attackable targets
 		local tReactionText = ""

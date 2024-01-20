@@ -124,7 +124,41 @@ SkuCore.Keys.SkuDefaultBindings = {
 			["index"] = 123,
 		},
 	},		
-
+	["BINDING_HEADER_RAID_TARGET"] = {
+		["RAIDTARGET1"] = {
+			["index"] = 236,
+		},
+		["RAIDTARGET6"] = {
+			["key1"] = "CTRL-NUMPAD4",
+			["index"] = 231,
+		},
+		["RAIDTARGET3"] = {
+			["index"] = 234,
+		},
+		["RAIDTARGET2"] = {
+			["index"] = 235,
+		},
+		["RAIDTARGET8"] = {
+			["key1"] = "CTRL-NUMPAD1",
+			["index"] = 229,
+		},
+		["RAIDTARGET4"] = {
+			["key1"] = "CTRL-NUMPAD3",
+			["index"] = 233,
+		},
+		["RAIDTARGET5"] = {
+			["key1"] = "CTRL-NUMPAD5",
+			["index"] = 232,
+		},
+		["RAIDTARGET7"] = {
+			["key1"] = "CTRL-NUMPAD2",
+			["index"] = 230,
+		},
+		["RAIDTARGETNONE"] = {
+			["key1"] = "CTRL-NUMPAD0",
+			["index"] = 237,
+		},
+	},
 	["BINDING_HEADER_CAMERA"] = {
 		["SAVEVIEW5"] = {
 			["index"] = 222,
@@ -624,6 +658,29 @@ SkuCore.Keys.SkuDefaultBindings = {
 			["index"] = 39,
 		},
 	},
+	["BINDING_HEADER_VEHICLE"] = {
+		["VEHICLEEXIT"] = {
+			["index"] = 258,
+		},
+		["VEHICLEPREVSEAT"] = {
+			["index"] = 259,
+		},
+		["VEHICLENEXTSEAT"] = {
+			["index"] = 260,
+		},
+		["VEHICLEAIMUP"] = {
+			["index"] = 261,
+		},
+		["VEHICLEAIMDOWN"] = {
+			["index"] = 262,
+		},
+		["VEHICLEAIMINCREMENT"] = {
+			["index"] = 263,
+		},
+		["VEHICLEAIMDECREMENT"] = {
+			["index"] = 264,
+		},
+	},	
 	["BINDING_HEADER_INTERFACE"] = {
 		["TOGGLEBAG1"] = {
 			["index"] = 160,
@@ -664,6 +721,9 @@ SkuCore.Keys.SkuDefaultBindings = {
 		["OPENALLBAGS"] = {
 			["key1"] = "B",
 			["index"] = 164,
+		},
+		["TOGGLELFGTAB"] = {
+			["index"] = 191,
 		},
 		["TOGGLECHATTAB"] = {
 			["index"] = 189,
@@ -706,6 +766,9 @@ SkuCore.Keys.SkuDefaultBindings = {
 			["key1"] = "M",
 			["index"] = 177,
 		},
+		["TOGGLELFGPARENT"] = {
+			["index"] = 190,
+		},
 		["TOGGLETALENTS"] = {
 			["key1"] = "N",
 			["index"] = 174,
@@ -735,7 +798,14 @@ SkuCore.Keys.SkuDefaultBindings = {
 		["TOGGLECHARACTER0"] = {
 			["index"] = 166,
 		},
-
+		--[[
+		["TOGGLELFGPARENT"] = {
+			["index"] = 268,
+		},
+		["TOGGLELFGLISTINGTAB"] = {
+			["index"] = 269,
+		},
+		]]
 		["TOGGLEACHIEVEMENT"] = {
 			["index"] = 202,
 		},

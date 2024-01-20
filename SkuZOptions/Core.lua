@@ -11,7 +11,6 @@ SkuOptions = SkuOptions or LibStub("AceAddon-3.0"):NewAddon("SkuOptions", "AceCo
 LibStub("AceComm-3.0"):Embed(SkuOptions)
 SkuOptions.TTS = LibStub("SkuTTS-1.0"):Create("SkuOptions", false)
 SkuOptions.Voice = LibStub("SkuVoice-1.0"):Create("SkuOptions", false)
-SkuOptions.HBD = LibStub("HereBeDragons-2.0")
 SkuOptions.BeaconLib = LibStub("SkuBeacon-1.0"):Create("SkuOptions", false)
 SkuOptions.Serializer = LibStub("AceSerializer-3.0")
 SkuOptions.RangeCheck = LibStub("LibRangeCheck-2.0")
@@ -534,7 +533,7 @@ end
 
 ---------------------------------------------------------------------------------------------------------------------------------------
 function SkuOptions:UpdateOverviewText(aPageId)
---SkuOptions.db.profile["SkuOptions"].overviewPages[aPageId].overviewSections
+	--SkuOptions.db.profile["SkuOptions"].overviewPages[aPageId].overviewSections
 	aPageId = aPageId or 1
 	local tSectionRepo = {}
 
@@ -555,22 +554,35 @@ function SkuOptions:UpdateOverviewText(aPageId)
 		tTmpText = L["Your group"]..": "..tPlayersSubgroup.."\r\n"
 
 		local tSubgroups = {}
-		for x = 1, 40 do
+		local tsubgroupcounter = {}
+		for x = 1, MAX_RAID_MEMBERS do
 			local name, rank, subgroup, level, class, fileName, zone, online, isDead, role, isML, combatRole = GetRaidRosterInfo(x)
-			if name then
-				if not tSubgroups[subgroup] then
-					tSubgroups[subgroup] = {}
-				end
-				tSubgroups[subgroup][name] = {level = level, class = class, zone = zone, online = online, isDead = isDead,}
+			if name and subgroup then
+				subgroup = tonumber(subgroup)
+				tSubgroups[subgroup] = tSubgroups[subgroup] or {}
+				tsubgroupcounter[subgroup] = tsubgroupcounter[subgroup] or 0
+				tsubgroupcounter[subgroup] = tsubgroupcounter[subgroup] + 1
+				local tRole = UnitGroupRolesAssigned("raid"..x) or "None"
+				tSubgroups[subgroup][tsubgroupcounter[subgroup]] = {level = level, class = class, zone = zone, online = online, isDead = isDead, name = name, role = L[tRole]}
 			end
 		end
 
-		for i, v in pairs(tSubgroups) do
-			tTmpText = tTmpText.." "..L["Gruppe"].." "..i.."\r\n"
-			for iUnit, vUnit in pairs(v) do
-				if vUnit.online then vUnit.online = L["online"] else vUnit.online = L["offline"] end
-				if vUnit.isDead then vUnit.isDead = L["tot"] else vUnit.isDead = L["lebt"] end
-				tTmpText = tTmpText.." "..iUnit..", "..vUnit.class..", "..vUnit.level..", "..vUnit.zone..", "..vUnit.online..", "..vUnit.isDead.."\r\n"
+		for y = 1, 8 do 
+			local i, v = y, tSubgroups[y]
+			if not tSubgroups[y] then
+				tTmpText = tTmpText.." "..L["Gruppe"].." "..i..":"..L["empty"].."\r\n"
+			else
+				tTmpText = tTmpText.." "..L["Gruppe"].." "..i.."\r\n"
+				for x = 1, #v do
+					local iUnit, vUnit = x, v[x]
+					vUnit.level = vUnit.level..", "
+					vUnit.zone = vUnit.zone..", "
+					if vUnit.online then vUnit.online = L["online"]..", " else vUnit.online = L["offline"]..", " end
+					if vUnit.isDead then vUnit.isDead = L["tot"]..", " else vUnit.isDead = "" end
+					if vUnit.online == L["offline"]..", " then vUnit.isDead = "" vUnit.zone = "" vUnit.level = "" end
+					if vUnit.online == L["online"]..", " then vUnit.online = "" end
+					tTmpText = tTmpText.." "..iUnit..", "..vUnit.name..", "..vUnit.isDead..vUnit.class..", "..vUnit.role..", "..vUnit.level..vUnit.zone..vUnit.online.."\r\n"
+				end
 			end
 		end
 	else
@@ -603,16 +615,26 @@ function SkuOptions:UpdateOverviewText(aPageId)
 		end
 	end
 
+	local tPartyRoles = {}
+	for q = 1, 4 do
+		local tPlayerName = UnitName("party"..q)
+		if tPlayerName then
+			local tRole = UnitGroupRolesAssigned("party"..q)
+			tPartyRoles[tPlayerName] = L[tRole]
+		end
+	end
+
 	for x = 1, 40 do
 		local name, rank, subgroup, level, class, fileName, zone, online, isDead, role, isML, combatRole = GetRaidRosterInfo(x)
 		if online then online = L["online"] else online = L["offline"] end
 		if isDead then isDead = L["tot"] else isDead = L["lebt"] end
+		
 		if name then
 			if subgroup == tPlayersSubgroup then
 				local tPlayerName = UnitName("player")
 				if name ~= tPlayerName then
 					tCount = tCount + 1
-					tTmpText = tTmpText..tCount.." "..name..", "..class..", "..level..", "..zone..", "..online..", "..isDead.."\r\n"
+					tTmpText = tTmpText..tCount.." "..name..", "..class..", "..level..", "..(tPartyRoles[name] or "")..", "..zone..", "..online..", "..isDead.."\r\n"
 				end
 			end
 		end
@@ -648,6 +670,13 @@ function SkuOptions:UpdateOverviewText(aPageId)
 	end
 	if UnitName("playerpet") then
 		tGeneral = tGeneral .. "\r\n" .. L["Pet"] .. " " .. L["Gesundheit: "] .. formatPercentage(UnitHealth("pet"), UnitHealthMax("pet"))
+	end
+
+	--pvp
+	if UnitIsPVP("player") == true then
+		tGeneral = tGeneral.."\r\n"..L["PvP"].." "..L["Enabled"]
+	else
+		tGeneral = tGeneral.."\r\n"..L["PvP"].." "..L["disabled"]
 	end
 
 	--repair status
@@ -802,7 +831,7 @@ function SkuOptions:UpdateOverviewText(aPageId)
 					else
 						tTimeString = tRemainingSec..L[" Sekunden"]
 					end
-	
+
 				end
 				tFound = true
 				if tTimeString ~= "" then
@@ -857,7 +886,7 @@ function SkuOptions:UpdateOverviewText(aPageId)
 					else
 						tTimeString = tRemainingSec..L[" Sekunden"]
 					end
-	
+
 				end
 				tFound = true
 				if tTimeString ~= "" then
@@ -1190,6 +1219,111 @@ function SkuOptions:CreateMainFrame()
 			elseif a == "SHIFT-RIGHT" then
 				tCurrentOverviewPage = 4
 			]]
+			end
+		end
+
+		if a == SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_TARGETHEALTH"].key then
+			SkuMob:OutputTargetHealth(true)
+		end
+
+		local tTargetGUID = UnitGUID("target")
+		if tTargetGUID then
+			local tRaidtarget = GetRaidTargetIndex("target")
+			if not tRaidtarget then
+				local tMarkerIndex = nil
+				if a == SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_SKUMARKERSET1WHITE"].key then
+					tMarkerIndex = SkuCore.SkuRaidTargetIndex[1]
+				end
+				if a == SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_SKUMARKERSET2RED"].key then
+					tMarkerIndex = SkuCore.SkuRaidTargetIndex[2]
+				end
+				if a == SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_SKUMARKERSET3BLUE"].key then
+					tMarkerIndex = SkuCore.SkuRaidTargetIndex[3]
+				end
+				if a == SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_SKUMARKERSET4GREEN"].key then
+					tMarkerIndex = SkuCore.SkuRaidTargetIndex[4]
+				end
+				if a == SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_SKUMARKERSET5PURPLE"].key then
+					tMarkerIndex = SkuCore.SkuRaidTargetIndex[5]
+				end
+				if a == SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_SKUMARKERSET6YELLOW"].key then
+					tMarkerIndex = SkuCore.SkuRaidTargetIndex[6]
+				end
+				if a == SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_SKUMARKERSET7ORANGE"].key then
+					tMarkerIndex = SkuCore.SkuRaidTargetIndex[7]
+				end
+				if a == SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_SKUMARKERSET8GREY"].key then
+					tMarkerIndex = SkuCore.SkuRaidTargetIndex[8]
+				end
+				if tMarkerIndex ~= nil then
+					SkuCore:aqCombatSetSkuRaidTarget(tTargetGUID, tMarkerIndex)
+					C_Timer.After(0.1, function()
+						SkuMob:PLAYER_TARGET_CHANGED("PLAYER_TARGET_CHANGED", "target")
+					end)
+				end
+			end
+		end
+
+		if a == SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_SKUMARKERCLEARALL"].key then
+			SkuCore:aqCombatClearSkuRaidTargets()
+			local tTargetGUID = UnitGUID("target")
+			if tTargetGUID then
+				C_Timer.After(0.1, function()
+					SkuMob:PLAYER_TARGET_CHANGED("PLAYER_TARGET_CHANGED", "target")
+				end)
+			end
+		end
+
+		--monitor
+		if a == SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_ENABLEPARTYRAIDHEALTHMONITOR"].key then
+			if UnitInRaid("player") then
+				SkuOptions.db.char["SkuCore"].aq[SkuCore.talentSet].party.health2.enabled = false
+				if SkuOptions.db.char["SkuCore"].aq[SkuCore.talentSet].raid.health2.enabled == true then
+					SkuOptions.db.char["SkuCore"].aq[SkuCore.talentSet].raid.health2.enabled = false
+					SkuOptions.db.char["SkuCore"].aq[SkuCore.talentSet].player.health.enabled = true
+					print(L["Player health monitor enabled"])
+				else
+					SkuOptions.db.char["SkuCore"].aq[SkuCore.talentSet].raid.health2.enabled = true
+					SkuOptions.db.char["SkuCore"].aq[SkuCore.talentSet].player.health.enabled = false
+					print(L["Raid health monitor enabled"])
+				end
+			elseif UnitInParty("player") == true then
+				SkuOptions.db.char["SkuCore"].aq[SkuCore.talentSet].raid.health2.enabled = false
+				if SkuOptions.db.char["SkuCore"].aq[SkuCore.talentSet].party.health2.enabled == true then
+					SkuOptions.db.char["SkuCore"].aq[SkuCore.talentSet].party.health2.enabled = false
+					SkuOptions.db.char["SkuCore"].aq[SkuCore.talentSet].player.health.enabled = true
+					print(L["Player health monitor enabled"])
+				else
+					SkuOptions.db.char["SkuCore"].aq[SkuCore.talentSet].party.health2.enabled = true
+					SkuOptions.db.char["SkuCore"].aq[SkuCore.talentSet].player.health.enabled = false
+					print(L["Party health monitor enabled"])
+				end
+			else
+				SkuOptions.db.char["SkuCore"].aq[SkuCore.talentSet].raid.health2.enabled = false
+				SkuOptions.db.char["SkuCore"].aq[SkuCore.talentSet].party.health2.enabled = false
+				if SkuOptions.db.char["SkuCore"].aq[SkuCore.talentSet].player.health.enabled == true then
+					SkuOptions.db.char["SkuCore"].aq[SkuCore.talentSet].player.health.enabled = false
+					print(L["Player health monitor disabled"])
+				else
+					SkuOptions.db.char["SkuCore"].aq[SkuCore.talentSet].player.health.enabled = true
+					print(L["Player health monitor enabled"])
+				end
+			end
+		end
+
+		--combat monitor
+		if a == SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_COMBATMONSETFOLLOWTARGET"].key then
+			if SkuOptions.db.char["SkuCore"].aq[SkuCore.talentSet].combat.enabled == true then
+				if UnitName("target") and UnitIsPlayer("target") then
+					SkuOptions.db.char["SkuCore"].aq[SkuCore.talentSet].combat.friendly.oorUnitName = UnitName("target")
+					SkuOptions.Voice:OutputStringBTtts(L["New follow unit"].." "..UnitName("target"), {overwrite = true, wait = true, doNotOverwrite = true, engine = 2})
+				end
+			end
+		end
+
+		if a == SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_COMBATMONOUTPUTNUMBERINCOMBAT"].key then
+			if SkuOptions.db.char["SkuCore"].aq[SkuCore.talentSet].combat.enabled == true then
+				SkuOptions.Voice:OutputString(SkuCore.inOutCombatQueue.current.." "..L["In Combat"], true, true, 0.3, true)
 			end
 		end
 
@@ -1741,17 +1875,33 @@ function SkuOptions:CreateMainFrame()
 		SkuOptions:HideVisualMenu()
 	end)
 
+	local tKbds = SkuOptions.db.profile["SkuOptions"].SkuKeyBinds
 	--SetOverrideBindingClick(tFrame, true, "SHIFT-U", tFrame:GetName(), "SHIFT-U")
 	--SetOverrideBindingClick(tFrame, true, "SHIFT-J", tFrame:GetName(), "SHIFT-J")
-	SetOverrideBindingClick(tFrame, true, SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_ENABLESOFTTARGETINGENEMY"].key, tFrame:GetName(), SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_ENABLESOFTTARGETINGENEMY"].key)
-	SetOverrideBindingClick(tFrame, true, SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_ENABLESOFTTARGETINGFRIENDLY"].key, tFrame:GetName(), SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_ENABLESOFTTARGETINGFRIENDLY"].key)
-	SetOverrideBindingClick(tFrame, true, SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_ENABLESOFTTARGETINGINTERACT"].key, tFrame:GetName(), SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_ENABLESOFTTARGETINGINTERACT"].key)
-	SetOverrideBindingClick(tFrame, true, SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_OUTPUTHARDTARGET"].key, tFrame:GetName(), SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_OUTPUTHARDTARGET"].key)
-	SetOverrideBindingClick(tFrame, true, SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_OUTPUTSOFTTARGET"].key, tFrame:GetName(), SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_OUTPUTSOFTTARGET"].key)
+	SetOverrideBindingClick(tFrame, true, tKbds["SKU_KEY_QUESTSHARE"].key, tFrame:GetName(), tKbds["SKU_KEY_QUESTSHARE"].key)
+	SetOverrideBindingClick(tFrame, true, tKbds["SKU_KEY_SKUMARKERSET1WHITE"].key, tFrame:GetName(), tKbds["SKU_KEY_SKUMARKERSET1WHITE"].key)
+	SetOverrideBindingClick(tFrame, true, tKbds["SKU_KEY_SKUMARKERSET2RED"].key, tFrame:GetName(), tKbds["SKU_KEY_SKUMARKERSET2RED"].key)
+	SetOverrideBindingClick(tFrame, true, tKbds["SKU_KEY_SKUMARKERSET3BLUE"].key, tFrame:GetName(), tKbds["SKU_KEY_SKUMARKERSET3BLUE"].key)
+	SetOverrideBindingClick(tFrame, true, tKbds["SKU_KEY_SKUMARKERSET4GREEN"].key, tFrame:GetName(), tKbds["SKU_KEY_SKUMARKERSET4GREEN"].key)
+	SetOverrideBindingClick(tFrame, true, tKbds["SKU_KEY_SKUMARKERSET5PURPLE"].key, tFrame:GetName(), tKbds["SKU_KEY_SKUMARKERSET5PURPLE"].key)
+	SetOverrideBindingClick(tFrame, true, tKbds["SKU_KEY_SKUMARKERSET6YELLOW"].key, tFrame:GetName(), tKbds["SKU_KEY_SKUMARKERSET6YELLOW"].key)
+	SetOverrideBindingClick(tFrame, true, tKbds["SKU_KEY_SKUMARKERSET7ORANGE"].key, tFrame:GetName(), tKbds["SKU_KEY_SKUMARKERSET7ORANGE"].key)
+	SetOverrideBindingClick(tFrame, true, tKbds["SKU_KEY_SKUMARKERSET8GREY"].key, tFrame:GetName(), tKbds["SKU_KEY_SKUMARKERSET8GREY"].key)
+	SetOverrideBindingClick(tFrame, true, tKbds["SKU_KEY_SKUMARKERCLEARALL"].key, tFrame:GetName(), tKbds["SKU_KEY_SKUMARKERCLEARALL"].key)
 
-	SetOverrideBindingClick(tFrame, true, SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_DEBUGMODE"].key, tFrame:GetName(), SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_DEBUGMODE"].key)
 
-	SetOverrideBindingClick(tFrame, true, SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_QUESTSHARE"].key, tFrame:GetName(), SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_QUESTSHARE"].key)
+
+	SetOverrideBindingClick(tFrame, true, tKbds["SKU_KEY_ENABLEPARTYRAIDHEALTHMONITOR"].key, tFrame:GetName(), tKbds["SKU_KEY_ENABLEPARTYRAIDHEALTHMONITOR"].key)
+	SetOverrideBindingClick(tFrame, true, tKbds["SKU_KEY_ENABLESOFTTARGETINGENEMY"].key, tFrame:GetName(), tKbds["SKU_KEY_ENABLESOFTTARGETINGENEMY"].key)
+	SetOverrideBindingClick(tFrame, true, tKbds["SKU_KEY_ENABLESOFTTARGETINGFRIENDLY"].key, tFrame:GetName(), tKbds["SKU_KEY_ENABLESOFTTARGETINGFRIENDLY"].key)
+	SetOverrideBindingClick(tFrame, true, tKbds["SKU_KEY_ENABLESOFTTARGETINGINTERACT"].key, tFrame:GetName(), tKbds["SKU_KEY_ENABLESOFTTARGETINGINTERACT"].key)
+	SetOverrideBindingClick(tFrame, true, tKbds["SKU_KEY_OUTPUTHARDTARGET"].key, tFrame:GetName(), tKbds["SKU_KEY_OUTPUTHARDTARGET"].key)
+	SetOverrideBindingClick(tFrame, true, tKbds["SKU_KEY_OUTPUTSOFTTARGET"].key, tFrame:GetName(), tKbds["SKU_KEY_OUTPUTSOFTTARGET"].key)
+	SetOverrideBindingClick(tFrame, true, tKbds["SKU_KEY_DEBUGMODE"].key, tFrame:GetName(), tKbds["SKU_KEY_DEBUGMODE"].key)
+	SetOverrideBindingClick(tFrame, true, tKbds["SKU_KEY_COMBATMONSETFOLLOWTARGET"].key, tFrame:GetName(), tKbds["SKU_KEY_COMBATMONSETFOLLOWTARGET"].key)
+	SetOverrideBindingClick(tFrame, true, tKbds["SKU_KEY_COMBATMONOUTPUTNUMBERINCOMBAT"].key, tFrame:GetName(), tKbds["SKU_KEY_COMBATMONOUTPUTNUMBERINCOMBAT"].key)
+	SetOverrideBindingClick(tFrame, true, tKbds["SKU_KEY_TARGETHEALTH"].key, tFrame:GetName(), tKbds["SKU_KEY_TARGETHEALTH"].key)
+	
 	SetOverrideBindingClick(tFrame, true, "SHIFT-UP", tFrame:GetName(), "SHIFT-UP")
 	SetOverrideBindingClick(tFrame, true, "SHIFT-DOWN", tFrame:GetName(), "SHIFT-DOWN")
 	SetOverrideBindingClick(tFrame, true, "CTRL-SHIFT-UP", tFrame:GetName(), "CTRL-SHIFT-UP")
@@ -1761,22 +1911,22 @@ function SkuOptions:CreateMainFrame()
 	SetOverrideBindingClick(tFrame, true, "SHIFT-LEFT", "OnSkuOptionsMainOption1", "SHIFT-LEFT")
 	SetOverrideBindingClick(tFrame, true, "SHIFT-ENTER", "OnSkuOptionsMainOption1", "SHIFT-ENTER")
 	SetOverrideBindingClick(tFrame, true, "SHIFT-BACKSPACE", "OnSkuOptionsMainOption1", "SHIFT-BACKSPACE")
-
-	SetOverrideBindingClick(tFrame, true, SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_OPENMENU"].key, tFrame:GetName(), SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_OPENMENU"].key)
-	SetOverrideBindingClick(tFrame, true, SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_OPENADVGUIDE"].key, tFrame:GetName(), SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_OPENADVGUIDE"].key)
-
+	
+	SetOverrideBindingClick(tFrame, true, tKbds["SKU_KEY_OPENMENU"].key, tFrame:GetName(), tKbds["SKU_KEY_OPENMENU"].key)
+	SetOverrideBindingClick(tFrame, true, tKbds["SKU_KEY_OPENADVGUIDE"].key, tFrame:GetName(), tKbds["SKU_KEY_OPENADVGUIDE"].key)
+	
 	for q = 1, 10 do
-		SetOverrideBindingClick(tFrame, true, SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_MENUQUICK"..q].key, tFrame:GetName(), SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_MENUQUICK"..q].key)
-		SetOverrideBindingClick(tFrame, true, SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_MENUQUICK"..q.."SET"].key, tFrame:GetName(), SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_MENUQUICK"..q.."SET"].key)
+		SetOverrideBindingClick(tFrame, true, tKbds["SKU_KEY_MENUQUICK"..q].key, tFrame:GetName(), tKbds["SKU_KEY_MENUQUICK"..q].key)
+		SetOverrideBindingClick(tFrame, true, tKbds["SKU_KEY_MENUQUICK"..q.."SET"].key, tFrame:GetName(), tKbds["SKU_KEY_MENUQUICK"..q.."SET"].key)
 	end
+	
+	SetOverrideBindingClick(tFrame, true, tKbds["SKU_KEY_ROLLNEED"].key, tFrame:GetName(), tKbds["SKU_KEY_ROLLNEED"].key)
+	SetOverrideBindingClick(tFrame, true, tKbds["SKU_KEY_ROLLGREED"].key, tFrame:GetName(), tKbds["SKU_KEY_ROLLGREED"].key)
+	SetOverrideBindingClick(tFrame, true, tKbds["SKU_KEY_ROLLPASS"].key, tFrame:GetName(), tKbds["SKU_KEY_ROLLPASS"].key)
+	SetOverrideBindingClick(tFrame, true, tKbds["SKU_KEY_ROLLINFO"].key, tFrame:GetName(), tKbds["SKU_KEY_ROLLINFO"].key)
+	SetOverrideBindingClick(tFrame, true, tKbds["SKU_KEY_STOPTTSOUTPUT"].key, tFrame:GetName(), tKbds["SKU_KEY_STOPTTSOUTPUT"].key)
 
-	SetOverrideBindingClick(tFrame, true, SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_ROLLNEED"].key, tFrame:GetName(), SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_ROLLNEED"].key)
-	SetOverrideBindingClick(tFrame, true, SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_ROLLGREED"].key, tFrame:GetName(), SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_ROLLGREED"].key)
-	SetOverrideBindingClick(tFrame, true, SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_ROLLPASS"].key, tFrame:GetName(), SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_ROLLPASS"].key)
-	SetOverrideBindingClick(tFrame, true, SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_ROLLINFO"].key, tFrame:GetName(), SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_ROLLINFO"].key)
-
-	SetOverrideBindingClick(tFrame, true, SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_STOPTTSOUTPUT"].key, tFrame:GetName(), SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_STOPTTSOUTPUT"].key)
-
+	SetOverrideBindingClick(tFrame, true, tKbds["SKU_KEY_STOPTTSOUTPUT"].key, tFrame:GetName(), tKbds["SKU_KEY_STOPTTSOUTPUT"].key)
 end
 
 ---------------------------------------------------------------------------------------------------------------------------------------
@@ -2610,7 +2760,6 @@ end
 
 ---------------------------------------------------------------------------------------------------------------------------------------
 function SkuOptions:OnInitialize()
-	dprint("SkuOptions OnInitialize")
 	if SkuOptions then
 		options.args["SkuOptions"] = SkuOptions.options
 		defaults.profile["SkuOptions"] = SkuOptions.defaults
@@ -2976,13 +3125,18 @@ function SkuOptions:PLAYER_ENTERING_WORLD(...)
 		SkuMob.interactTempDisabled = nil
 		SkuMob:PLAYER_TARGET_CHANGED()
 		SkuOptions:UpdateSoftTargetingSettings("all")
+
+		SkuOptions.db.global["SkuOptions"] = SkuOptions.db.global["SkuOptions"] or {}
+		SkuOptions.db.global["SkuOptions"].devmode = SkuOptions.db.global["SkuOptions"].devmode or false
+
 	end
 end
 
 ---------------------------------------------------------------------------------------------------------------------------------------
+
 SkuOptions.nextRollFrameNumber = 0
 function SkuOptions:START_LOOT_ROLL(rollID, rollTime, lootHandle, a, b)
-	--dprint("START_LOOT_ROLL(rollID, rollTime, lootHandle, a, b", rollID, rollTime, lootHandle, a, b)
+	--print("START_LOOT_ROLL(rollID, rollTime, lootHandle, a, b", rollID, rollTime, lootHandle, a, b)
 	local tItem
 	SkuOptions.nextRollFrameNumber, tItem = SkuOptions:GetCurrentRollItem()
 	if SkuOptions.nextRollFrameNumber then
@@ -2992,7 +3146,7 @@ end
 
 ---------------------------------------------------------------------------------------------------------------------------------------
 function SkuOptions:CANCEL_LOOT_ROLL(rollID, a, b)
-	--dprint("CANCEL_LOOT_ROLL(rollID, a, b", rollID, a, b)
+	--print("CANCEL_LOOT_ROLL(rollID, a, b", rollID, a, b)
 	local tItem
 	SkuOptions.nextRollFrameNumber, tItem = SkuOptions:GetCurrentRollItem()
 	if SkuOptions.nextRollFrameNumber then
@@ -3002,16 +3156,18 @@ end
 
 ---------------------------------------------------------------------------------------------------------------------------------------
 function SkuOptions:LOOT_SLOT_CHANGED(lootSlot, a, b)
-	--dprint("OT_CHANGED(lootSlot, a, b", lootSlot, a, b)
+	--print("OT_CHANGED(lootSlot, a, b", lootSlot, a, b)
 	local tItem
 	SkuOptions.nextRollFrameNumber, tItem = SkuOptions:GetCurrentRollItem()
 	if SkuOptions.nextRollFrameNumber then
+		print("SkuOptions.nextRollFrameNumber", SkuOptions.nextRollFrameNumber, tItem, tItem.name)
 		SkuOptions.Voice:OutputStringBTtts(L["Roll on"].." "..tItem.name..", "..tItem.alFavoriteString..", "..tItem.quality..", "..tItem.bind..", "..tItem.type..", "..tItem.subtype, true, true, 0.3, true, nil, nil, 2)
 	end
 end
 
 ---------------------------------------------------------------------------------------------------------------------------------------
 function SkuOptions:GetCurrentRollItem()
+	--print("GetCurrentRollItem()")
 	local tLootFrameNumber = nil
 	local tLootItem = nil
 	for x = 1, 6 do
@@ -3021,11 +3177,13 @@ function SkuOptions:GetCurrentRollItem()
 				local itemName, itemLink, itemQuality, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemTexture, sellPrice, classID, subclassID, bindType, expacID, setID, isCraftingReagent = GetItemInfo(GetLootRollItemLink(_G["GroupLootFrame"..x].rollID))
 				local tAlFavoriteString = ""
 				local invType = C_Item.GetItemInventoryTypeByID(itemLink)
-				if invType and itemLink then
-					if SkuCore.favoriteSlots[invType] and SkuCore.favoriteSlots[invType][1] and #SkuOptions.db.char["SkuCore"].alIntegration.favorites[invType] > 0 then
-						for q = 1, #SkuOptions.db.char["SkuCore"].alIntegration.favorites[invType] do
-							if SkuOptions.db.char["SkuCore"].alIntegration.favorites[invType][q] == itemLink then
-								tAlFavoriteString = L["Prio"].." "..q.." "..L["in AtlasLoot favorites for"].." ".._G[SkuCore.favoriteSlots[invType][1]]
+				if SkuCore.favoriteSlots then
+					if invType and itemLink then
+						if SkuCore.favoriteSlots[invType] and SkuCore.favoriteSlots[invType][1] and #SkuOptions.db.char["SkuCore"].alIntegration.favorites[invType] > 0 then
+							for q = 1, #SkuOptions.db.char["SkuCore"].alIntegration.favorites[invType] do
+								if SkuOptions.db.char["SkuCore"].alIntegration.favorites[invType][q] == itemLink then
+									tAlFavoriteString = L["Prio"].." "..q.." "..L["in AtlasLoot favorites for"].." ".._G[SkuCore.favoriteSlots[invType][1]]
+								end
 							end
 						end
 					end

@@ -47,6 +47,251 @@ SkuNav.PrintMT = {
 	end,
 	}
 
+	---@diagnostic disable: undefined-field, undefined-doc-name
+---------------------------------------------------------------------------------------------------------------------------------------
+local MODULE_NAME = "SkuNav"
+local _G = _G
+local L = Sku.L
+
+SkuNav = SkuNav or LibStub("AceAddon-3.0"):NewAddon("SkuNav", "AceConsole-3.0", "AceEvent-3.0")
+
+local lastLayer = ""
+
+local lastDirection = -1
+local lastDistance = 0
+SkuDrawFlag = false
+
+local slower = string.lower
+local sfind = string.find
+local ssplit = string.split
+local ssub = string.sub
+local tinsert = table.insert
+
+SkuNav.BeaconSoundSetNames  = {}
+
+SkuMetapathFollowingMetapathsTMP = {}
+
+SkuNav.PrintMT = {
+	__tostring = function(thisTable)
+		local tStr = ""
+		local function tf(ttable, tTab)
+			for k, v in pairs(ttable) do
+				if k ~= "parent" and v ~= "parent" and k ~= "prev" and v ~= "prev" and k ~= "next" and v ~= "next"  then
+					if type(v) ~= "userdata" and k ~= "frame" and k ~= 0  then
+						if type(v) == 'table' then
+							dprint(tTab..k..":")
+							tf(v, tTab.."  ")
+						elseif type(v) == "function" then
+							dprint(tTab..k..": function")
+						elseif type(v) == "boolean" then
+							dprint(tTab..k..": "..tostring(v))
+						else
+							dprint(tTab..k..": "..v)
+						end
+					end
+				end
+			end
+		end
+		tf(thisTable, "")
+	end,
+	}
+
+
+------------------------------------------------------------------------------------------------------------------------
+local COSMIC_MAP_ID = 946
+local WORLD_MAP_ID = 947
+
+local WoWClassic = (WOW_PROJECT_ID == WOW_PROJECT_CLASSIC)
+local WoWBC = (WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC)
+
+mapData          = {}
+local worldMapData     = {}
+local transforms       = {}
+
+local function buildMapData()
+	-- gather map info, but only if this isn't an upgrade (or the upgrade version forces a re-map)
+	-- wipe old data, if required, otherwise the upgrade path isn't triggered
+	if oldversion then
+		wipe(mapData)
+		wipe(worldMapData)
+		wipe(transforms)
+	end
+
+	-- map transform data extracted from UIMapAssignment.db2 (see HereBeDragons-Scripts on GitHub)
+	-- format: instanceID, newInstanceID, minY, maxY, minX, maxX, offsetY, offsetX
+	local transformData
+	if WoWBC then
+		transformData = {
+			{ 530, 0, 4800, 16000, -10133.3, -2666.67, -2400, 2662.8 },
+			{ 530, 1, -6933.33, 533.33, -16000, -8000, 10339.7, 17600 },
+		}
+	else
+		transformData = {
+			{ 530, 1, -6933.33, 533.33, -16000, -8000, 9916, 17600 },
+			{ 530, 0, 4800, 16000, -10133.3, -2666.67, -2400, 2400 },
+			{ 732, 0, -3200, 533.3, -533.3, 2666.7, -611.8, 3904.3 },
+			{ 1064, 870, 5391, 8148, 3518, 7655, -2134.2, -2286.6 },
+			{ 1208, 1116, -2666, -2133, -2133, -1600, 10210.7, 2411.4 },
+			{ 1460, 1220, -1066.7, 2133.3, 0, 3200, -2333.9, 966.7 },
+			{ 1599, 1, 4800, 5866.7, -4266.7, -3200, -490.6, -0.4 },
+			{ 1609, 571, 6400, 8533.3, -1600, 533.3, 512.8, 545.3 },
+		}
+	end
+
+	local function processTransforms()
+		for _, transform in pairs(transformData) do
+			local instanceID, newInstanceID, minY, maxY, minX, maxX, offsetY, offsetX = unpack(transform)
+			if not transforms[instanceID] then
+					transforms[instanceID] = {}
+			end
+			table.insert(transforms[instanceID], { newInstanceID = newInstanceID, minY = minY, maxY = maxY, minX = minX, maxX = maxX, offsetY = offsetY, offsetX = offsetX })
+		end
+	end
+
+	local function applyMapTransforms(instanceID, left, right, top, bottom)
+		if transforms[instanceID] then
+			for _, data in ipairs(transforms[instanceID]) do
+					if left <= data.maxX and right >= data.minX and top <= data.maxY and bottom >= data.minY then
+						instanceID = data.newInstanceID
+						left   = left   + data.offsetX
+						right  = right  + data.offsetX
+						top    = top    + data.offsetY
+						bottom = bottom + data.offsetY
+						break
+					end
+			end
+		end
+		return instanceID, left, right, top, bottom
+	end
+
+	local vector00, vector05 = CreateVector2D(0, 0), CreateVector2D(0.5, 0.5)
+	-- gather the data of one map (by uiMapID)
+	local function processMap(id, data, parent)
+		if not id or not data or mapData[id] then return end
+
+		if data.parentMapID and data.parentMapID ~= 0 then
+			parent = data.parentMapID
+		elseif not parent then
+			parent = 0
+		end
+
+		-- get two positions from the map, we use 0/0 and 0.5/0.5 to avoid issues on some maps where 1/1 is translated inaccurately
+		local instance, topLeft = C_Map.GetWorldPosFromMapPos(id, vector00)
+		local _, bottomRight = C_Map.GetWorldPosFromMapPos(id, vector05)
+		if topLeft and bottomRight then
+			local top, left = topLeft:GetXY()
+			local bottom, right = bottomRight:GetXY()
+			bottom = top + (bottom - top) * 2
+			right = left + (right - left) * 2
+
+			instance, left, right, top, bottom = applyMapTransforms(instance, left, right, top, bottom)
+			mapData[id] = {left - right, top - bottom, left, top, instance = instance, name = data.name, mapType = data.mapType, parent = parent }
+		else
+			mapData[id] = {0, 0, 0, 0, instance = instance or -1, name = data.name, mapType = data.mapType, parent = parent }
+		end
+	end
+
+	local function processMapChildrenRecursive(parent)
+		local children = C_Map.GetMapChildrenInfo(parent)
+		if children and #children > 0 then
+			for i = 1, #children do
+					local id = children[i].mapID
+					if id and not mapData[id] then
+						processMap(id, children[i], parent)
+						processMapChildrenRecursive(id)
+
+						-- process sibling maps (in the same group)
+						-- in some cases these are not discovered by GetMapChildrenInfo above
+						local groupID = C_Map.GetMapGroupID(id)
+						if groupID then
+							local groupMembers = C_Map.GetMapGroupMembersInfo(groupID)
+							if groupMembers then
+									for k = 1, #groupMembers do
+										local memberId = groupMembers[k].mapID
+										if memberId and not mapData[memberId] then
+											processMap(memberId, C_Map.GetMapInfo(memberId), parent)
+											processMapChildrenRecursive(memberId)
+										end
+									end
+							end
+						end
+					end
+			end
+		end
+	end
+
+	local function fixupZones()
+		local cosmic = C_Map.GetMapInfo(COSMIC_MAP_ID)
+		if cosmic then
+			mapData[COSMIC_MAP_ID] = {0, 0, 0, 0}
+			mapData[COSMIC_MAP_ID].instance = -1
+			mapData[COSMIC_MAP_ID].name = cosmic.name
+			mapData[COSMIC_MAP_ID].mapType = cosmic.mapType
+		end
+
+		-- data for the azeroth world map
+		if WoWClassic then
+			worldMapData[0] = { 44688.53, 29795.11, 32601.04,  9894.93 }
+			worldMapData[1] = { 44878.66, 29916.10,  8723.96, 14824.53 }
+		elseif WoWBC then
+			worldMapData[0] = { 44688.53, 29791.24, 32681.47, 11479.44 }
+			worldMapData[1] = { 44878.66, 29916.10,  8723.96, 14824.53 }
+		else
+			worldMapData[0] = { 76153.14, 50748.62, 65008.24, 23827.51 }
+			worldMapData[1] = { 77803.77, 51854.98, 13157.6, 28030.61 }
+			worldMapData[571] = { 71773.64, 50054.05, 36205.94, 12366.81 }
+			worldMapData[870] = { 67710.54, 45118.08, 33565.89, 38020.67 }
+			worldMapData[1220] = { 82758.64, 55151.28, 52943.46, 24484.72 }
+			worldMapData[1642] = { 77933.3, 51988.91, 44262.36, 32835.1 }
+			worldMapData[1643] = { 76060.47, 50696.96, 55384.8, 25774.35 }
+		end
+	end
+
+	local function gatherMapData()
+		processTransforms()
+
+		-- find all maps in well known structures
+		if WoWClassic then
+			processMap(WORLD_MAP_ID)
+			processMapChildrenRecursive(WORLD_MAP_ID)
+		else
+			processMapChildrenRecursive(COSMIC_MAP_ID)
+		end
+
+		fixupZones()
+
+		-- try to fill in holes in the map list
+		for i = 1, 2000 do
+			if not mapData[i] then
+					local mapInfo = C_Map.GetMapInfo(i)
+					if mapInfo and mapInfo.name then
+						processMap(i, mapInfo, nil)
+					end
+			end
+		end
+	end
+
+	gatherMapData()
+
+end
+
+------------------------------------------------------------------------------------------------------------------------
+function SkuNav:GetWorldCoordinatesFromZone(x, y, zone)
+	if not mapData[zone] then
+		buildMapData()
+	end
+
+
+	local data = mapData[zone]
+	if not data or data[1] == 0 or data[2] == 0 then return nil, nil, nil end
+	if not x or not y then return nil, nil, nil end
+
+	local width, height, left, top = data[1], data[2], data[3], data[4]
+	x, y = left - width * x, top - height * y
+
+	return x, y
+end
+
 ------------------------------------------------------------------------------------------------------------------------
 SkuNav.WpTypes = {
 	[1] = "custom",
@@ -59,6 +304,11 @@ SkuNav.MaxMetaRange = 2000
 SkuNav.MaxMetaWPs = 100
 SkuNav.MaxMetaEntryRange = 300
 SkuNav.BestRouteWeightedLengthModForMetaDistance = 37 -- this is a modifier for close routes
+
+SkuNav.lastSelectedWaypointFullName = nil
+SkuNav.isAutoSelectTime = 0
+SkuNav.isAutoSelectEnabled = false
+
 
 local WaypointCache = {}
 local WaypointCacheLookupAll = {}
@@ -1631,6 +1881,7 @@ function SkuNav:UpdateReverseRtData()
 end
 
 --------------------------------------------------------------------------------------------------------------------------------------
+local tLastCheckedDistance = 1000000
 function SkuNav:ProcessCheckReachingWp()
 	if SkuOptions.db.profile[MODULE_NAME].routeRecording ~= true and SkuOptions.db.profile[MODULE_NAME].metapathFollowing ~= true then
 		--we're following a single wp
@@ -1640,7 +1891,11 @@ function SkuNav:ProcessCheckReachingWp()
 				--not rt recording/following, just a single wp
 				local distance = SkuNav:GetDistanceToWp(SkuOptions.db.profile[MODULE_NAME].selectedWaypoint)
 				if distance then
-					if distance < SkuNavWpSize[tWpObject.size] + SkuNav.CurrentStandardWpReachedRange and SkuOptions.db.profile[MODULE_NAME].selectedWaypoint ~= "" then
+					if 
+						(SkuNav.isAutoSelectWp ~= true and (distance < SkuNavWpSize[tWpObject.size] + SkuNav.CurrentStandardWpReachedRange and SkuOptions.db.profile[MODULE_NAME].selectedWaypoint ~= ""))
+						or
+						(SkuNav.isAutoSelectWp == true and (distance < SkuNavWpSize[tWpObject.size] + SkuOptions.db.profile[MODULE_NAME].autoNextWaypoint.reachRange and SkuOptions.db.profile[MODULE_NAME].selectedWaypoint ~= ""))
+					then
 						SkuNav:PlayWpComments(SkuOptions.db.profile[MODULE_NAME].selectedWaypoint)
 						SkuOptions.Voice:OutputString("sound-success2", true, true, 0.3)
 
@@ -1650,13 +1905,39 @@ function SkuNav:ProcessCheckReachingWp()
 							lastLayer = tLayerText
 							tOutput = tLayerText..";"..tOutput
 						end
-						SkuOptions.Voice:OutputString(tOutput, false, true, 0, true)
+						if SkuNav.isAutoSelectWp ~= true or (SkuNav.isAutoSelectWp == true and SkuOptions.db.profile[MODULE_NAME].autoNextWaypoint.nonVocalized ~= true) then
+							SkuOptions.Voice:OutputString(tOutput, false, true, 0, true)
+						end
 							
 						if SkuOptions.BeaconLib:GetBeaconStatus("SkuOptions", SkuOptions.db.profile[MODULE_NAME].selectedWaypoint) then
 							SkuOptions.BeaconLib:DestroyBeacon("SkuOptions", SkuOptions.db.profile[MODULE_NAME].selectedWaypoint)
 						end
 						SkuNav:setWaypointVisited(SkuOptions.db.profile[MODULE_NAME].selectedWaypoint)
 						SkuNav:SelectWP("", true)
+
+						if SkuNav.isAutoSelectEnabled == true then
+							if SkuNav.lastSelectedWaypointFullName then
+								local tBaseName = SkuNav:StripBaseNameFromWaypointName(SkuNav.lastSelectedWaypointFullName)
+								if tBaseName then
+									local tNextWaypointName = SkuNav:GetClosestWaypointFromBaseName(tBaseName, SkuNav.lastSelectedWaypointFullName)
+									if tNextWaypointName then
+										SkuNav.isAutoSelectTimer = nil
+										SkuNav.lastSelectedWaypointFullName = tNextWaypointName
+										SkuNav:EndFollowingWpOrRt(SkuOptions.db.profile[MODULE_NAME].autoNextWaypoint.nonVocalized)
+										SkuNav:SelectWP(tNextWaypointName, nil, SkuOptions.db.profile[MODULE_NAME].autoNextWaypoint.nonVocalized)
+										SkuNav.isAutoSelectWp = true
+									end
+								end
+							end
+						end
+						tLastCheckedDistance = SkuNav:GetDistanceToWp(SkuOptions.db.profile[MODULE_NAME].selectedWaypoint) or 10000
+					else
+						if SkuOptions.db.profile[MODULE_NAME].outputDistance > 0 then
+							if (tLastCheckedDistance - distance > SkuOptions.db.profile[MODULE_NAME].outputDistance) or tLastCheckedDistance - distance < -(SkuOptions.db.profile[MODULE_NAME].outputDistance) then
+								SkuOptions.Voice:OutputStringBTtts(distance, false, true, 0.2)
+								tLastCheckedDistance = distance
+							end
+						end
 					end
 				end
 			end
@@ -1741,12 +2022,21 @@ function SkuNav:ProcessCheckReachingWp()
 								SkuNav:SelectWP("", true)
 							end
 						end
+						tLastCheckedDistance = SkuNav:GetDistanceToWp(SkuOptions.db.profile[MODULE_NAME].selectedWaypoint) or 10000
+					else
+						if SkuOptions.db.profile[MODULE_NAME].outputDistance > 0 then
+							if (tLastCheckedDistance - distance > SkuOptions.db.profile[MODULE_NAME].outputDistance) or tLastCheckedDistance - distance < -(SkuOptions.db.profile[MODULE_NAME].outputDistance) then
+								SkuOptions.Voice:OutputStringBTtts(distance, false, true, 0.2)
+								tLastCheckedDistance = distance
+							end
+						end
 					end
 				end
 			end
 		end
 	end
 end
+
 
 --------------------------------------------------------------------------------------------------------------------------------------
 local mouseMiddleDown = false
@@ -2037,6 +2327,44 @@ function SkuNav:CreateSkuNavMain()
 			SkuNav:StartReverseRtFollow()
 		end
 		
+
+
+		--select next base waypoint
+		if a == SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_SELECTNEXTBASEWAYPOINT"].key then
+			if SkuNav.lastSelectedWaypointFullName then
+				local tBaseName = SkuNav:StripBaseNameFromWaypointName(SkuNav.lastSelectedWaypointFullName)
+				if tBaseName then
+					local tNextWaypointName = SkuNav:GetClosestWaypointFromBaseName(tBaseName, SkuNav.lastSelectedWaypointFullName)
+					if tNextWaypointName then
+						if GetTime() - SkuNav.isAutoSelectTime < 0.5 and SkuNav.isAutoSelectTime > 0 then
+							--toggle auto
+							SkuNav.isAutoSelectTime = GetTime() - 3
+							if SkuNav.isAutoSelectTimer then
+								SkuNav.isAutoSelectTimer:Cancel()
+							end
+							if SkuNav.isAutoSelectEnabled == false then
+								SkuNav.isAutoSelectEnabled = true
+								SkuOptions.Voice:OutputString(L["Next"]..";"..L["auto"], false, true, 0.3, true)
+							else
+								SkuNav.isAutoSelectEnabled = false
+								SkuOptions.Voice:OutputString(L["Next"]..";"..L["Manually"], false, true, 0.3, true)
+							end
+						else
+							--switch to next
+							SkuNav.isAutoSelectTime = GetTime()
+							SkuNav.isAutoSelectTimer = C_Timer.NewTimer (0.3, function()
+								SkuNav.isAutoSelectTimer = nil
+								SkuNav.lastSelectedWaypointFullName = tNextWaypointName
+								SkuNav:EndFollowingWpOrRt(SkuOptions.db.profile[MODULE_NAME].autoNextWaypoint.nonVocalized)
+								SkuNav:SelectWP(tNextWaypointName, nil, SkuOptions.db.profile[MODULE_NAME].autoNextWaypoint.nonVocalized)
+								SkuNav.isAutoSelectWp = true
+							end)
+						end
+					end
+				end
+			end
+		end
+		
 		--move to prev/next wp on following a rt
 		if a == SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_MOVETONEXTWP"].key then
 			SkuNav.MoveToWp = 1
@@ -2113,6 +2441,7 @@ function SkuNav:CreateSkuNavMain()
 	end)
 	tFrame:Hide()
 	
+	SetOverrideBindingClick(tFrame, true, SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_SELECTNEXTBASEWAYPOINT"].key, tFrame:GetName(), SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_SELECTNEXTBASEWAYPOINT"].key)
 	SetOverrideBindingClick(tFrame, true, SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_TURNTOBEACON"].key, tFrame:GetName(), SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_TURNTOBEACON"].key)
 	SetOverrideBindingClick(tFrame, true, SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_STARTRRFOLLOW"].key, tFrame:GetName(), SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_STARTRRFOLLOW"].key)
 	--SetOverrideBindingClick(tFrame, true, SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_SKUMMOPEN"].key, tFrame:GetName(), SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_SKUMMOPEN"].key)
@@ -2747,6 +3076,7 @@ function SkuNav:PLAYER_LOGIN(...)
 	SkuOptions.db.profile[MODULE_NAME].routeRecording = false
 	SkuOptions.db.profile[MODULE_NAME].routeRecordingLastWp = nil
 		
+	--[[
 	--tomtom integration for adding beacons to the arrow
 	if TomTom then
 		SkuOptions.tomtomBeaconName = "SkuTomTomBeacon"
@@ -2776,6 +3106,7 @@ function SkuNav:PLAYER_LOGIN(...)
 			end)
 		end)
 	end
+	]]
 
 	--SkuNav:SkuNavMMOpen()
 end
@@ -3511,4 +3842,72 @@ function SkuNav:GetLayerText(aNonAutoLevel, aNonAutoLevelNotUnique, aLongFlag)
 	end
 	return ""
 end
-	
+		
+---------------------------------------------------------------------------------------------------------------------------------------
+function SkuNav:StripBaseNameFromWaypointName(aWaypointName)
+	if string.find(aWaypointName, "auto ") then
+		return
+	end
+
+	local tWaypointType = string.gsub(aWaypointName, "OBJEKT;%d+;", "")
+
+	if string.find(tWaypointType, ";") then
+		tWaypointType = string.sub(tWaypointType, 1, string.find(tWaypointType, ";") - 1)
+	end
+
+	return tWaypointType
+end
+
+---------------------------------------------------------------------------------------------------------------------------------------
+function SkuNav:GetClosestWaypointFromBaseName(aBaseName, aOriginWaypointName)
+	local tCurrentAreaId = SkuNav:GetAreaIdFromUiMapId(SkuNav:GetBestMapForUnit("player"))
+	local tSubAreaIds = SkuNav:GetSubAreaIds(tCurrentAreaId)
+	tSubAreaIds[tCurrentAreaId] = tCurrentAreaId
+
+	local tWaypointList = {}
+	local tListWPs = SkuNav:ListWaypoints2(true, nil, tCurrentAreaId)
+	if tListWPs then
+		for i, v in SkuNav:ListWaypoints2(true, nil, tCurrentAreaId) do
+			local tWayP = SkuNav:GetWaypointData2(v)
+			if tWayP then
+				if tSubAreaIds[tonumber(tWayP.areaId)] then
+					if ssub(v, 1, tAutoLen) ~= L["auto"].." " then
+						local tWpX, tWpY = tWayP.worldX, tWayP.worldY
+						local tPlayX, tPlayY = UnitPosition("player")
+						local tDistance, _  = SkuNav:Distance(tPlayX, tPlayY, tWpX, tWpY)
+
+						-- add direction to wp
+						local tDirectionTargetWp = ""
+						--[[
+						if SkuOptions.db.profile["SkuNav"].showGlobalDirectionInWaypointLists == true then
+							local tDirectionString = SkuNav:GetDirectionToAsString(tWpX, tWpY)
+							if tDirectionString then
+								tDirectionTargetWp = ";"..tDirectionString
+							end
+						end
+						]]									
+
+						tWaypointList[v] = {distance = tDistance, direction = tDirectionTargetWp,}
+					end
+				end
+			end
+		end
+	end
+
+	local tSortedWaypointList = {}
+	for k,v in SkuSpairs(tWaypointList, function(t,a,b) return t[b].distance > t[a].distance end) do --nach wert
+		table.insert(tSortedWaypointList, k)
+	end
+	if #tSortedWaypointList > 0 then
+		for i, waypointName in pairs(tSortedWaypointList) do
+			if aOriginWaypointName ~= waypointName then
+				local tBase = SkuNav:StripBaseNameFromWaypointName(waypointName) 
+				if tBase and aBaseName == tBase then
+					if not SkuNav:waypointWasVisited(waypointName) then
+						return waypointName
+					end
+				end
+			end
+		end		
+	end
+end

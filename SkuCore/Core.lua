@@ -13,6 +13,7 @@ local tStartDebugTimestamp = GetTime() or 0
 SkuCoreDB = {}
 SkuCore = LibStub("AceAddon-3.0"):NewAddon("SkuCore", "AceConsole-3.0", "AceEvent-3.0")
 SkuCore.maxItemNameLength = 1000
+SkuCore.talentSet = 1
 
 ---------------------------------------------------------------------------------------------------------------------------------------
 CLASS_IDS = {
@@ -223,65 +224,68 @@ SkuCore.interactFramesList = {
 
 ---------------------------------------------------------------------------------------------------------------------------------------
 function SkuCore:OnInitialize()
-	SkuCore:RegisterEvent("PLAYER_ENTERING_WORLD")
-	SkuCore:RegisterEvent("PLAYER_LEAVING_WORLD")
-	SkuCore:RegisterEvent("PLAYER_LOGIN")
-	SkuCore:RegisterEvent("VARIABLES_LOADED")
-	SkuCore:RegisterEvent("PLAYER_REGEN_DISABLED")
-	SkuCore:RegisterEvent("PLAYER_REGEN_ENABLED")
-	SkuCore:RegisterEvent("QUEST_LOG_UPDATE")
-	SkuCore:RegisterEvent("PLAYER_CONTROL_LOST")
-	SkuCore:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED")
-	SkuCore:RegisterEvent("PLAYER_CONTROL_GAINED")
-	SkuCore:RegisterEvent("PLAYER_DEAD")
-	SkuCore:RegisterEvent("AUTOFOLLOW_BEGIN")
-	SkuCore:RegisterEvent("AUTOFOLLOW_END")
-	SkuCore:RegisterEvent("PLAYER_UPDATE_RESTING")
-	SkuCore:RegisterEvent("UPDATE_STEALTH")
-	SkuCore:RegisterEvent("ITEM_UNLOCKED")
-	SkuCore:RegisterEvent("ITEM_LOCK_CHANGED")
-	SkuCore:RegisterEvent("BAG_UPDATE")
-	SkuCore:RegisterEvent("UNIT_POWER_UPDATE")
-	SkuCore:RegisterEvent("UNIT_HAPPINESS")
-
-	SkuCore:RegisterEvent("PLAYER_TARGET_CHANGED")
-
-	SkuCore:RegisterEvent("CURRENT_SPELL_CAST_CHANGED")
-
-	SkuCore:RegisterEvent("UNIT_SPELLCAST_START")
-	SkuCore:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START")
-	SkuCore:RegisterEvent("UNIT_SPELLCAST_CHANNEL_STOP")
-	SkuCore:RegisterEvent("UNIT_SPELLCAST_CHANNEL_UPDATE")
-	SkuCore:RegisterEvent("UNIT_SPELLCAST_DELAYED")
-	SkuCore:RegisterEvent("UNIT_SPELLCAST_FAILED")
-	SkuCore:RegisterEvent("UNIT_SPELLCAST_FAILED_QUIET")
-	SkuCore:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED")
-	SkuCore:RegisterEvent("UNIT_SPELLCAST_STOP")
-	SkuCore:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
-
-	SkuCore:RegisterEvent("NAME_PLATE_CREATED")
-	SkuCore:RegisterEvent("NAME_PLATE_UNIT_ADDED")
-	SkuCore:RegisterEvent("NAME_PLATE_UNIT_REMOVED")
-	SkuCore:RegisterEvent("PLAYER_STARTED_MOVING")
-	--SkuCore:RegisterEvent("CURSOR_CHANGED")
-	--SkuCore:RegisterEvent("PET_STABLE_SHOW")
-	--SkuCore:RegisterEvent("PET_STABLE_CLOSED")
-
-	SkuCore:RegisterEvent("GOSSIP_SHOW")
-
-	SkuCore:RegisterEvent("TRADE_SHOW")
-	SkuCore:RegisterEvent("TRADE_CLOSED")
+	SkuDispatcher:RegisterEventCallback("UNIT_SPELLCAST_START", SkuCore.UNIT_SPELLCAST_START)
+	SkuDispatcher:RegisterEventCallback("PLAYER_ENTERING_WORLD", SkuCore.PLAYER_ENTERING_WORLD)
+	SkuDispatcher:RegisterEventCallback("PLAYER_LEAVING_WORLD", SkuCore.PLAYER_LEAVING_WORLD)
+	SkuDispatcher:RegisterEventCallback("PLAYER_LOGIN", SkuCore.PLAYER_LOGIN)
+	SkuDispatcher:RegisterEventCallback("VARIABLES_LOADED", SkuCore.VARIABLES_LOADED)
+	SkuDispatcher:RegisterEventCallback("PLAYER_REGEN_DISABLED", SkuCore.PLAYER_REGEN_DISABLED)
+	SkuDispatcher:RegisterEventCallback("PLAYER_REGEN_ENABLED", SkuCore.PLAYER_REGEN_ENABLED)
+	SkuDispatcher:RegisterEventCallback("QUEST_LOG_UPDATE", SkuCore.QUEST_LOG_UPDATE)
+	SkuDispatcher:RegisterEventCallback("PLAYER_CONTROL_LOST", SkuCore.PLAYER_CONTROL_LOST)
+	SkuDispatcher:RegisterEventCallback("PLAYER_MOUNT_DISPLAY_CHANGED", SkuCore.PLAYER_MOUNT_DISPLAY_CHANGED)
+	SkuDispatcher:RegisterEventCallback("PLAYER_CONTROL_GAINED", SkuCore.PLAYER_CONTROL_GAINED)
+	SkuDispatcher:RegisterEventCallback("PLAYER_DEAD", SkuCore.PLAYER_DEAD)
+	SkuDispatcher:RegisterEventCallback("AUTOFOLLOW_BEGIN", SkuCore.AUTOFOLLOW_BEGIN)
+	SkuDispatcher:RegisterEventCallback("AUTOFOLLOW_END", SkuCore.AUTOFOLLOW_END)
+	SkuDispatcher:RegisterEventCallback("PLAYER_UPDATE_RESTING", SkuCore.PLAYER_UPDATE_RESTING)
+	SkuDispatcher:RegisterEventCallback("UPDATE_STEALTH", SkuCore.UPDATE_STEALTH)
+	SkuDispatcher:RegisterEventCallback("ITEM_UNLOCKED", SkuCore.ITEM_UNLOCKED)
+	SkuDispatcher:RegisterEventCallback("ITEM_LOCK_CHANGED", SkuCore.ITEM_LOCK_CHANGED)
+	SkuDispatcher:RegisterEventCallback("BAG_UPDATE", SkuCore.BAG_UPDATE)
+	SkuDispatcher:RegisterEventCallback("UNIT_POWER_UPDATE", SkuCore.UNIT_POWER_UPDATE)
+	SkuDispatcher:RegisterEventCallback("UNIT_HAPPINESS", SkuCore.UNIT_HAPPINESS)
+	SkuDispatcher:RegisterEventCallback("PLAYER_TARGET_CHANGED", SkuCore.PLAYER_TARGET_CHANGED)
+	SkuDispatcher:RegisterEventCallback("CURRENT_SPELL_CAST_CHANGED", SkuCore.CURRENT_SPELL_CAST_CHANGED)
+	SkuDispatcher:RegisterEventCallback("UNIT_SPELLCAST_START", SkuCore.UNIT_SPELLCAST_START)
+	SkuDispatcher:RegisterEventCallback("UNIT_SPELLCAST_CHANNEL_START", SkuCore.UNIT_SPELLCAST_CHANNEL_START)
+	SkuDispatcher:RegisterEventCallback("UNIT_SPELLCAST_CHANNEL_STOP", SkuCore.UNIT_SPELLCAST_CHANNEL_STOP)
+	SkuDispatcher:RegisterEventCallback("UNIT_SPELLCAST_CHANNEL_UPDATE", SkuCore.UNIT_SPELLCAST_CHANNEL_UPDATE)
+	SkuDispatcher:RegisterEventCallback("UNIT_SPELLCAST_DELAYED", SkuCore.UNIT_SPELLCAST_DELAYED)
+	SkuDispatcher:RegisterEventCallback("UNIT_SPELLCAST_FAILED", SkuCore.UNIT_SPELLCAST_FAILED)
+	SkuDispatcher:RegisterEventCallback("UNIT_SPELLCAST_FAILED_QUIET", SkuCore.UNIT_SPELLCAST_FAILED_QUIET)
+	SkuDispatcher:RegisterEventCallback("UNIT_SPELLCAST_INTERRUPTED", SkuCore.UNIT_SPELLCAST_INTERRUPTED)
+	SkuDispatcher:RegisterEventCallback("UNIT_SPELLCAST_STOP", SkuCore.UNIT_SPELLCAST_STOP)
+	SkuDispatcher:RegisterEventCallback("UNIT_SPELLCAST_SUCCEEDED", SkuCore.UNIT_SPELLCAST_SUCCEEDED)
+	SkuDispatcher:RegisterEventCallback("NAME_PLATE_CREATED", SkuCore.NAME_PLATE_CREATED)
+	SkuDispatcher:RegisterEventCallback("NAME_PLATE_UNIT_ADDED", SkuCore.NAME_PLATE_UNIT_ADDED)
+	SkuDispatcher:RegisterEventCallback("NAME_PLATE_UNIT_REMOVED", SkuCore.NAME_PLATE_UNIT_REMOVED)
+	SkuDispatcher:RegisterEventCallback("PLAYER_STARTED_MOVING", SkuCore.PLAYER_STARTED_MOVING)
+	SkuDispatcher:RegisterEventCallback("GOSSIP_SHOW", SkuCore.GOSSIP_SHOW)
+	--SkuDispatcher:RegisterEventCallback("ACTIVE_TALENT_GROUP_CHANGED", SkuCore.ACTIVE_TALENT_GROUP_CHANGED)
+	SkuDispatcher:RegisterEventCallback("PLAYER_TALENT_UPDATE", SkuCore.PLAYER_TALENT_UPDATE)
+	--SkuDispatcher:RegisterEventCallback("GLYPH_ADDED", SkuCore.GLYPH_ADDED)
+	--SkuDispatcher:RegisterEventCallback("GLYPH_REMOVED", SkuCore.GLYPH_REMOVED)
+	--SkuDispatcher:RegisterEventCallback("GLYPH_UPDATED", SkuCore.GLYPH_UPDATED)
+	--SkuDispatcher:RegisterEventCallback("LFG_LIST_SEARCH_RESULTS_RECEIVED", SkuCore.LFG_LIST_SEARCH_RESULTS_RECEIVED)
+	--SkuDispatcher:RegisterEventCallback("LFG_LIST_SEARCH_RESULT_UPDATED", SkuCore.LFG_LIST_SEARCH_RESULT_UPDATED)
+	SkuDispatcher:RegisterEventCallback("TRADE_SHOW", SkuCore.TRADE_SHOW)
+	SkuDispatcher:RegisterEventCallback("TRADE_CLOSED", SkuCore.TRADE_CLOSED)
 
 
 	SkuCore:MailOnInitialize()
 	SkuCore:UIErrorsOnInitialize()
 	SkuCore:RangeCheckOnInitialize()
 	SkuCore:AqOnInitialize()
+	SkuCore:aqCombatOnInitialize()
+
 	SkuCore:DamageMeterOnInitialize()
 	SkuCore:AuctionHouseOnInitialize()
 	SkuCore:FriendsOnInitialize()
 	SkuCore:GameWorldObjectsOnInitialize()
 	SkuCore:TurnToUnitOnInitialize()
+	SkuCore:SkuFocusOnInitialize()
+
 end
 
 ---------------------------------------------------------------------------------------------------------------------------------------
@@ -1235,6 +1239,23 @@ function SkuCore:OnEnable()
 			SkuCore:DoRangeCheck(true)
 		end
 
+		if aKey == SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_GROUPMEMBERSRANGECHECK"].key then
+			SkuCore:DoGroupRangeCheck()
+		end
+
+		if aKey == SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_DOMONITORPARTYHEALTH2CONTI"].key then
+			if UnitInRaid("player") ~= nil then
+				SkuCore:MonitorRaidHealth2Conti(true)
+			elseif UnitInParty("player") == true then
+				SkuCore:MonitorPartyHealth2Conti(true)
+			end
+		end
+
+
+		if aKey == SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_TARGETDISTANCE"].key then
+			SkuCore:DoRangeCheck(true)
+		end
+
 		if aKey == SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_PANICMODE"].key then
 			SkuCore:PanicModeStart()
 		end
@@ -1385,11 +1406,12 @@ function SkuCore:OnEnable()
 		SetOverrideBindingClick(tFrame, true, SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_PANICMODE"].key, "SkuCoreControlOption1", SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_PANICMODE"].key)
 		SetOverrideBindingClick(tFrame, true, SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_MMSCANWIDE"].key, "SkuCoreControlOption1", SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_MMSCANWIDE"].key)
 		SetOverrideBindingClick(tFrame, true, SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_MMSCANNARROW"].key, "SkuCoreControlOption1", SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_MMSCANNARROW"].key)
+		SetOverrideBindingClick(tFrame, true, SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_GROUPMEMBERSRANGECHECK"].key, "SkuCoreControlOption1", SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_GROUPMEMBERSRANGECHECK"].key)
 		for x = 1, 6 do
 			SetOverrideBindingClick(tFrame, true, SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_TURNTOUNIT"..x].key, "SkuCoreControlOption1", SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_TURNTOUNIT"..x].key)
 		end
+		
 		SetOverrideBindingClick(tFrame, true, SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_TURNTOUNITTURN180"].key, "SkuCoreControlOption1", SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_TURNTOUNITTURN180"].key)
-
 		SetOverrideBindingClick(tFrame, true, SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_SCANCONTINUE"].key, "SkuCoreControlOption1", SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_SCANCONTINUE"].key)
 		SetOverrideBindingClick(tFrame, true, SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_SCAN1"].key, "SkuCoreControlOption1", SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_SCAN1"].key)
 		SetOverrideBindingClick(tFrame, true, SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_SCAN2"].key, "SkuCoreControlOption1", SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_SCAN2"].key)
@@ -1873,9 +1895,15 @@ function SkuCore:PLAYER_ENTERING_WORLD(...)
 	local event, isInitialLogin, isReloadingUi = ...
 	dprint("PLAYER_ENTERING_WORLD", isInitialLogin, isReloadingUi)
 
+
+
 	SkuOptions.db.global[MODULE_NAME] = SkuOptions.db.global[MODULE_NAME] or {}
 	SkuOptions.db.char[MODULE_NAME] = SkuOptions.db.char[MODULE_NAME] or {}
 	SkuOptions.db.char["SkuAuras"] = SkuOptions.db.char["SkuAuras"] or {}
+
+	SetCVar("nameplateShowEnemies", 1)
+	SetCVar("nameplateShowFriends", 1)
+	SetCVar("nameplateShowAll", 1)
 
 	if isInitialLogin == true then
 		--add default profiles if they are not there
@@ -1963,9 +1991,40 @@ function SkuCore:PLAYER_ENTERING_WORLD(...)
 				end	
 			end)			
 
+			C_Timer.After(120, function()
+				if BugSackLDBIconDB then
+					BugSackLDBIconDB.minimapPos = 350
+				end
+				LeaveChannelByName("LookingForGroup")
+				LeaveChannelByName("SucheNachGruppe")		
+			end)	
+
 			_G["OnSkuOptionsMain"]:GetScript("OnClick")(_G["OnSkuOptionsMain"], SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_OPENMENU"].key)
 			SkuOptions:CloseMenu()
 			
+			C_Timer.After(10, function()
+				if InCombatLockdown() ~= true then
+					TRAINER_FILTER_AVAILABLE = 1 
+					TRAINER_FILTER_UNAVAILABLE = 0 
+					TRAINER_FILTER_USED = 0
+					SetActionBarToggles(1,1,1,1,1) 
+					
+					
+					SHOW_MULTI_ACTIONBAR_1 = 1 
+					SHOW_MULTI_ACTIONBAR_2 = 1 
+					SHOW_MULTI_ACTIONBAR_3 = 1 
+					SHOW_MULTI_ACTIONBAR_4 = 1 
+					
+					MultiActionBar_Update() 
+					UIParent_ManageFramePositions() 
+					C_CVar.SetCVar("instantQuestText", "1")
+					C_CVar.SetCVar("autoLootDefault", "1")
+					C_CVar.SetCVar("alwaysShowActionBars", "1")
+					C_CVar.SetCVar("cameraSmoothStyle", "2")
+					C_CVar.GetCVar("removeChatDelay", "1")
+				end
+			end)		
+
 			SkuOptions.db.char[MODULE_NAME].IsFirstCharLogin = false
 		end
 		--SetBindingClick(SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_CHATOPEN"].key, "OnSkuChatToggle")
@@ -2065,16 +2124,14 @@ function SkuCore:PLAYER_ENTERING_WORLD(...)
 		SkuOptions.db.factionrealm[MODULE_NAME].AuctionDBHistory = SkuOptions.db.factionrealm[MODULE_NAME].AuctionDBHistory or {}
 
 		SkuCore:JunkAndRepairInitialize()
-
 		SkuCore:UpdateInteractMove(true)
-
 		SkuCore:GameWorldObjectsOnLogin()
-
 		SkuCore:AqOnLogin()
-
+		SkuCore:aqCombatOnLogin()
 		SkuCore:DamageMeterOnLogin()
-
 		SkuCore:TurnToUnitOnLogin()
+		SkuCore:SkuFocusOnLogin()
+
 		--SetBindingClick(SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_CHATOPEN"].key, "OnSkuChatToggle")
 		--SetOverrideBindingClick(_G["OnSkuChatToggle"], true, SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_CHATOPEN"].key, "OnSkuChatToggle", SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_CHATOPEN"].key)
 	end
