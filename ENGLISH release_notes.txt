@@ -3,6 +3,11 @@
 -------------------------------------------------------------------------------------------------------	
 
 -------------------------------------------------------------------------------------------------------
+Changes in Sku Era r32.26
+	- Fixed a but with game key binds, that was breaking Core > Game Key Binds > Reset all.
+
+
+-------------------------------------------------------------------------------------------------------
 Changes in Sku Era r32.25
 	- Fixed a bug that was breaking the loot roll feature. Should work again.
 	- Fixed the stable master.

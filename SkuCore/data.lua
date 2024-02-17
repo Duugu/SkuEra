@@ -125,9 +125,11 @@ SkuCore.Keys.SkuDefaultBindings = {
 		},
 	},		
 	["BINDING_HEADER_RAID_TARGET"] = {
+		--[[
 		["RAIDTARGET1"] = {
 			["index"] = 236,
 		},
+		
 		["RAIDTARGET6"] = {
 			["key1"] = "CTRL-NUMPAD4",
 			["index"] = 231,
@@ -158,6 +160,7 @@ SkuCore.Keys.SkuDefaultBindings = {
 			["key1"] = "CTRL-NUMPAD0",
 			["index"] = 237,
 		},
+		]]
 	},
 	["BINDING_HEADER_CAMERA"] = {
 		["SAVEVIEW5"] = {
@@ -658,6 +661,7 @@ SkuCore.Keys.SkuDefaultBindings = {
 			["index"] = 39,
 		},
 	},
+	--[[
 	["BINDING_HEADER_VEHICLE"] = {
 		["VEHICLEEXIT"] = {
 			["index"] = 258,
@@ -681,6 +685,7 @@ SkuCore.Keys.SkuDefaultBindings = {
 			["index"] = 264,
 		},
 	},	
+	]]
 	["BINDING_HEADER_INTERFACE"] = {
 		["TOGGLEBAG1"] = {
 			["index"] = 160,
