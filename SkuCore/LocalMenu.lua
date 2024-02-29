@@ -14,6 +14,24 @@ local tRolenamesLookup = {
 	["HEALER"] = 3,
 }	
 
+local tBagSlotListSorted = {
+	[1] = 0,
+	[2] = 1,
+	[3] = 2,
+	[4] = 3,
+	[5] = 4,
+	[6] = -1,
+	[7] = 5,
+	[8] = 6,
+	[9] = 7,
+	[10] = 8,
+	[11] = 9,
+	[12] = 10,
+	[13] = 11,
+	[14] = -2,
+	[15] = -3,
+}
+
 ---------------------------------------------------------------------------------------------------------------------------------------
 -- helpers
 ---------------------------------------------------------------------------------------------------------------------------------------
@@ -698,6 +716,351 @@ function SkuCore:Build_BankFrame(aParentChilds)
 end
 
 ---------------------------------------------------------------------------------------------------------------------------------------
+local tIsProcessing = 0
+local tIsProcessingHandle
+local function SortProcessingSoundHelper()
+	if tIsProcessingHandle == nil then
+		tIsProcessingHandle = C_Timer.NewTicker(0.5, function(self)
+			if tIsProcessing > 0 then
+				--SkuOptions.Voice:OutputStringBTtts("sound-notification24", false, true)
+			else
+				self:Cancel() 
+				tIsProcessingHandle = nil
+				C_Timer.After(0.1, function()
+					SkuOptions.currentMenuPosition.parent:OnUpdate()
+					SkuOptions.Voice:OutputStringBTtts("sound-notification16", false, true)--24
+				end)
+			end
+		
+		end)
+	end
+end
+
+local function BagSortMenuHelper(aParentChilds, aBagId)
+	local function tGetContainerFrameHelper(tCurrentContainerFrameNumber, tNumSlots, slotId)
+		local containerFrameName = ""
+		if tCurrentContainerFrameNumber then
+			containerFrameName = "ContainerFrame"..(tCurrentContainerFrameNumber).."Item"..(tNumSlots - slotId + 1)
+		end
+		if i == -1 and _G["BankFrame"] and _G["BankFrame"]:IsVisible() == true then
+			tCurrentContainerFrameNumber = -1
+			containerFrameName = "BankFrameItem"..slotId
+		end
+		return _G[containerFrameName]
+	end
+
+
+	--collapse
+	local tFriendlyName = L["Remove empty bag slots (collapse)"]
+	table.insert(aParentChilds, tFriendlyName)
+	aParentChilds[tFriendlyName] = {
+		frameName = nil,
+		RoC = "Child",
+		type = "Button",
+		textFirstLine = tFriendlyName,
+		textFull = "",
+		noMenuNumbers = true,
+		childs = {},
+		func = function()
+			SkuCore.CursorSilent = true
+			SkuOptions.Voice.TutorialPlaying = 1
+			for i, v in pairs(tBagSlotList) do
+				if i == aBagId or aBagId == nil then
+					local tCurrentContainerFrameNumber = IsBagOpen(i)
+					local tNumSlots = GetContainerNumSlots(i)
+					if tNumSlots > 0 and (tCurrentContainerFrameNumber or (i == -1 and _G["BankFrame"] and _G["BankFrame"]:IsVisible() == true)) then
+						local tCompleted = true
+						local co = coroutine.create(function ()
+							while tCompleted == true do
+								local tLastEmptySlotFrame = nil
+								tCompleted = false
+								for slotId = 1, tNumSlots do
+									local containerFrameName = ""
+									if tCurrentContainerFrameNumber then
+										containerFrameName = "ContainerFrame"..(tCurrentContainerFrameNumber).."Item"..(tNumSlots - slotId + 1)
+									end
+									if i == -1 and _G["BankFrame"] and _G["BankFrame"]:IsVisible() == true then
+										tCurrentContainerFrameNumber = -1
+										containerFrameName = "BankFrameItem"..slotId
+									end
+						
+									local containerFrame = _G[containerFrameName]
+									local maybeText = getItemTooltipTextFromBagItem(nil, nil, nil, containerFrame)
+									local tFirst, tFull
+									if maybeText then
+										tFirst, tFull = SkuCore:ItemName_helper(maybeText)
+										if tFirst == "" then tFirst = nil end
+									end
+
+									if tFirst and tLastEmptySlotFrame ~= nil then
+										containerFrame:GetScript("OnClick")(containerFrame, "LeftButton")
+										tLastEmptySlotFrame:GetScript("OnClick")(tLastEmptySlotFrame, "LeftButton") 
+										tLastEmptySlotFrame = containerFrame
+										tCompleted = true
+										coroutine.yield()
+										break
+									elseif not tFirst and tLastEmptySlotFrame == nil then
+										tLastEmptySlotFrame = containerFrame
+										if slotId == tNumSlots then
+											tCompleted = false
+										end
+									elseif slotId == tNumSlots and tLastEmptySlotFrame == nil then
+										tCompleted = false
+									end
+								end
+							end
+						end)
+
+						tIsProcessing = tIsProcessing + 1
+						SortProcessingSoundHelper()
+						cbObject = C_Timer.NewTicker(0.5, function(self) 
+							if coroutine.status(co) == "suspended" then
+								SortProcessingSoundHelper()
+								coroutine.resume(co)
+							else
+								tIsProcessing = tIsProcessing - 1
+								self:Cancel() 
+								SkuCore.CursorSilent = false
+								SkuOptions.Voice.TutorialPlaying = 0
+								SkuOptions.Voice:StopOutputEmptyQueue()
+								SortProcessingSoundHelper()
+							end
+						end)
+					end
+				end
+			end
+		end,
+	}   
+
+
+
+	--sort by quality
+	local function SortByQualityHelper(tCurrentContainerFrameNumber, tNumSlots, i, aEvaluateFunc)
+		SkuCore.CursorSilent = true
+		SkuOptions.Voice.TutorialPlaying = 1
+		local co = coroutine.create(function ()
+			local tProcess = true
+			while tProcess do
+				tProcess = nil
+				for count = 1, tNumSlots - 1 do
+					local tPickContainerFrame = tGetContainerFrameHelper(tCurrentContainerFrameNumber, tNumSlots, count)
+					local tPlaceContainerFrame = tGetContainerFrameHelper(tCurrentContainerFrameNumber, tNumSlots, count + 1)
+					_G["SkuScanningTooltip"]:ClearLines()
+					_G["SkuScanningTooltip"]:SetBagItem(i, count)
+					local itemName, pickItemLink = _G["SkuScanningTooltip"]:GetItem()
+					local tPickQuali = 99999
+					if pickItemLink then
+						tPickQuali = C_Item.GetItemQualityByID(pickItemLink)
+					end
+					_G["SkuScanningTooltip"]:ClearLines()
+					_G["SkuScanningTooltip"]:SetBagItem(i, count + 1)
+					local itemName, placeItemLink = _G["SkuScanningTooltip"]:GetItem()
+					local tPlaceQuali = 99999
+					if placeItemLink then
+						tPlaceQuali = C_Item.GetItemQualityByID(placeItemLink)
+					end
+					if aEvaluateFunc(tPickQuali, tPlaceQuali) == true then
+						if pickItemLink then
+							tPickContainerFrame:GetScript("OnClick")(tPickContainerFrame, "LeftButton")
+							tPlaceContainerFrame:GetScript("OnClick")(tPlaceContainerFrame, "LeftButton")
+						else
+							tPlaceContainerFrame:GetScript("OnClick")(tPlaceContainerFrame, "LeftButton")
+							tPickContainerFrame:GetScript("OnClick")(tPickContainerFrame, "LeftButton")
+						end
+						tProcess = true
+						break
+					end
+				end
+				coroutine.yield()
+			end
+		end)
+
+		tIsProcessing = tIsProcessing + 1
+		SortProcessingSoundHelper()
+		cbObject = C_Timer.NewTicker(0.01, function(self) 
+			if coroutine.status(co) == "suspended" then
+				SortProcessingSoundHelper()
+				local tret = coroutine.resume(co)
+			else
+				tIsProcessing = tIsProcessing - 1
+				self:Cancel() 
+				SkuCore.CursorSilent = false
+				SkuOptions.Voice.TutorialPlaying = 0
+				SkuOptions.Voice:StopOutputEmptyQueue()
+				SortProcessingSoundHelper()
+			end
+		end)
+	end
+
+	local tFriendlyName = L["Sort items by quality"].." "..L["ascending"]
+	table.insert(aParentChilds, tFriendlyName)
+	aParentChilds[tFriendlyName] = {
+		frameName = nil,
+		RoC = "Child",
+		type = "Button",
+		textFirstLine = tFriendlyName,
+		textFull = "",
+		noMenuNumbers = true,
+		childs = {},
+		func = function()
+			--print("func Sort by quality ascending", aBagId)
+			for i, v in pairs(tBagSlotList) do
+				if i == aBagId or aBagId == nil then
+					local tCurrentContainerFrameNumber = IsBagOpen(i)
+					local tNumSlots = GetContainerNumSlots(i)
+					if tNumSlots > 0 and (tCurrentContainerFrameNumber or (i == -1 and _G["BankFrame"] and _G["BankFrame"]:IsVisible() == true)) then
+						SortByQualityHelper(tCurrentContainerFrameNumber, tNumSlots, i, function(a, b)
+						 	return a > b
+						end)
+					end
+				end
+			end
+		end,
+	}   
+	local tFriendlyName = L["Sort items by quality"].." "..L["descending"]
+	table.insert(aParentChilds, tFriendlyName)
+	aParentChilds[tFriendlyName] = {
+		frameName = nil,
+		RoC = "Child",
+		type = "Button",
+		textFirstLine = tFriendlyName,
+		textFull = "",
+		noMenuNumbers = true,
+		childs = {},
+		func = function()
+			--print("func Sort by quality descending", aBagId)
+			for i, v in pairs(tBagSlotList) do
+				if i == aBagId or aBagId == nil then
+					local tCurrentContainerFrameNumber = IsBagOpen(i)
+					local tNumSlots = GetContainerNumSlots(i)
+					if tNumSlots > 0 and (tCurrentContainerFrameNumber or (i == -1 and _G["BankFrame"] and _G["BankFrame"]:IsVisible() == true)) then
+						SortByQualityHelper(tCurrentContainerFrameNumber, tNumSlots, i, function(a, b)
+						 	return a < b
+						end)
+					end
+				end
+			end
+		end,
+	}   
+
+
+
+
+
+	--sort by name
+	local function SortByNameHelper(tCurrentContainerFrameNumber, tNumSlots, i, aEvaluateFunc)
+		SkuCore.CursorSilent = true
+		SkuOptions.Voice.TutorialPlaying = 1
+		local co = coroutine.create(function ()
+			local tProcess = true
+			while tProcess do
+				tProcess = nil
+				for count = 1, tNumSlots - 1 do
+					local tPickContainerFrame = tGetContainerFrameHelper(tCurrentContainerFrameNumber, tNumSlots, count)
+					local tPlaceContainerFrame = tGetContainerFrameHelper(tCurrentContainerFrameNumber, tNumSlots, count + 1)
+					_G["SkuScanningTooltip"]:ClearLines()
+					_G["SkuScanningTooltip"]:SetBagItem(i, count)
+					local pickitemName, pickItemLink = _G["SkuScanningTooltip"]:GetItem()
+					if not pickitemName then
+						pickitemName = "zzzzzzzzzz"
+					end
+					_G["SkuScanningTooltip"]:ClearLines()
+					_G["SkuScanningTooltip"]:SetBagItem(i, count + 1)
+					local placeitemName = _G["SkuScanningTooltip"]:GetItem()
+					if not placeitemName then
+						placeitemName = "zzzzzzzzzz"
+					end
+					if aEvaluateFunc(pickitemName, placeitemName) == true then
+						if pickItemLink then
+							tPickContainerFrame:GetScript("OnClick")(tPickContainerFrame, "LeftButton")
+							tPlaceContainerFrame:GetScript("OnClick")(tPlaceContainerFrame, "LeftButton")
+						else
+							tPlaceContainerFrame:GetScript("OnClick")(tPlaceContainerFrame, "LeftButton")
+							tPickContainerFrame:GetScript("OnClick")(tPickContainerFrame, "LeftButton")
+						end
+						tProcess = true
+						break
+					end
+				end
+				coroutine.yield()
+			end
+		end)
+
+		tIsProcessing = tIsProcessing + 1
+		SortProcessingSoundHelper()
+		cbObject = C_Timer.NewTicker(0.01, function(self) 
+			if coroutine.status(co) == "suspended" then
+				SortProcessingSoundHelper()
+				local tret = coroutine.resume(co)
+			else
+				tIsProcessing = tIsProcessing - 1
+				self:Cancel() 
+				SkuCore.CursorSilent = false
+				SkuOptions.Voice.TutorialPlaying = 0
+				SkuOptions.Voice:StopOutputEmptyQueue()
+				SortProcessingSoundHelper()
+			end
+		end)
+	end
+
+	--sort by name
+	local tFriendlyName = L["Sort items by name"].." "..L["ascending"]
+	table.insert(aParentChilds, tFriendlyName)
+	aParentChilds[tFriendlyName] = {
+		frameName = nil,
+		RoC = "Child",
+		type = "Button",
+		textFirstLine = tFriendlyName,
+		textFull = "",
+		noMenuNumbers = true,
+		childs = {},
+		func = function()
+			for i, v in pairs(tBagSlotList) do
+				if i == aBagId or aBagId == nil then
+					local tCurrentContainerFrameNumber = IsBagOpen(i)
+					local tNumSlots = GetContainerNumSlots(i)
+					if tNumSlots > 0 and (tCurrentContainerFrameNumber or (i == -1 and _G["BankFrame"] and _G["BankFrame"]:IsVisible() == true)) then
+						SortByNameHelper(tCurrentContainerFrameNumber, tNumSlots, i, function(a, b)
+						 	return a > b
+						end)
+					end
+				end
+			end
+		end,
+	}   
+	local tFriendlyName = L["Sort items by name"].." "..L["descending"]
+	table.insert(aParentChilds, tFriendlyName)
+	aParentChilds[tFriendlyName] = {
+		frameName = nil,
+		RoC = "Child",
+		type = "Button",
+		textFirstLine = tFriendlyName,
+		textFull = "",
+		noMenuNumbers = true,
+		childs = {},
+		func = function()
+			for i, v in pairs(tBagSlotList) do
+				if i == aBagId or aBagId == nil then
+					local tCurrentContainerFrameNumber = IsBagOpen(i)
+					local tNumSlots = GetContainerNumSlots(i)
+					if tNumSlots > 0 and (tCurrentContainerFrameNumber or (i == -1 and _G["BankFrame"] and _G["BankFrame"]:IsVisible() == true)) then
+						SortByNameHelper(tCurrentContainerFrameNumber, tNumSlots, i, function(a, b)
+						 	return a < b
+						end)
+					end
+				end
+			end
+		end,
+	}   
+
+
+
+
+
+
+end
+
+---------------------------------------------------------------------------------------------------------------------------------------
 local ContainerFrame1Hook
 function SkuCore:Build_BagsFrame(aParentChilds)
 	if not ContainerFrame1Hook then
@@ -716,24 +1079,6 @@ function SkuCore:Build_BagsFrame(aParentChilds)
 	local allBagResults = {}
 	local tBagResultsByBag = {}
 	local inventoryTooltipTextCache = {}
-
-	local tBagSlotListSorted = {
-		[1] = 0,
-		[2] = 1,
-		[3] = 2,
-		[4] = 3,
-		[5] = 4,
-		[6] = -1,
-		[7] = 5,
-		[8] = 6,
-		[9] = 7,
-		[10] = 8,
-		[11] = 9,
-		[12] = 10,
-		[13] = 11,
-		[14] = -2,
-		[15] = -3,
-	}
 
 	OpenAllBagsHelper()
 
@@ -895,10 +1240,30 @@ function SkuCore:Build_BagsFrame(aParentChilds)
 		end  
 	end
 
-	for i, v in pairs(tBagResultsByBag) do
-		for ic, vc in pairs(v.childs) do
-			table.insert(v.obj.childs, vc)
-			v.obj.childs[vc] = vc
+	for q = -3, 40 do
+		local i, v = q, tBagResultsByBag[q]
+		if v then
+			for ic, vc in pairs(v.childs) do
+				table.insert(v.obj.childs, vc)
+				v.obj.childs[vc] = vc
+			end
+
+			--sort button
+			local tFriendlyName = L["Sorting and cleanup"]
+			table.insert(v.obj.childs, tFriendlyName)
+			v.obj.childs[tFriendlyName] = {
+				frameName = nil,
+				RoC = "Child",
+				type = "Button",
+				obj = nil,
+				textFirstLine = tFriendlyName,
+				textFull = "",
+				noMenuNumbers = true,
+				childs = {},
+				func = nil,
+				click = true,
+			}   
+			BagSortMenuHelper(v.obj.childs[tFriendlyName].childs, v.obj.obj:GetBag(), v)
 		end
 	end
 
@@ -1072,6 +1437,24 @@ function SkuCore:Build_BagsFrame(aParentChilds)
 			tCurrentParentContainer.childs[aParentChilds[tFriendlyName] ] = aParentChilds[tFriendlyName]
 		end
 	end
+
+	--sort all button
+	local tFriendlyName = L["Sorting and cleanup all bags"]
+	table.insert(aParentChilds, tFriendlyName)
+	aParentChilds[tFriendlyName] = {
+		frameName = nil,
+		RoC = "Child",
+		type = "Button",
+		obj = nil,
+		textFirstLine = tFriendlyName,
+		textFull = "",
+		noMenuNumbers = true,
+		childs = {},
+		func = nil,
+		click = true,
+	}   
+
+	BagSortMenuHelper(aParentChilds[tFriendlyName].childs, nil)
 end
 
 ---------------------------------------------------------------------------------------------------------------------------------------

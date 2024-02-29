@@ -732,7 +732,7 @@ function SkuOptions:UpdateOverviewText(aPageId)
 
 	--hearthstone
 	local tTmpText = L["Keiner vorhanden"]
-	local startTime, duration, enable = GetItemCooldown(40582) --Scourgestone item id is working for all
+	local startTime, duration, enable = GetItemCooldown(6948) --Scourgestone item id is working for all
 	if duration == 0 then
 		tTmpText = L[" bereit"]
 	else
@@ -2220,9 +2220,11 @@ function SkuOptions:CreateMenuFrame()
 		if aKey == SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_QUESTABANDON"].key then
 			SkuQuest:OnSkuQuestAbandon()
 		end
+		--[[
 		if aKey == SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_QUESTSHARE"].key then
 			SkuQuest:OnSkuQuestPush()
 		end
+		]]
 
 		if SkuOptions.currentMenuPosition then
 			if aKey == "SHIFT-UP" then 
@@ -2445,7 +2447,6 @@ function SkuOptions:CreateMenuFrame()
 		SetOverrideBindingClick(self, true, "PAGEUP", "OnSkuOptionsMainOption1", "PAGEUP")
 		SetOverrideBindingClick(self, true, "PAGEDOWN", "OnSkuOptionsMainOption1", "PAGEDOWN")
 		SetOverrideBindingClick(self, true, SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_QUESTABANDON"].key, "SkuQuestMainOption1", SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_QUESTABANDON"].key)
-		SetOverrideBindingClick(self, true, SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_QUESTSHARE"].key, "SkuQuestMainOption1", SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_QUESTSHARE"].key)
 		SetOverrideBindingClick(self, true, "CTRL-SHIFT-UP", "OnSkuOptionsMainOption1", "CTRL-SHIFT-UP")
 		SetOverrideBindingClick(self, true, "CTRL-SHIFT-DOWN", "OnSkuOptionsMainOption1", "CTRL-SHIFT-DOWN")
 		SetOverrideBindingClick(self, true, "SHIFT-UP", "OnSkuOptionsMainOption1", "SHIFT-UP")
@@ -3447,19 +3448,17 @@ local function SkuIterateGossipList(aGossipListTable, aParentMenuTable, aTab)
 						tNewMenuEntry.itemId = tItemId
 				end
 			end
+
+			if aGossipListTable[index].onEnter then
+				tNewMenuEntry.OnEnter = aGossipListTable[index].onEnter
+			end
+			
 			if tNewMenuEntry and aGossipListTable[index].click == true then
 				if aGossipListTable[index].func then
-
-
 					tNewMenuEntry.BuildChildren = function(self)
 						if ((aGossipListTable[index].isBag and CursorHasItem())) or not aGossipListTable[index].isBag or aGossipListTable[index].isPurchasable then
 							self.children = {}
-							obj = aGossipListTable[index].obj
-							objName = ""
-							if obj and obj.getName then
-								objName = obj:getName() or ""
-							end
-							if string.find(objName, "MerchantItem") then
+							if aGossipListTable[index] and aGossipListTable[index].obj and aGossipListTable[index].obj.GetName and aGossipListTable[index].obj:GetName() and string.find(aGossipListTable[index].obj:GetName(), "MerchantItem") then
 								local tStock = 1000
 								if aGossipListTable[index].obj.numInStock and aGossipListTable[index].obj.numInStock ~= -1 then
 									tStock = aGossipListTable[index].obj.numInStock
@@ -3759,6 +3758,8 @@ local function SkuIterateGossipList(aGossipListTable, aParentMenuTable, aTab)
 						end
 					end
 				end
+			elseif tNewMenuEntry and aGossipListTable[index].func and aGossipListTable[index].click ~= true then
+				tNewMenuEntry.OnAction = aGossipListTable[index].func
 			end
 		else
 			--dprint(aTab, x, "SUB: "..aGossipListTable[index].textFirstLine)
@@ -3773,6 +3774,11 @@ local function SkuIterateGossipList(aGossipListTable, aParentMenuTable, aTab)
 					tNewMenuEntry.textFull = aGossipListTable[index].textFull
 				end
 			end
+
+			if aGossipListTable[index].onEnter then
+				tNewMenuEntry.OnEnter = aGossipListTable[index].onEnter
+			end
+
 			tNewMenuEntry.BuildChildren = function(self)
 				self.children = {}
 				SkuIterateGossipList(aGossipListTable[index].childs, self, aTab.."  ")

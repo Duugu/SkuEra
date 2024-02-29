@@ -47,6 +47,13 @@ local SapiLangIds = {
 	["enAU"] = 409,
 	}
 
+---------------------------------------------------------------------------------------------------------
+SkuVoice.LastPlayedString = ""
+SkuVoice.TutorialPlaying = 0
+--setmetatable(mSkuVoiceQueue, SkuNav.PrintMT)
+
+---------------------------------------------------------------------------------------------------------
+
 local mSkuVoiceQueue = {}
 local mSkuVoiceQueueBTTS = {}
 local mSkuVoiceQueueBTTS_Speaking = {}
@@ -449,11 +456,33 @@ function SkuVoice:CheckIgnore(aString)
 end
 
 ---------------------------------------------------------------------------------------------------------
-function SkuVoice:OutputStringBTtts(aString, aOverwrite, aWait, aLength, aDoNotOverwrite, aIsMulti, aSoundChannel, engine, aSpell, aVocalizeAsIs, aInstant, aDnQ, aIgnoreLinks)
-	--print("OutputStringBTtts", aString, aOverwrite, aWait, aLength, aDoNotOverwrite, aIsMulti, aSoundChannel, engine, aSpell, aVocalizeAsIs, aInstant, aDnQ, aIgnoreLinks)
+function SkuVoice:OutputStringBTtts(aString, aOverwrite, aWait, aLength, aDoNotOverwrite, aIsMulti, aSoundChannel, engine, aSpell, aVocalizeAsIs, aInstant, aDnQ, aIgnoreLinks, aIsTutorial)
 	if not aString then
 		return
 	end
+	
+	--changing to a new approach with passing a table of arguments instead of a lot of values, but still need to update that everywhere
+	if type(aOverwrite) == "table" then
+		aWait = aOverwrite.wait
+		aLength = aOverwrite.length
+		aDoNotOverwrite = aOverwrite.doNotOverwrite
+		aIsMulti = aOverwrite.isMulti
+		aSoundChannel = aOverwrite.soundChannel
+		engine = aOverwrite.engine
+		aSpell = aOverwrite.spell
+		aVocalizeAsIs = aOverwrite.vocalizeAsIs
+		aInstant = aOverwrite.instant
+		aDnQ = aOverwrite.dnQ
+		aIgnoreLinks = aOverwrite.ignoreLinks
+		aIsTutorial = aOverwrite.isTutorial
+		aOverwrite = aOverwrite.overwrite
+	end
+
+	--SkuNav:NavigationModeWoCoordinatesCheckTaskTrigger(aString)
+
+	--strip object numbers
+	aString = string.gsub(aString, L["OBJECT"]..";%d+;", L["OBJECT"]..";")
+
 
 	if SkuVoice:CheckIgnore(aString) then
 		aIgnoreLinks = true

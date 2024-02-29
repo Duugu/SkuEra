@@ -573,6 +573,7 @@ function SkuCore:AuctionHouseMenuBuilder()
          --categories
          SkuCore:AuctionHouseResetQuery()
          for categoryIndex, categoryInfo in ipairs(AuctionCategories) do
+print("categoryInfo.name", categoryInfo.name)
             if categoryInfo.name ~= L["WoW Token (China Only)"] then
                tNewMenuEntryCategory = SkuOptions:InjectMenuItems(self, {categoryInfo.name}, SkuGenericMenuItem)
                tNewMenuEntryCategory.dynamic = true
@@ -593,6 +594,7 @@ function SkuCore:AuctionHouseMenuBuilder()
                         tNewMenuEntryCategorySub.BuildChildren = function(self)
                            OnEnterAllFlag = nil
                            SkuCore:AuctionHouseResetQuery()
+
                            if subCategoryInfo.subCategories then
                               for subSubCategoryIndex, subSubCategoryInfo in ipairs(subCategoryInfo.subCategories) do
                                  tNewMenuEntryCategorySubSub = SkuOptions:InjectMenuItems(self, {subSubCategoryInfo.name}, SkuGenericMenuItem)
@@ -600,19 +602,19 @@ function SkuCore:AuctionHouseMenuBuilder()
                                  tNewMenuEntryCategorySubSub.filterable = true
                                  tNewMenuEntryCategorySubSub.BuildChildren = function(self)
                                     OnEnterAllFlag = nil
-                                    -- query categoryIndex subCategoryIndex
+                                    -- query categoryIndex, subCategoryIndex, subSubCategoryIndex
                                     SkuCore:AuctionHouseBuildItemDBMenu(self, categoryIndex, subCategoryIndex, subSubCategoryIndex)                                         
                                  end
                               end
                            else
-                              -- query categoryIndex subCategoryIndex
-                              SkuCore:AuctionHouseBuildItemDBMenu(self, categoryIndex, subCategoryIndex, subSubCategoryIndex)
+                              -- query categoryIndex, subCategoryIndex
+                              SkuCore:AuctionHouseBuildItemDBMenu(self, categoryIndex, subCategoryIndex)
                            end
                         end
                      end
                   else
                      --query categoryIndex
-                     SkuCore:AuctionHouseBuildItemDBMenu(self, categoryIndex, subCategoryIndex, subSubCategoryIndex)
+                     SkuCore:AuctionHouseBuildItemDBMenu(self, categoryIndex)
                   end
                end
             end
@@ -1316,6 +1318,10 @@ function SkuCore:AuctionHouseBuildItemDBMenu(self, categoryIndex, subCategoryInd
       classID = AuctionCategories[categoryIndex].subCategories[subCategoryIndex].filters[1].classID
       subClassID = AuctionCategories[categoryIndex].subCategories[subCategoryIndex].filters[1].subClassID
       inventoryType = AuctionCategories[categoryIndex].subCategories[subCategoryIndex].filters[1].inventoryType
+   elseif categoryIndex then
+      classID = AuctionCategories[categoryIndex].filters[1].classID
+      subClassID = AuctionCategories[categoryIndex].filters[1].subClassID
+      inventoryType = AuctionCategories[categoryIndex].filters[1].inventoryType
    end
 
    tNewMenuEntryCategorySubSubItem = SkuOptions:InjectMenuItems(self, {L["All"]}, SkuGenericMenuItem)

@@ -3,8 +3,20 @@
 -------------------------------------------------------------------------------------------------------	
 
 -------------------------------------------------------------------------------------------------------
+Changes in Sku Era r32.27
+	- Added bag sorting options to bag menus (below the last slot of each bag, same as in Wrath)
+	- Moved the Pre-Quests entry in quest log down.
+	- Fixed the Hearthstone details on overview page.
+	- Fixed a bug with the Control + Shift + T key for reading the tooltip of the item you're currently rolling on.
+	- Fixed a bug with the Select next waypoint of same type	feature.
+	- Fixed a bug that was leading to several missing audio outputs.
+	- Fixed a bug in route calculation that was leading to incorrect routes, like in Wetlands leading over Murloc camps and stuff.
+	- Fixed auction house categories with weird results.
+
+
+-------------------------------------------------------------------------------------------------------
 Changes in Sku Era r32.26
-	- Fixed a but with game key binds, that was breaking Core > Game Key Binds > Reset all.
+	- Fixed a bug with game key binds, that was breaking Core > Game Key Binds > Reset all.
 
 
 -------------------------------------------------------------------------------------------------------

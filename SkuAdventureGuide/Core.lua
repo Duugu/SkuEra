@@ -79,6 +79,75 @@ SkuAdventureGuide.HistoryNotifySounds = {
 function SkuAdventureGuide:OnInitialize()
 	SkuAdventureGuide:RegisterEvent("PLAYER_LOGIN")
 	SkuAdventureGuide:RegisterEvent("PLAYER_ENTERING_WORLD")
+
+   --this frame is to catch all keys if tutorial output is running
+	tFrame = _G["OnSkuOptionsKeyTrap"] or CreateFrame("Button", "OnSkuOptionsKeyTrap", _G["UIParent"], "UIPanelButtonTemplate")
+	tFrame:SetSize(80, 22)
+	tFrame:SetText("OnSkuOptionsKeyTrap")
+	tFrame:SetPoint("TOP", _G["OnSkuOptionsMain"], "BOTTOM", 0, 0)
+	tFrame:SetScript("OnKeyDown", function(self, aKey, aB)
+      if SkuOptions.Voice.TutorialPlaying then
+         if SkuOptions.Voice.TutorialPlaying > 0 then
+            local tFullKey = aKey
+            if IsAltKeyDown() == true then
+               tFullKey = "ALT-"..tFullKey
+            end
+            if IsControlKeyDown() == true then
+               tFullKey = "CTRL-"..tFullKey
+            end
+            if IsShiftKeyDown() == true then
+               tFullKey = "SHIFT-"..tFullKey
+            end
+
+            if aKey == "7" and IsShiftKeyDown() == true then
+               SkuOptions.Voice.TutorialPlaying = 0
+               self:SetPropagateKeyboardInput(true)
+               self:Hide()
+            else
+               if aKey ~= "LALT" and aKey ~= "RALT" and aKey ~= "RCTRL" and aKey ~= "LCTRL" and aKey ~= "LSHIFT" and aKey ~= "RSHIFT" then
+                  PlaySound(88)
+               end
+            end
+         end
+      end
+	end)
+	tFrame:SetScript("OnKeyUp", function(self, aKey, aB)
+		--print("OnKeyUp", aKey, aB, self:GetPropagateKeyboardInput())
+      if SkuOptions.Voice.TutorialPlaying then
+         if SkuOptions.Voice.TutorialPlaying > 0 then
+            --print("   SetPropagateKeyboardInput false")
+            self:SetPropagateKeyboardInput(false)
+         end
+      end
+	end)
+	tFrame:SetScript("OnChar", function(self, aKey, aB)
+      --if (aKey = "a" or aKey = "s" or aKey = "d") and IsAltKeyDown() == true then
+		--print("OnChar", aKey, aB, self:GetPropagateKeyboardInput())
+	end)
+	tFrame:Hide()
+	tFrame:EnableKeyboard(true)
+	tFrame:SetPropagateKeyboardInput(true)
+
+
+   local f = _G["SkuAdventureGuideTutorialControl"] or CreateFrame("Frame", "SkuAdventureGuideTutorialControl", UIParent)
+   local tNextCollectorCleanup = 0 
+   local ttime = 0
+   f:SetScript("OnUpdate", function(self, time)
+      if SkuOptions.Voice.TutorialPlaying <= 0 then
+         if _G["OnSkuOptionsKeyTrap"]:IsShown() == true then
+            --print("hide trap")
+            _G["OnSkuOptionsKeyTrap"]:Hide()
+            _G["OnSkuOptionsKeyTrap"]:SetPropagateKeyboardInput(true)
+         end
+      else
+         if _G["OnSkuOptionsKeyTrap"]:IsShown() == false then
+            --print("show trap")
+            _G["OnSkuOptionsKeyTrap"]:Show()
+            _G["OnSkuOptionsKeyTrap"]:SetPropagateKeyboardInput(false)
+         end
+      end
+   end)
+
 end
 
 ---------------------------------------------------------------------------------------------------------------------------------------

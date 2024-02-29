@@ -300,7 +300,6 @@ SkuNav.WpTypes = {
 	[4] = "standard",
 }
 
-SkuNav.MaxMetaRange = 2000
 SkuNav.MaxMetaWPs = 100
 SkuNav.MaxMetaEntryRange = 300
 SkuNav.BestRouteWeightedLengthModForMetaDistance = 37 -- this is a modifier for close routes
@@ -723,125 +722,117 @@ function SkuNav:GetCleanWpName(aWpName)
 end
 
 ---------------------------------------------------------------------------------------------------------------------------------------
-function SkuNav:GetAllMetaTargetsFromWp4(aStartWpName, aMaxDistance, aMaxWPs, aReturnPathForWp, aIncludeAutoWps)
-	dprint("SkuNav:GetAllMetaTargetsFromWp4", aStartWpName, aMaxDistance, aMaxWPs, aReturnPathForWp, aIncludeAutoWps)
-	--local beginTime = debugprofilestop()
-
-	local rMetapathData = {}
-	local tToCheckList = {}
-	local tFoundNbList = {}
-	local tStepList = {}
-	local tCurrentNumber = 0
-
-	tToCheckList[1] = WaypointCacheLookupAll[aStartWpName]
+function SkuNav:GetAllMetaTargetsFromWp5(aStartWpName, aMaxDistance, aMaxWPs, aReturnPathForWp, aIncludeAutoWps)
+	--print("SkuNav:GetAllMetaTargetsFromWp5", aStartWpName, aMaxDistance, aMaxWPs, aReturnPathForWp, aIncludeAutoWps)
 
 	local aStartWpNameData = WaypointCache[WaypointCacheLookupAll[aStartWpName]]
+	local aReturnPathForWpData = WaypointCache[WaypointCacheLookupAll[aReturnPathForWp]]
 	local fPlayerPosX, fPlayerPosY = UnitPosition("player")
 	local tDistanceToStartWp = SkuNav:Distance(aStartWpNameData.worldX, aStartWpNameData.worldY, fPlayerPosX, fPlayerPosY)	
 
-	while #tToCheckList > 0 do
-		tCurrentNumber = tCurrentNumber + 1
-		if not tStepList[tCurrentNumber] then
-			tStepList[tCurrentNumber] = {}
+	local tFinalWpDistances = {}
+	tFinalWpDistances[WaypointCacheLookupAll[aStartWpName]] = tDistanceToStartWp
+
+	do
+		local WaypointCache = WaypointCache
+		local tWpToCheckNextRound = {}
+		tWpToCheckNextRound[WaypointCacheLookupAll[aStartWpName]] = tDistanceToStartWp
+		local tStillWpToCheckNextRound = true
+		local tTempWpToCheckNextRound = {}
+		while tStillWpToCheckNextRound == true do
+			tStillWpToCheckNextRound = false
+			tTempWpToCheckNextRound = {}
+			for tWaypointCacheIndex, tDistance in pairs(tWpToCheckNextRound) do
+				for tLinktWaypointCacheIndex, tLinkDistance in pairs(WaypointCache[tWaypointCacheIndex].links.byId) do
+					local tDisPlusLink = tDistance + tLinkDistance
+					if tLinkDistance == 0 then
+						tDisPlusLink = tDisPlusLink + 0.5
+					end
+					if tDisPlusLink < aMaxDistance then
+						if tFinalWpDistances[tLinktWaypointCacheIndex] == nil then
+							tFinalWpDistances[tLinktWaypointCacheIndex] = tDisPlusLink
+							tTempWpToCheckNextRound[tLinktWaypointCacheIndex] = tDisPlusLink
+							tStillWpToCheckNextRound = true
+						else
+							if tFinalWpDistances[tLinktWaypointCacheIndex] > tDisPlusLink then
+								tFinalWpDistances[tLinktWaypointCacheIndex] = tDisPlusLink
+								tTempWpToCheckNextRound[tLinktWaypointCacheIndex] = tDisPlusLink
+								tStillWpToCheckNextRound = true
+							end
+						end
+					end
+				end
+			end
+			tWpToCheckNextRound = tTempWpToCheckNextRound
 		end
-		local tLocalToCheckList = {}
-		for x = 1, #tToCheckList do
-			local tCurrentWP = WaypointCache[tToCheckList[x]]
-			if tCurrentWP.links then
-				if tCurrentWP.links.byId then
-					for i, v in pairs(tCurrentWP.links.byId) do
-						if not tFoundNbList[i] then
-							tStepList[tCurrentNumber][i] = i
-							tLocalToCheckList[#tLocalToCheckList + 1] = i
-							tFoundNbList[i] = tCurrentNumber
+	end
+	
+	local tAuto = L["auto"]
+	if aIncludeAutoWps then
+		tAuto = ""
+	end
+
+	 rMetapathData = {}
+	local tcount = 0
+	for i, v in pairs(tFinalWpDistances) do
+		local tCurrentWP = WaypointCache[i]
+		if tAuto == "" or ssub(tCurrentWP.name, 1, 4) ~= tAuto or aReturnPathForWp ~= nil then
+			tcount = tcount + 1
+			local tDist = v
+			if tDist == 0 then
+				tDist = 1
+			end
+			rMetapathData[tCurrentWP.name] = {
+				distance = v,
+				distanceToStartWp = tDistanceToStartWp,
+			}
+		end
+	end
+
+	if aReturnPathForWp then --and rMetapathData[aReturnPathForWp] then
+		local tmprMetapathData = {}
+		tmprMetapathData[aReturnPathForWp] = {
+			distance = rMetapathData[aReturnPathForWp].distance,
+			distanceToStartWp = rMetapathData[aReturnPathForWp].distanceToStartWp,
+			pathWps = {},
+		}
+
+		local tContinue = true
+		local tNextWp = WaypointCacheLookupAll[aReturnPathForWp]
+
+		local tpathWps = {}
+		tinsert(tpathWps, 1, WaypointCache[tNextWp].name)
+
+		while tContinue == true do
+			tContinue = false
+			if tFinalWpDistances[tNextWp] then
+				local tCurrentWP = WaypointCache[tNextWp]
+				if tCurrentWP.links then
+					if tCurrentWP.links.byId then
+						local tBestDistance = tFinalWpDistances[tNextWp]
+						for tLinktWaypointCacheIndex, tLinkDistance in pairs(tCurrentWP.links.byId) do
+							if tFinalWpDistances[tLinktWaypointCacheIndex] then
+								if tFinalWpDistances[tLinktWaypointCacheIndex] < tBestDistance then
+									tinsert(tpathWps, 1, WaypointCache[tLinktWaypointCacheIndex].name)
+									tBestDistance = tFinalWpDistances[tLinktWaypointCacheIndex]
+									tContinue = true
+									tNextWp = tLinktWaypointCacheIndex
+								end
+							end
 						end
 					end
 				end
 			end
 		end
-		tToCheckList = tLocalToCheckList
+		
+
+		tmprMetapathData[aReturnPathForWp].pathWps = tpathWps
+		rMetapathData = tmprMetapathData
 	end
-
-	--dprint("filled", debugprofilestop() - beginTime)
-	--beginTime = debugprofilestop()
-
-	local _, _, tPlayerContinentID  = SkuNav:GetAreaData(SkuNav:GetCurrentAreaId())
-	local tAuto = L["auto"]
-	if aIncludeAutoWps then
-		tAuto = ""
+	
+	for i, v in pairs(rMetapathData) do
+		v.distance = floor(v.distance)
 	end
-	local tDistance = 0
-	local tCurrentFrom = 0
-	local tCurrentNumber = 0
-	local tSteplistIndex = 0
-	local tDistCalculatedFrom = {}
-
-	local tTargetWps = WaypointCacheLookupPerContintent[tPlayerContinentID]
-	if aReturnPathForWp then
-		tTargetWps = {[WaypointCacheLookupAll[aReturnPathForWp]] = aReturnPathForWp}
-	end
-
-	for tIndex, tName in pairs(tTargetWps) do
-		if tFoundNbList[tIndex] then
-			if tAuto == "" or ssub(tName, 1, 4) ~= tAuto then
-				--if aStartWpName ~= tName then
-					rMetapathData[tName] = {
-						distance = aMaxDistance,
-						distanceToStartWp = tDistanceToStartWp,
-					}
-					if aReturnPathForWp then
-						rMetapathData[tName].pathWps = {}
-					end
-					if (tFoundNbList[tIndex] < aMaxWPs) or (aReturnPathForWp) then
-						tDistance = 0
-						tCurrentFrom = tIndex
-						tCurrentNumber = tFoundNbList[tIndex] - 1
-						while tCurrentNumber ~= 0 do
-							if tDistCalculatedFrom[tCurrentFrom] and not aReturnPathForWp then
-								tDistance = tDistance + tDistCalculatedFrom[tCurrentFrom]
-								tCurrentNumber = 0
-							else
-								local tList = tStepList[tCurrentNumber]
-								for tWpIndex, tWpDistance in pairs(WaypointCache[tCurrentFrom].links.byId) do
-									if tList[tWpIndex] then
-										if aReturnPathForWp then
-											tinsert(rMetapathData[tName].pathWps, 1, WaypointCache[tCurrentFrom].name)
-										end
-										tDistance = tDistance + tWpDistance
-										tCurrentFrom = tWpIndex
-										tCurrentNumber = tCurrentNumber - 1
-										break
-									end
-								end
-							end
-							if tDistance > aMaxDistance and not aReturnPathForWp then
-								tDistance = aMaxDistance
-								tCurrentNumber = 0
-							end
-						end
-						if aReturnPathForWp then
-							tinsert(rMetapathData[tName].pathWps, 1, WaypointCache[tCurrentFrom].name)
-							tinsert(rMetapathData[tName].pathWps, 1, aStartWpName)
-						end
-						if tDistance ~= aMaxDistance then
-							if WaypointCache[tCurrentFrom].links.byId[WaypointCacheLookupAll[aStartWpName]] then
-								tDistance = tDistance + WaypointCache[tCurrentFrom].links.byId[WaypointCacheLookupAll[aStartWpName]]
-							end
-						end
-						tDistCalculatedFrom[tIndex] = tDistance
-						if tDistance + tDistanceToStartWp > aMaxDistance and not aReturnPathForWp then
-							rMetapathData[tName].distance = aMaxDistance
-						else
-							rMetapathData[tName].distance = tDistance + tDistanceToStartWp
-						end
-					end
-				--end
-			end
-		end
-	end
-
-	--dprint("End", debugprofilestop() - beginTime)
-	--beginTime = debugprofilestop()
 
 	return rMetapathData
 end
@@ -1623,7 +1614,7 @@ function SkuNav:ProcessPlayerDead()
 			if #tSortedWaypointList == 0 then
 				SkuNav:SelectWP(L["Quick waypoint"]..";4", true)
 			else
-				local tMetapaths = SkuNav:GetAllMetaTargetsFromWp4(SkuNav:GetCleanWpName(tSortedWaypointList[1]), SkuNav.MaxMetaRange, SkuNav.MaxMetaWPs, nil, true)
+				local tMetapaths = SkuNav:GetAllMetaTargetsFromWp5(SkuNav:GetCleanWpName(tSortedWaypointList[1]), SkuOptions.db.profile["SkuNav"].routesMaxDistance, SkuNav.MaxMetaWPs, nil, true)
 				SkuOptions.db.profile["SkuNav"].metapathFollowingStart = SkuNav:GetCleanWpName(tSortedWaypointList[1])
 				SkuOptions.db.profile["SkuNav"].metapathFollowingMetapaths = tMetapaths
 
@@ -1673,7 +1664,7 @@ function SkuNav:ProcessPlayerDead()
 							if string.find(SkuOptions.db.profile["SkuNav"].metapathFollowingStart, "#") then
 								SkuOptions.db.profile["SkuNav"].metapathFollowingStart = string.sub(SkuOptions.db.profile["SkuNav"].metapathFollowingStart, string.find(SkuOptions.db.profile["SkuNav"].metapathFollowingStart, "#") + 1)
 							end
-							SkuOptions.db.profile["SkuNav"].metapathFollowingMetapaths = SkuNav:GetAllMetaTargetsFromWp4(SkuOptions.db.profile["SkuNav"].metapathFollowingStart, SkuNav.MaxMetaRange, SkuNav.MaxMetaWPs, SkuOptions.db.profile["SkuNav"].metapathFollowingTarget, true)--
+							SkuOptions.db.profile["SkuNav"].metapathFollowingMetapaths = SkuNav:GetAllMetaTargetsFromWp5(SkuOptions.db.profile["SkuNav"].metapathFollowingStart, SkuOptions.db.profile["SkuNav"].routesMaxDistance, SkuNav.MaxMetaWPs, SkuOptions.db.profile["SkuNav"].metapathFollowingTarget, true)--
 							SkuOptions.db.profile["SkuNav"].metapathFollowingMetapaths[#SkuOptions.db.profile["SkuNav"].metapathFollowingMetapaths+1] = SkuOptions.db.profile["SkuNav"].metapathFollowingEndTarget
 							SkuOptions.db.profile["SkuNav"].metapathFollowingMetapaths[SkuOptions.db.profile["SkuNav"].metapathFollowingEndTarget] = SkuOptions.db.profile["SkuNav"].metapathFollowingMetapaths[SkuOptions.db.profile["SkuNav"].metapathFollowingTarget]
 							table.insert(SkuOptions.db.profile["SkuNav"].metapathFollowingMetapaths[SkuOptions.db.profile["SkuNav"].metapathFollowingEndTarget].pathWps, SkuOptions.db.profile["SkuNav"].metapathFollowingEndTarget)
@@ -2955,7 +2946,7 @@ function SkuNav:UpdateQuickWP(aWpName, aSilent, x, y)
 				end
 
 				if #tSortedWaypointList > 0 then
-					local tMetapaths = SkuNav:GetAllMetaTargetsFromWp4(SkuNav:GetCleanWpName(tSortedWaypointList[1]), 10000, 1000, nil, true)
+					local tMetapaths = SkuNav:GetAllMetaTargetsFromWp5(SkuNav:GetCleanWpName(tSortedWaypointList[1]), 10000, 1000, nil, true)
 					local tResults = {}
 					local tNearWps = SkuNav:GetNearestWpsWithLinksToWp(aWpName, 10, 100000)
 					local tBestRouteWeightedLength = 100000
@@ -3006,7 +2997,7 @@ function SkuNav:UpdateQuickWP(aWpName, aSilent, x, y)
 						if string.find(SkuOptions.db.profile["SkuNav"].metapathFollowingStart, "#") then
 							SkuOptions.db.profile["SkuNav"].metapathFollowingStart = string.sub(SkuOptions.db.profile["SkuNav"].metapathFollowingStart, string.find(SkuOptions.db.profile["SkuNav"].metapathFollowingStart, "#") + 1)
 						end
-						SkuOptions.db.profile["SkuNav"].metapathFollowingMetapaths = SkuNav:GetAllMetaTargetsFromWp4(SkuOptions.db.profile["SkuNav"].metapathFollowingStart, 10000, 1000, SkuOptions.db.profile["SkuNav"].metapathFollowingTarget, true)--
+						SkuOptions.db.profile["SkuNav"].metapathFollowingMetapaths = SkuNav:GetAllMetaTargetsFromWp5(SkuOptions.db.profile["SkuNav"].metapathFollowingStart, 10000, 1000, SkuOptions.db.profile["SkuNav"].metapathFollowingTarget, true)--
 						SkuOptions.db.profile["SkuNav"].metapathFollowingMetapaths[#SkuOptions.db.profile["SkuNav"].metapathFollowingMetapaths+1] = SkuOptions.db.profile["SkuNav"].metapathFollowingEndTarget
 						SkuOptions.db.profile["SkuNav"].metapathFollowingMetapaths[SkuOptions.db.profile["SkuNav"].metapathFollowingEndTarget] = SkuOptions.db.profile["SkuNav"].metapathFollowingMetapaths[SkuOptions.db.profile["SkuNav"].metapathFollowingTarget]
 						table.insert(SkuOptions.db.profile["SkuNav"].metapathFollowingMetapaths[SkuOptions.db.profile["SkuNav"].metapathFollowingEndTarget].pathWps, SkuOptions.db.profile["SkuNav"].metapathFollowingEndTarget)
