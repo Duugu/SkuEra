@@ -284,7 +284,7 @@ function SkuCore:OnInitialize()
 	SkuCore:FriendsOnInitialize()
 	SkuCore:GameWorldObjectsOnInitialize()
 	SkuCore:TurnToUnitOnInitialize()
-	SkuCore:SkuFocusOnInitialize()
+	SkuCore.SkuFocus:OnInitialize()
 
 end
 
@@ -2130,7 +2130,7 @@ function SkuCore:PLAYER_ENTERING_WORLD(...)
 		SkuCore:aqCombatOnLogin()
 		SkuCore:DamageMeterOnLogin()
 		SkuCore:TurnToUnitOnLogin()
-		SkuCore:SkuFocusOnLogin()
+		SkuCore.SkuFocus:OnLogin()
 
 		--SetBindingClick(SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_CHATOPEN"].key, "OnSkuChatToggle")
 		--SetOverrideBindingClick(_G["OnSkuChatToggle"], true, SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_CHATOPEN"].key, "OnSkuChatToggle", SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_CHATOPEN"].key)

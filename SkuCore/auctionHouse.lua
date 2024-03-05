@@ -573,7 +573,6 @@ function SkuCore:AuctionHouseMenuBuilder()
          --categories
          SkuCore:AuctionHouseResetQuery()
          for categoryIndex, categoryInfo in ipairs(AuctionCategories) do
-print("categoryInfo.name", categoryInfo.name)
             if categoryInfo.name ~= L["WoW Token (China Only)"] then
                tNewMenuEntryCategory = SkuOptions:InjectMenuItems(self, {categoryInfo.name}, SkuGenericMenuItem)
                tNewMenuEntryCategory.dynamic = true
@@ -696,6 +695,7 @@ print("categoryInfo.name", categoryInfo.name)
                      end
                   end
                   tNewMenuEntryCategory.BuildChildren = function(self)
+OnEnterAllFlag = nil
                      SkuCore:AuctionHouseResetQuery()
                      if categoryInfo.subCategories then
                         for subCategoryIndex, subCategoryInfo in ipairs(categoryInfo.subCategories) do
@@ -703,26 +703,29 @@ print("categoryInfo.name", categoryInfo.name)
                            tNewMenuEntryCategorySub.dynamic = true
                            tNewMenuEntryCategorySub.filterable = true
                            tNewMenuEntryCategorySub.BuildChildren = function(self)
+OnEnterAllFlag = nil
                               SkuCore:AuctionHouseResetQuery()
+
                               if subCategoryInfo.subCategories then
                                  for subSubCategoryIndex, subSubCategoryInfo in ipairs(subCategoryInfo.subCategories) do
                                     tNewMenuEntryCategorySubSub = SkuOptions:InjectMenuItems(self, {subSubCategoryInfo.name}, SkuGenericMenuItem)
                                     tNewMenuEntryCategorySubSub.dynamic = true
                                     tNewMenuEntryCategorySubSub.filterable = true
                                     tNewMenuEntryCategorySubSub.BuildChildren = function(self)
+OnEnterAllFlag = nil
                                        -- query categoryIndex subCategoryIndex
                                        SkuCore:AuctionHouseBuildItemFullScanDBMenu(self, categoryIndex, subCategoryIndex, subSubCategoryIndex)                                         
                                     end
                                  end
                               else
                                  -- query categoryIndex subCategoryIndex
-                                 SkuCore:AuctionHouseBuildItemFullScanDBMenu(self, categoryIndex, subCategoryIndex, subSubCategoryIndex)
+                                 SkuCore:AuctionHouseBuildItemFullScanDBMenu(self, categoryIndex, subCategoryIndex)
                               end
                            end
                         end
                      else
                         --query categoryIndex
-                        SkuCore:AuctionHouseBuildItemFullScanDBMenu(self, categoryIndex, subCategoryIndex, subSubCategoryIndex)
+                        SkuCore:AuctionHouseBuildItemFullScanDBMenu(self, categoryIndex)
                      end
                   end
                end
@@ -1063,6 +1066,10 @@ function SkuCore:AuctionHouseBuildItemFullScanDBMenu(aParent, categoryIndex, sub
       classID = AuctionCategories[categoryIndex].subCategories[subCategoryIndex].filters[1].classID
       subClassID = AuctionCategories[categoryIndex].subCategories[subCategoryIndex].filters[1].subClassID
       inventoryType = AuctionCategories[categoryIndex].subCategories[subCategoryIndex].filters[1].inventoryType
+   elseif categoryIndex then
+      classID = AuctionCategories[categoryIndex].filters[1].classID
+      subClassID = AuctionCategories[categoryIndex].filters[1].subClassID
+      inventoryType = AuctionCategories[categoryIndex].filters[1].inventoryType
    end
 
    local filterData
@@ -1088,7 +1095,9 @@ function SkuCore:AuctionHouseBuildItemFullScanDBMenu(aParent, categoryIndex, sub
                if SkuDB.itemDataTBC[tRecord[17]] and
                   (
                      SkuDB.itemDataTBC[tRecord[17]][SkuDB.itemKeys.class] == classID and
-                     SkuDB.itemDataTBC[tRecord[17]][SkuDB.itemKeys.subClass] == subClassID and
+                     (
+                        not subClassID or SkuDB.itemDataTBC[tRecord[17]][SkuDB.itemKeys.subClass] == subClassID
+                     ) and
                      (
                         not inventoryType or (C_Item.GetItemInventoryTypeByID(tRecord[17]) == tFilterInventoryTypeToGetItemInventoryTypeByID[inventoryType])
                      )

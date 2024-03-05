@@ -2181,6 +2181,10 @@ function SkuOptions:CreateMenuFrame()
 		if aKey == "HOME" then
 			SkuOptions.currentMenuPosition:OnFirst()
 		end
+		if aKey == "END" then
+			SkuOptions.currentMenuPosition:OnLast()
+		end		
+
 		if aKey == "ENTER" or aKey == "SHIFT-ENTER" then
 			tVocalizeReset = false
 			SkuOptions.currentMenuPosition:OnSelect(true)
@@ -2460,6 +2464,7 @@ function SkuOptions:CreateMenuFrame()
 
 		SetOverrideBindingClick(self, true, "CTRL-RIGHT", "OnSkuOptionsMainOption1", "CTRL-RIGHT")
 		SetOverrideBindingClick(self, true, "HOME", "OnSkuOptionsMainOption1", "HOME")
+		SetOverrideBindingClick(self, true, "END", "OnSkuOptionsMainOption1", "END")
 		SetOverrideBindingClick(self, true, "UP", "OnSkuOptionsMainOption1", "UP")
 		SetOverrideBindingClick(self, true, "DOWN", "OnSkuOptionsMainOption1", "DOWN")
 		SetOverrideBindingClick(self, true, "LEFT", "OnSkuOptionsMainOption1", "LEFT")

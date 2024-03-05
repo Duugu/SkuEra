@@ -1396,6 +1396,12 @@ local function CreateQuestSubmenu(aParent, aQuestID)
 						end
 					end
 				end
+
+				local tNewMenuSubEntry = SkuOptions:InjectMenuItems(aParent, {L["Share quest"]}, SkuGenericMenuItem)
+				tNewMenuSubEntry.dynamic = false
+				tNewMenuSubEntry.OnAction = function(self, aValue, aName)
+					SkuQuest:OnSkuQuestPush()
+				end				
 			end			
 		end
 	end
