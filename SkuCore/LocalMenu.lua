@@ -2792,8 +2792,8 @@ function SkuCore:Build_CraftFrame(aParentChilds)
 					childs = {},
 					func = _G[tFrameName]:GetScript("OnClick"),
 					click = true,
-					--containerFrameName = "CraftCreateButton",
-					onActionFunc = function(self, aTable, aChildName) end,
+					containerFrameName = "CraftCreateButton",
+					--onActionFunc = function(self, aTable, aChildName) end,
 				}   
 			end
 		end

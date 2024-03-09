@@ -3,6 +3,14 @@
 -------------------------------------------------------------------------------------------------------	
 
 -------------------------------------------------------------------------------------------------------
+Changes in Sku Era r32.29
+	- Tried to change the target sku focus x key code to remove lag.
+	- Fixed a bug with Pet Action Bar with pets that don't have special abilities. Pet action bar should now show up as intended with not special pet abilities.
+	- Fixed Train button in the Beast Training menu for hunter pets. Should not be blocked anymore.
+	- Fixed the blocked Enchant button in Enchanting menu. Should not be blocked anymore.
+
+
+-------------------------------------------------------------------------------------------------------
 Changes in Sku Era r32.28
 	- Fixed a bug with the route calculation that was sometimes generating incorrect routes leading into walls, etc.
 	- Fixed another bug with the auction house categories for full scan results by item and removed overlooked debug outputs.

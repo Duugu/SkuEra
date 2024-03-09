@@ -1198,7 +1198,7 @@ local function SpellBookMenuBuilder(aParentEntry, aBooktype, aIsPet, aButtonsWit
 		end
 		
 		local tNewMenuSubEntry
-		if aIsPet == true then
+		if aIsPet == true and token ~= nil then
 			tNewMenuSubEntry = SkuOptions:InjectMenuItems(aParentEntry, {_G["PET_TYPE_"..token]}, SkuGenericMenuItem)
 		else
 			tNewMenuSubEntry = SkuOptions:InjectMenuItems(aParentEntry, {name}, SkuGenericMenuItem)
