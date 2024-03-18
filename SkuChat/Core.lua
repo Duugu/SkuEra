@@ -2346,7 +2346,7 @@ function SkuChat:CHAT_MSG_CHANNEL_NOTICE(...)
 			for x = 1, #SkuOptions.db.profile["SkuChat"].tabs do
 				for y = 1, #SkuOptions.db.profile["SkuChat"].tabs[x].channels do
 					if SkuOptions.db.profile["SkuChat"].tabs[x].channels[y].name then
-						if string.lower(SkuOptions.db.profile["SkuChat"].tabs[x].channels[y].name) == string.lower(tInternalChannelName) then
+						if string.lower(SkuOptions.db.profile["SkuChat"].tabs[x].channels[y].name or "one") == string.lower(tInternalChannelName or "two") then
 							table.remove(SkuOptions.db.profile["SkuChat"].tabs[x].channels, y)
 							break
 						end

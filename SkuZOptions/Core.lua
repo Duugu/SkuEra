@@ -1453,12 +1453,6 @@ function SkuOptions:CreateMainFrame()
 							if tText then
 								if string.len(tText) > 0 then
 									SkuOptions.TooltipReaderText =  {tText}
-
-									local tBisText = SkuCore:bisGetBisTooltipInfo(tItem.itemId)
-									if tBisText then
-										table.insert(SkuOptions.TooltipReaderText, i + 1, tBisText)
-									end
-
 									local t = {}
 									local comparisnSections = SkuCore:getItemComparisnSections(tItem.itemId, t)
 									if comparisnSections then

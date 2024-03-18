@@ -652,9 +652,12 @@ local function Constructor()
 	treeframe:SetBackdropColor(0.1, 0.1, 0.1, 0.5)
 	treeframe:SetBackdropBorderColor(0.4, 0.4, 0.4)
 	treeframe:SetResizable(true)
-	--treeframe:SetResizeBounds(100, 1, 400, 1600)
-	treeframe:SetMinResize(100,1)
-	treeframe:SetMaxResize(400,1600)
+	if treeframe.SetResizeBounds then
+		treeframe:SetResizeBounds(100, 1, 400, 1600)
+	else
+		treeframe:SetMinResize(100,1)
+		treeframe:SetMaxResize(400,1600)
+	end
 
 	
 	treeframe:SetScript("OnUpdate", FirstFrameUpdate)

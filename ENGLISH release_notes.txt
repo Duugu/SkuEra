@@ -2,6 +2,13 @@
 - Sku Era Addon Release Notes
 -------------------------------------------------------------------------------------------------------	
 
+
+-------------------------------------------------------------------------------------------------------
+Changes in Sku Era r32.30
+	- Again fixed a bug with reading the tooltip of items you're currently rolling on with CTRL + SHIFT + T. This time for real. :D
+	- Fixed a bug with leaving chat channels
+	
+
 -------------------------------------------------------------------------------------------------------
 Changes in Sku Era r32.29
 	- Tried to change the target sku focus x key code to remove lag.
