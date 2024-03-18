@@ -4,9 +4,6 @@ local L = Sku.L
 
 SkuChat = LibStub("AceAddon-3.0"):NewAddon("SkuChat", "AceConsole-3.0", "AceEvent-3.0")
 
-Sku_CombatLog_Filter_Defaults = {}
-
-
 local play = 2	--this is just a local constant for output type (play, true, false)
 local zoneChannels = {
 	general = 1,
@@ -130,7 +127,7 @@ SkuChat.ChatFrameMessageTypes = {
 			},
 		[4] = {
 			type = "TRADESKILLS",
-			default = true,
+			default = false,
 			},
 		[5] = {
 			type = "OPENING",
@@ -189,7 +186,7 @@ SkuChat.ChatFrameMessageTypes = {
 		[7] = {
 			text = L["Addons"],
 			type = "ADDON",
-			default = play,
+			default = true,
 		},		
 	},
 	
@@ -211,601 +208,7 @@ SkuChat.ChatFrameMessageTypes = {
 			default = true,
 		},
 	},
-
-	SKU = {
-		[1] = {
-			type = "COMBATLOG",
-			default = false,
-		},
-		[2] = {
-			type = "AUDIOLOG",
-			default = false,
-		}
-	},
 }
-
-SkuChat.ChatFrameDefaultTabs = {
-	[L["Default"]] = {
-		PLAYER_MESSAGES = {
-			[1] = {
-				type = "SAY",
-				default = play,
-			},
-			[2] = {
-				type = "EMOTE",
-				default = play,
-			},
-			[3] = {
-				type = "YELL",
-				default = play,
-			},
-			[4] = {
-				text = GUILD_CHAT,
-				type = "GUILD",
-				default = false,
-			},
-			[5] = {
-				text = OFFICER_CHAT,
-				type = "OFFICER",
-				default = false,
-			},
-			[6] = {
-				type = "WHISPER",
-				default = false,
-			},
-			[7] = {
-				type = "BN_WHISPER",
-				default = false,
-			},
-			[8] = {
-				type = "PARTY",
-				default = false,
-			},
-			[9] = {
-				type = "PARTY_LEADER",
-				default = false,
-			},
-			[10] = {
-				type = "RAID",
-				default = false,
-			},
-			[11] = {
-				type = "RAID_LEADER",
-				default = false,
-			},
-			[12] = {
-				type = "RAID_WARNING",
-				default = false,
-			},
-			[13] = {
-				type = "INSTANCE_CHAT",
-				default = false,
-			},
-			[14] = {
-				type = "INSTANCE_CHAT_LEADER",
-				default = false,
-			},
-		},
-	
-		CREATURE_MESSAGES = {
-			[1] = {
-				text = SAY;
-				type = "MONSTER_SAY",
-				default = play,
-			},
-			[2] = {
-				text = EMOTE;
-				type = "MONSTER_EMOTE",
-				default = play,
-			},
-			[3] = {
-				text = YELL;
-				type = "MONSTER_YELL",
-				default = play,
-			},
-			[4] = {
-				text = WHISPER;
-				type = "MONSTER_WHISPER",
-				default = false,
-			},
-			[5] = {
-				type = "MONSTER_BOSS_EMOTE",
-				default = false,
-			},
-			[6] = {
-				type = "MONSTER_BOSS_WHISPER",
-				default = false,
-			}
-		},
-	
-		OTHER = {
-			[1] = {
-				text = SKILLUPS,
-				type = "SKILL",
-				default = false,
-				},
-			[2] = {
-				text = ITEM_LOOT,
-				type = "LOOT",
-				default = false,
-				},
-			[3] = {
-				text = MONEY_LOOT,
-				type = "MONEY",
-				default = false,
-				},
-			[4] = {
-				type = "TRADESKILLS",
-				default = false,
-				},
-			[5] = {
-				type = "OPENING",
-				default = false,
-				},
-			[6] = {
-				type = "PET_INFO",
-				default = false,
-				},
-		},
-	
-		PVP = {
-			[1] = {
-				text = BG_SYSTEM_HORDE,
-				type = "BG_HORDE",
-				default = false,
-			},
-			[2] = {
-				text = BG_SYSTEM_ALLIANCE,
-				type = "BG_ALLIANCE",
-				default = false,
-			},
-			[3] = {
-				text = BG_SYSTEM_NEUTRAL,
-				type = "BG_NEUTRAL",
-				default = false,
-			},
-		},
-	
-		SYSTEM = {
-			[1] = {
-				text = SYSTEM_MESSAGES,
-				type = "SYSTEM",
-				default = true,
-			},
-			[2] = {
-				type = "ERRORS",
-				default = true,
-			},
-			[3] = {
-				type = "IGNORED",
-				default = true,
-			},
-			[4] = {
-				type = "CHANNEL",
-				default = true,
-			},
-			[5] = {
-				type = "TARGETICONS",
-				default = true,
-			},
-			[6] = {
-				type = "BN_INLINE_TOAST_ALERT",
-				default = true,
-			},
-			[7] = {
-				text = L["Addons"],
-				type = "ADDON",
-				default = play,
-			},		
-		},
-		
-		COMBAT = {
-			[1] = {
-				type = "COMBAT_XP_GAIN",
-				default = true,
-			},
-			[2] = {
-				type = "COMBAT_HONOR_GAIN",
-				default = true,
-			},
-			[3] = {
-				type = "COMBAT_FACTION_CHANGE",
-				default = true,
-			},
-			[5] = {
-				type = "COMBAT_MISC_INFO",
-				default = true,
-			},
-		},
-	},
-	[L["Communication"]] = {
-		PLAYER_MESSAGES = {
-			[1] = {
-				type = "SAY",
-				default = false,
-			},
-			[2] = {
-				type = "EMOTE",
-				default = false,
-			},
-			[3] = {
-				type = "YELL",
-				default = false,
-			},
-			[4] = {
-				text = GUILD_CHAT,
-				type = "GUILD",
-				default = play,
-			},
-			[5] = {
-				text = OFFICER_CHAT,
-				type = "OFFICER",
-				default = play,
-			},
-			[6] = {
-				type = "WHISPER",
-				default = play,
-			},
-			[7] = {
-				type = "BN_WHISPER",
-				default = play,
-			},
-			[8] = {
-				type = "PARTY",
-				default = play,
-			},
-			[9] = {
-				type = "PARTY_LEADER",
-				default = play,
-			},
-			[10] = {
-				type = "RAID",
-				default = play,
-			},
-			[11] = {
-				type = "RAID_LEADER",
-				default = play,
-			},
-			[12] = {
-				type = "RAID_WARNING",
-				default = play,
-			},
-			[13] = {
-				type = "INSTANCE_CHAT",
-				default = play,
-			},
-			[14] = {
-				type = "INSTANCE_CHAT_LEADER",
-				default = play,
-			},
-		},
-	
-		CREATURE_MESSAGES = {
-			[1] = {
-				text = SAY;
-				type = "MONSTER_SAY",
-				default = false,
-			},
-			[2] = {
-				text = EMOTE;
-				type = "MONSTER_EMOTE",
-				default = false,
-			},
-			[3] = {
-				text = YELL;
-				type = "MONSTER_YELL",
-				default = false,
-			},
-			[4] = {
-				text = WHISPER;
-				type = "MONSTER_WHISPER",
-				default = play,
-			},
-			[5] = {
-				type = "MONSTER_BOSS_EMOTE",
-				default = play,
-			},
-			[6] = {
-				type = "MONSTER_BOSS_WHISPER",
-				default = play,
-			}
-		},
-	
-		OTHER = {
-			[1] = {
-				text = SKILLUPS,
-				type = "SKILL",
-				default = false,
-				},
-			[2] = {
-				text = ITEM_LOOT,
-				type = "LOOT",
-				default = false,
-				},
-			[3] = {
-				text = MONEY_LOOT,
-				type = "MONEY",
-				default = false,
-				},
-			[4] = {
-				type = "TRADESKILLS",
-				default = false,
-				},
-			[5] = {
-				type = "OPENING",
-				default = false,
-				},
-			[6] = {
-				type = "PET_INFO",
-				default = false,
-				},
-		},
-	
-		PVP = {
-			[1] = {
-				text = BG_SYSTEM_HORDE,
-				type = "BG_HORDE",
-				default = false,
-			},
-			[2] = {
-				text = BG_SYSTEM_ALLIANCE,
-				type = "BG_ALLIANCE",
-				default = false,
-			},
-			[3] = {
-				text = BG_SYSTEM_NEUTRAL,
-				type = "BG_NEUTRAL",
-				default = false,
-			},
-		},
-	
-		SYSTEM = {
-			[1] = {
-				text = SYSTEM_MESSAGES,
-				type = "SYSTEM",
-				default = false,
-			},
-			[2] = {
-				type = "ERRORS",
-				default = false,
-			},
-			[3] = {
-				type = "IGNORED",
-				default = false,
-			},
-			[4] = {
-				type = "CHANNEL",
-				default = false,
-			},
-			[5] = {
-				type = "TARGETICONS",
-				default = false,
-			},
-			[6] = {
-				type = "BN_INLINE_TOAST_ALERT",
-				default = false,
-			},
-			[7] = {
-				text = L["Addons"],
-				type = "ADDON",
-				default = false,
-			},		
-		},
-		
-		COMBAT = {
-			[1] = {
-				type = "COMBAT_XP_GAIN",
-				default = false,
-			},
-			[2] = {
-				type = "COMBAT_HONOR_GAIN",
-				default = false,
-			},
-			[3] = {
-				type = "COMBAT_FACTION_CHANGE",
-				default = false,
-			},
-			[5] = {
-				type = "COMBAT_MISC_INFO",
-				default = false,
-			},
-		},
-	},
-	[L["Other"]] = {
-		PLAYER_MESSAGES = {
-			[1] = {
-				type = "SAY",
-				default = false,
-			},
-			[2] = {
-				type = "EMOTE",
-				default = false,
-			},
-			[3] = {
-				type = "YELL",
-				default = false,
-			},
-			[4] = {
-				text = GUILD_CHAT,
-				type = "GUILD",
-				default = false,
-			},
-			[5] = {
-				text = OFFICER_CHAT,
-				type = "OFFICER",
-				default = false,
-			},
-			[6] = {
-				type = "WHISPER",
-				default = false,
-			},
-			[7] = {
-				type = "BN_WHISPER",
-				default = false,
-			},
-			[8] = {
-				type = "PARTY",
-				default = false,
-			},
-			[9] = {
-				type = "PARTY_LEADER",
-				default = false,
-			},
-			[10] = {
-				type = "RAID",
-				default = false,
-			},
-			[11] = {
-				type = "RAID_LEADER",
-				default = false,
-			},
-			[12] = {
-				type = "RAID_WARNING",
-				default = false,
-			},
-			[13] = {
-				type = "INSTANCE_CHAT",
-				default = false,
-			},
-			[14] = {
-				type = "INSTANCE_CHAT_LEADER",
-				default = false,
-			},
-		},
-	
-		CREATURE_MESSAGES = {
-			[1] = {
-				text = SAY;
-				type = "MONSTER_SAY",
-				default = false,
-			},
-			[2] = {
-				text = EMOTE;
-				type = "MONSTER_EMOTE",
-				default = false,
-			},
-			[3] = {
-				text = YELL;
-				type = "MONSTER_YELL",
-				default = false,
-			},
-			[4] = {
-				text = WHISPER;
-				type = "MONSTER_WHISPER",
-				default = false,
-			},
-			[5] = {
-				type = "MONSTER_BOSS_EMOTE",
-				default = false,
-			},
-			[6] = {
-				type = "MONSTER_BOSS_WHISPER",
-				default = false,
-			}
-		},
-	
-		OTHER = {
-			[1] = {
-				text = SKILLUPS,
-				type = "SKILL",
-				default = true,
-				},
-			[2] = {
-				text = ITEM_LOOT,
-				type = "LOOT",
-				default = true,
-				},
-			[3] = {
-				text = MONEY_LOOT,
-				type = "MONEY",
-				default = true,
-				},
-			[4] = {
-				type = "TRADESKILLS",
-				default = true,
-				},
-			[5] = {
-				type = "OPENING",
-				default = true,
-				},
-			[6] = {
-				type = "PET_INFO",
-				default = true,
-				},
-		},
-	
-		PVP = {
-			[1] = {
-				text = BG_SYSTEM_HORDE,
-				type = "BG_HORDE",
-				default = false,
-			},
-			[2] = {
-				text = BG_SYSTEM_ALLIANCE,
-				type = "BG_ALLIANCE",
-				default = false,
-			},
-			[3] = {
-				text = BG_SYSTEM_NEUTRAL,
-				type = "BG_NEUTRAL",
-				default = false,
-			},
-		},
-	
-		SYSTEM = {
-			[1] = {
-				text = SYSTEM_MESSAGES,
-				type = "SYSTEM",
-				default = false,
-			},
-			[2] = {
-				type = "ERRORS",
-				default = false,
-			},
-			[3] = {
-				type = "IGNORED",
-				default = false,
-			},
-			[4] = {
-				type = "CHANNEL",
-				default = false,
-			},
-			[5] = {
-				type = "TARGETICONS",
-				default = false,
-			},
-			[6] = {
-				type = "BN_INLINE_TOAST_ALERT",
-				default = false,
-			},
-			[7] = {
-				text = L["Addons"],
-				type = "ADDON",
-				default = play,
-			},		
-		},
-		
-		COMBAT = {
-			[1] = {
-				type = "COMBAT_XP_GAIN",
-				default = false,
-			},
-			[2] = {
-				type = "COMBAT_HONOR_GAIN",
-				default = false,
-			},
-			[3] = {
-				type = "COMBAT_FACTION_CHANGE",
-				default = false,
-			},
-			[5] = {
-				type = "COMBAT_MISC_INFO",
-				default = false,
-			},
-		},
-	},
-}
-
 
 ---------------------------------------------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------------------------------------------
@@ -977,13 +380,6 @@ SkuChatChatTypeGroup["VOICE_TEXT"] = {
 	"CHAT_MSG_VOICE_TEXT",
 } 
 
-SkuChatChatTypeGroup["COMBATLOG"] = {
-	"SKU_COMBATLOG",
-} 
-SkuChatChatTypeGroup["AUDIOLOG"] = {
-	"SKU_AUDIOLOG",
-} 
-
 ---------------------------------------------------------------------------------------------------------------------------------------
 SkuChatChatTypeGroupInverted = {} 
 for group, values in pairs(SkuChatChatTypeGroup) do
@@ -1122,11 +518,7 @@ function SkuChat_AddMessageGroup(chatFrame, group)
 	if ( info ) then
 		tinsert(chatFrame.messageTypeList, group) 
 		for index, value in pairs(info) do
-			if group == "COMBATLOG" or group == "AUDIOLOG" then
-				SkuDispatcher:RegisterEventCallback(value, SkuChat_SkuMessageEventHandler)
-			else
-				chatFrame:RegisterEvent(value) 
-			end
+			chatFrame:RegisterEvent(value) 
 		end
 	end
 end
@@ -1529,18 +921,6 @@ do
 	end
 end
 
-function SkuChat_SkuMessageEventHandler(self, event, tMessagetype, message)
-	for x = 1, #SkuOptions.db.profile["SkuChat"].tabs do
-		if tMessagetype == "COMBATLOG" and SkuOptions.db.profile["SkuChat"].tabs[x].messageTypes["SKU"] and SkuOptions.db.profile["SkuChat"].tabs[x].messageTypes["SKU"][1] == true then
-			_G[SkuOptions.db.profile["SkuChat"].tabs[x].frameName]:AddMessage(tMessagetype, message) 
-		end
-		if tMessagetype == "AUDIOLOG" and  SkuOptions.db.profile["SkuChat"].tabs[x].messageTypes["SKU"] and SkuOptions.db.profile["SkuChat"].tabs[x].messageTypes["SKU"][2] == true then
-			_G[SkuOptions.db.profile["SkuChat"].tabs[x].frameName]:AddMessage(tMessagetype, message) 
-		end
-	end
-	
-end
-
 function SkuChat_MessageEventHandler(self, event, ...)
 	--find messagetype group
 	local tMessagetype = event
@@ -1556,8 +936,6 @@ function SkuChat_MessageEventHandler(self, event, ...)
 	if ( strsub(event, 1, 8) == "CHAT_MSG" ) then
 		local arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17 = ... 
 
-		SkuNav:NavigationModeWoCoordinatesCheckTaskTrigger(arg1)
-
 		if (arg16) then
 			-- hiding sender in letterbox: do NOT even show in chat window (only shows in cinematic frame)
 			return true 
@@ -1565,16 +943,6 @@ function SkuChat_MessageEventHandler(self, event, ...)
 
 		local type = strsub(event, 10) 
 		local info = {r = nil, g = nil, b = nil, id = nil}
-
-		if SkuOptions.db.profile["SkuChat"].chatSettings.filter and SkuOptions.db.profile["SkuChat"].chatSettings.filter.terms then
-			if arg2 == "Rhonin" then
-				SkuOptions:StopSounds(15, true)
-				return true
-			end
-			if SkuOptions.db.profile["SkuChat"].chatSettings.filter.terms[string.lower(arg1)] then
-				return true
-			end
-		end
 
 		local filter = false 
 		if ( chatFilters[event] ) then
@@ -1690,7 +1058,7 @@ function SkuChat_MessageEventHandler(self, event, ...)
 		elseif (type == "LOOT") then
 			-- Append [Share] hyperlink if this is a valid social item and you are the looter.
 			-- arg5 contains the name of the player who looted
-			if C_Social and (C_Social.IsSocialEnabled() and UnitName("player") == arg5) then
+			if (C_Social and C_Social.IsSocialEnabled() and UnitName("player") == arg5) then
 				local itemID, strippedItemLink = GetItemInfoFromHyperlink(arg1) 
 				if (itemID and C_Social.GetLastItem() == itemID) then
 					arg1 = arg1 .. " " .. Social_GetShareItemLink(strippedItemLink, true) 
@@ -1709,7 +1077,7 @@ function SkuChat_MessageEventHandler(self, event, ...)
 
 		elseif ( strsub(type,1,11) == "ACHIEVEMENT" ) then
 			-- Append [Share] hyperlink
-			if C_Social and (arg12 == UnitGUID("player") and C_Social.IsSocialEnabled()) then
+			if (arg12 == UnitGUID("player") and C_Social and C_Social.IsSocialEnabled()) then
 				local achieveID = GetAchievementInfoFromHyperlink(arg1) 
 				if (achieveID) then
 					arg1 = arg1 .. " " .. Social_GetShareAchievementLink(achieveID, true) 
@@ -1719,7 +1087,7 @@ function SkuChat_MessageEventHandler(self, event, ...)
 
 		elseif ( strsub(type,1,18) == "GUILD_ACHIEVEMENT" ) then
 			local message = arg1:format(SkuChat:GetPlayerLink(arg2, ("[%s]"):format(coloredName))) 
-			if C_Social and (C_Social.IsSocialEnabled()) then
+			if (C_Social and C_Social.IsSocialEnabled()) then
 				local achieveID = GetAchievementInfoFromHyperlink(arg1) 
 				if (achieveID) then
 					local isGuildAchievement = select(12, GetAchievementInfo(achieveID)) 
@@ -2209,21 +1577,12 @@ function SkuChat:GetChannelAccessIdFromChannelName(aName)
 end
 
 ---------------------------------------------------------------------------------------------------------------------------------------
-function SkuChat:COMBAT_LOG_EVENT()
-	local text, r, g, b, a = CombatLog_OnEvent(Blizzard_CombatLog_CurrentSettings, CombatLogGetCurrentEventInfo() );
-	if ( text ) then
-		SkuDispatcher:TriggerSkuEvent("SKU_COMBATLOG", "COMBATLOG", text)
-	end
-end
-
----------------------------------------------------------------------------------------------------------------------------------------
 function SkuChat:OnInitialize()
 	SkuChat:RegisterEvent("PLAYER_ENTERING_WORLD")
 	SkuChat:RegisterEvent("PLAYER_LOGIN")
 	SkuChat:RegisterEvent("CHAT_MSG_CHANNEL_NOTICE")
 	SkuChat:RegisterEvent("CHAT_MSG_WHISPER")
 	SkuChat:RegisterEvent("CHAT_MSG_WHISPER_INFORM")
-	SkuChat:RegisterEvent("COMBAT_LOG_EVENT")
 
 	local function CloseChatMenuHelper()
 		_G["OnSkuChatToggle"].menuOpen = false
@@ -2231,12 +1590,8 @@ function SkuChat:OnInitialize()
 	end
 
 	-- OnSkuChatToggle to actually handle the chat key binds
-	tSkuCurrentLineDatalinktTextFirstLine = ""
-	tSkuCurrentLineDatalinktTextFull = ""
-	tSkuCurrentLineDatalinktItemId = ""
 	local a = _G["OnSkuChatToggle"] or CreateFrame("Button", "OnSkuChatToggle", UIParent, "SecureActionButtonTemplate")
 	a.timeCounter = 0
-	local ttime = 0
 	a:SetScript("OnUpdate", function(self, atime)
 		self.timeCounter = self.timeCounter + atime
 		if self.timeCounter > 5 then
@@ -2252,29 +1607,6 @@ function SkuChat:OnInitialize()
 				end
 			end
 			self.timeCounter = 0
-		end
-
-		ttime = ttime + atime
-		if ttime > 0.1 then
-			if SkuOptions.TTS:IsVisible() == true then
-				if IsShiftKeyDown() == false and SkuOptions.TTS:IsAutoRead() ~= true then
-					if SkuOptions.currentMenuPosition then
-						if SkuOptions.currentMenuPosition.textFullInitial then
-							SkuOptions.currentMenuPosition.textFull = SkuOptions.currentMenuPosition.textFullInitial
-						end
-						SkuOptions.currentMenuPosition.textFullInitial = nil
-						SkuOptions.currentMenuPosition.links = {}
-						SkuOptions.currentMenuPosition.linksSelected = 0
-						SkuOptions.currentMenuPosition.currentLinkName = nil
-						SkuOptions.currentMenuPosition.linksHistory = nil
-					end
-		
-					SkuOptions.TTS:Output("", -1)
-					SkuOptions.TTS:Hide()
-				end
-			end
-
-			ttime = 0
 		end
 	end)
 
@@ -2299,10 +1631,6 @@ function SkuChat:OnInitialize()
 						self:ClearBinding(self:GetAttribute("SKU_KEY_CHAT_TABPREV"))
 						self:ClearBinding(self:GetAttribute("SKU_KEY_CHAT_TABNEXT"))
 						self:ClearBinding(self:GetAttribute("SKU_KEY_CHAT_LINEMENU"))
-						self:ClearBinding(self:GetAttribute("SHIFT-DOWN"))
-						self:ClearBinding(self:GetAttribute("SHIFT-UP"))
-						self:ClearBinding(self:GetAttribute("CTRL-SHIFT-DOWN"))
-						self:ClearBinding(self:GetAttribute("CTRL-SHIFT-UP"))
 						self:ClearBinding(self:GetAttribute("ESCAPE"))
 						self:SetAttribute("ChatOpen", false)
 					end
@@ -2325,60 +1653,10 @@ function SkuChat:OnInitialize()
 
 	a:SetScript("OnClick", function(self, aKey)
 		--handle chat navigation
-		local tTextFirstLine, tTextFull = nil, "", ""
-
-		if aKey ~= "SHIFT-UP" and aKey ~= "SHIFT-DOWN" and aKey ~= "CTRL-SHIFT-UP" and aKey ~= "CTRL-SHIFT-DOWN" then
-			if SkuOptions.TTS:IsAutoRead() == true then
-				SkuOptions.TTS:ToggleAutoRead()
-				SkuOptions.Voice:StopOutputEmptyQueue(true, nil)
-			end
-			if SkuOptions.TTS:IsVisible() then
-				SkuOptions.TTS:Hide()
-			end
-		end
-
-		local tLineData = SkuOptions.db.profile["SkuChat"].tabs[SkuChat.currentTab].history[SkuOptions.db.profile["SkuChat"].tabs[SkuChat.currentTab].historyCurrentLine]
-		
-		if tLineData.itemLinks and #tLineData.itemLinks > 0 and self.menuOpen == false then
-			if self.menuOpen == false then
-				for w = 1, #tLineData.itemLinks do
-					local ltSkuCurrentLineDatalinktTextFirstLine, ltSkuCurrentLineDatalinktTextFull = "", ""
-					_G["SkuScanningTooltip"]:SetHyperlink(tLineData.itemLinks[w])
-
-					if TooltipLines_helper(_G["SkuScanningTooltip"]:GetRegions()) ~= "asd" then
-						if TooltipLines_helper(_G["SkuScanningTooltip"]:GetRegions()) ~= "" then
-							local tText = SkuChat:Unescape(TooltipLines_helper(_G["SkuScanningTooltip"]:GetRegions()))
-							ltSkuCurrentLineDatalinktTextFirstLine, ltSkuCurrentLineDatalinktTextFull = SkuCore:ItemName_helper(tText)
-						end
-					end
-					_G["SkuScanningTooltip"]:ClearLines()
-
-					if ltSkuCurrentLineDatalinktTextFirstLine ~= "" then
-						if w == 1 then
-							tSkuCurrentLineDatalinktItemId = SkuGetItemIdFromItemLink(tLineData.itemLinks[w]) 
-							tSkuCurrentLineDatalinktTextFirstLine, tSkuCurrentLineDatalinktTextFull = ltSkuCurrentLineDatalinktTextFirstLine, ltSkuCurrentLineDatalinktTextFull
-							tSkuCurrentLineDatalinktTextFull = tSkuCurrentLineDatalinktTextFirstLine.."\r\n"..tSkuCurrentLineDatalinktTextFull
-
-							local ttf = SkuCore:AuctionHouseGetAuctionPriceHistoryData(tSkuCurrentLineDatalinktItemId)
-							if not ttf then
-								ttf = {}
-							end
-							local tFull = tSkuCurrentLineDatalinktTextFull
-							if type(ttf) ~= "table" then
-								ttf = { (ttf or tSkuCurrentLineDatalinktTextFirstLine or ""), }
-							end
-							table.insert(ttf, 1, tFull)
-							SkuCore:InsertComparisnSections(tSkuCurrentLineDatalinktItemId, ttf)
-							tSkuCurrentLineDatalinktTextFull = ttf
-						end
-					end
-				end
-			end
-		end		
-
-		if self.menuOpen == false or (aKey == "SHIFT-UP" or aKey == "SHIFT-DOWN" or  aKey == "CTRL-SHIFT-UP" or aKey == "CTRL-SHIFT-DOWN") then
+		if self.menuOpen == false then
+			--if aKey == SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_CHAT_LINEMENU"].key then
 			if aKey == "CTRL-ENTER" then
-				--build/open the line menu
+					--build/open the line menu
 				self.menuOpen = true
 				SkuOptions.Menu = {}
 
@@ -2393,73 +1671,7 @@ function SkuChat:OnInitialize()
 					tAccessID = SkuChat:GetChannelAccessIdFromChannelName(tLineData.messageTypeGroup)
 				end
 
-				--[[
-				--start route
-				local _, _, _, tWpName = string.find(tLineData.body, "(.+)".."#"..L["Waypoint"]..":".."(.+)")
-				if tWpName then
-					local tWpObj = SkuNav:GetWaypointData2(tWpName)
-					if tWpObj then
-						local tNewMenuEntry = SkuOptions:InjectMenuItems(SkuOptions.Menu, {L["Start route to waypoint"]}, SkuGenericMenuItem)
-						tNewMenuEntry.isSelect = true
-						tNewMenuEntry.OnAction = function(self)
-							--print("tWpName", tWpName)
-							
-
-							C_Timer.After(0.01, function() CloseChatMenuHelper() end)
-						end
-					end
-				end
-				]]
-
-				--
-				local tLineDataitemLinks = tLineData.itemLinks
-				if tLineDataitemLinks and #tLineDataitemLinks > 0 then
-					for w = 1, #tLineDataitemLinks do
-						local ltSkuCurrentLineDatalinktTextFirstLine, ltSkuCurrentLineDatalinktTextFull = "", ""
-						local ltSkuCurrentLineDatalinktItemId = ""
-						_G["SkuScanningTooltip"]:SetHyperlink(tLineDataitemLinks[w])
-		
-						if TooltipLines_helper(_G["SkuScanningTooltip"]:GetRegions()) ~= "asd" then
-							if TooltipLines_helper(_G["SkuScanningTooltip"]:GetRegions()) ~= "" then
-								local tText = SkuChat:Unescape(TooltipLines_helper(_G["SkuScanningTooltip"]:GetRegions()))
-								ltSkuCurrentLineDatalinktTextFirstLine, ltSkuCurrentLineDatalinktTextFull = SkuCore:ItemName_helper(tText)
-							end
-						end
-						_G["SkuScanningTooltip"]:ClearLines()
-						if ltSkuCurrentLineDatalinktTextFirstLine ~= "" then
-							local tNewMenuEntry = SkuOptions:InjectMenuItems(SkuOptions.Menu, {L["link"].." "..w.." "..ltSkuCurrentLineDatalinktTextFirstLine}, SkuGenericMenuItem)
-							tNewMenuEntry.tSkuCurrentLineDatalinktTextFirstLine = ltSkuCurrentLineDatalinktTextFirstLine
-							tNewMenuEntry.tSkuCurrentLineDatalinktItemId = SkuGetItemIdFromItemLink(tLineDataitemLinks[w]) 
-							local ttf = SkuCore:AuctionHouseGetAuctionPriceHistoryData(tNewMenuEntry.tSkuCurrentLineDatalinktItemId)
-							if not ttf then
-								ttf = {}
-							end
-							local tFull = ltSkuCurrentLineDatalinktTextFull
-							if type(ttf) ~= "table" then
-								ttf = { (ttf or tSkuCurrentLineDatalinktTextFirstLine or ""), }
-							end
-							table.insert(ttf, 1, tFull)
-							SkuCore:InsertComparisnSections(tNewMenuEntry.tSkuCurrentLineDatalinktItemId, ttf)
-							tNewMenuEntry.tSkuCurrentLineDatalinktTextFull = ttf
-							tNewMenuEntry.OnEnter = function(self, aValue, aName)
-								tSkuCurrentLineDatalinktTextFirstLine, tSkuCurrentLineDatalinktTextFull = self.tSkuCurrentLineDatalinktTextFirstLine, self.tSkuCurrentLineDatalinktTextFull
-								tSkuCurrentLineDatalinktItemId = self.tSkuCurrentLineDatalinktItemId
-							end
-					
-							if w == 1 then
-								tSkuCurrentLineDatalinktTextFirstLine, tSkuCurrentLineDatalinktTextFull = ltSkuCurrentLineDatalinktTextFirstLine, ttf
-								tSkuCurrentLineDatalinktItemId = SkuGetItemIdFromItemLink(tLineDataitemLinks[w]) 
-							end
-						end
-					end
-				end
-
-
-				--
 				local tNewMenuEntry = SkuOptions:InjectMenuItems(SkuOptions.Menu, {L["send to channel"]}, SkuGenericMenuItem)
-				tNewMenuEntry.OnEnter = function(self, aValue, aName)
-					tSkuCurrentLineDatalinktTextFirstLine, tSkuCurrentLineDatalinktTextFull, tSkuCurrentLineDatalinktItemId = "", "", ""
-				end
 				tNewMenuEntry.isSelect = true
 				tNewMenuEntry.OnAction = function(self)
 					if tAccessID then
@@ -2472,9 +1684,6 @@ function SkuChat:OnInitialize()
 				end
 
 				local tNewMenuEntry = SkuOptions:InjectMenuItems(SkuOptions.Menu, {L["send item link to channel"]}, SkuGenericMenuItem)
-				tNewMenuEntry.OnEnter = function(self, aValue, aName)
-					tSkuCurrentLineDatalinktTextFirstLine, tSkuCurrentLineDatalinktTextFull, tSkuCurrentLineDatalinktItemId = "", "", ""
-				end
 				tNewMenuEntry.dynamic = true
 				tNewMenuEntry.BuildChildren = function(self)
 					local tBagSlotListSorted = {
@@ -2535,10 +1744,7 @@ function SkuChat:OnInitialize()
 				--whisper
 				if tLineData.arg2 then
 					local tNewMenuEntry = SkuOptions:InjectMenuItems(SkuOptions.Menu, {L["whisper sender"]}, SkuGenericMenuItem)
-					tNewMenuEntry.OnEnter = function(self, aValue, aName)
-						tSkuCurrentLineDatalinktTextFirstLine, tSkuCurrentLineDatalinktTextFull, tSkuCurrentLineDatalinktItemId = "", "", ""
-					end
-						tNewMenuEntry.isSelect = true
+					tNewMenuEntry.isSelect = true
 					tNewMenuEntry.OnAction = function(self)
 						if tLineData.messageTypeGroup ~= "BN_WHISPER" then
 							SkuChat:SetEditboxToCustom("WHISPER", MaskBattleNetNames(tLineData.arg2), "")
@@ -2552,10 +1758,7 @@ function SkuChat:OnInitialize()
 				--invite
 				if tLineData.arg2 then
 					local tNewMenuEntry = SkuOptions:InjectMenuItems(SkuOptions.Menu, {L["invite sender"]}, SkuGenericMenuItem)
-					tNewMenuEntry.OnEnter = function(self, aValue, aName)
-						tSkuCurrentLineDatalinktTextFirstLine, tSkuCurrentLineDatalinktTextFull, tSkuCurrentLineDatalinktItemId = "", "", ""
-					end
-						tNewMenuEntry.isSelect = true
+					tNewMenuEntry.isSelect = true
 					tNewMenuEntry.OnAction = function(self)
 						InviteUnit(MaskBattleNetNames(tLineData.arg2))
 						C_Timer.After(0.01, function() CloseChatMenuHelper() end)
@@ -2572,10 +1775,7 @@ function SkuChat:OnInitialize()
 				--copy sender name
 				if tLineData.arg2 then
 					local tNewMenuEntry = SkuOptions:InjectMenuItems(SkuOptions.Menu, {L["copy sender name"]}, SkuGenericMenuItem)
-					tNewMenuEntry.OnEnter = function(self, aValue, aName)
-						tSkuCurrentLineDatalinktTextFirstLine, tSkuCurrentLineDatalinktTextFull, tSkuCurrentLineDatalinktItemId = "", "", ""
-					end
-						tNewMenuEntry.isSelect = true
+					tNewMenuEntry.isSelect = true
 					tNewMenuEntry.OnAction = function(self)
 						PlaySound(88)
 						SkuOptions.Voice:OutputStringBTtts(L["Copy text with control plus C and press escape"], true, true, 0.2, nil, nil, nil, 2)
@@ -2588,9 +1788,6 @@ function SkuChat:OnInitialize()
 
 				--copy line
 				local tNewMenuEntry = SkuOptions:InjectMenuItems(SkuOptions.Menu, {L["copy chat line"]}, SkuGenericMenuItem)
-				tNewMenuEntry.OnEnter = function(self, aValue, aName)
-					tSkuCurrentLineDatalinktTextFirstLine, tSkuCurrentLineDatalinktTextFull, tSkuCurrentLineDatalinktItemId = "", "", ""
-				end
 				tNewMenuEntry.isSelect = true
 				tNewMenuEntry.OnAction = function(self)
 					PlaySound(88)
@@ -2603,9 +1800,6 @@ function SkuChat:OnInitialize()
 
 				--copy all lines
 				local tNewMenuEntry = SkuOptions:InjectMenuItems(SkuOptions.Menu, {L["copy all chat lines"]}, SkuGenericMenuItem)
-				tNewMenuEntry.OnEnter = function(self, aValue, aName)
-					tSkuCurrentLineDatalinktTextFirstLine, tSkuCurrentLineDatalinktTextFull, tSkuCurrentLineDatalinktItemId = "", "", ""
-				end
 				tNewMenuEntry.isSelect = true
 				tNewMenuEntry.OnAction = function(self)
 					PlaySound(88)
@@ -2632,10 +1826,7 @@ function SkuChat:OnInitialize()
 				--add friend
 				if tLineData.arg2 then
 					local tNewMenuEntry = SkuOptions:InjectMenuItems(SkuOptions.Menu, {L["add sender to friend list"]}, SkuGenericMenuItem)
-					tNewMenuEntry.OnEnter = function(self, aValue, aName)
-						tSkuCurrentLineDatalinktTextFirstLine, tSkuCurrentLineDatalinktTextFull, tSkuCurrentLineDatalinktItemId = "", "", ""
-					end
-						tNewMenuEntry.isSelect = true
+					tNewMenuEntry.isSelect = true
 					tNewMenuEntry.OnAction = function(self)
 						PlaySound(88)
 						SkuOptions.Voice:OutputStringBTtts(L["Notiz eingeben und Enter drücken"], true, true, 0.2, nil, nil, nil, 2)
@@ -2652,10 +1843,7 @@ function SkuChat:OnInitialize()
 				--ignore
 				if tLineData.arg2 then
 					local tNewMenuEntry = SkuOptions:InjectMenuItems(SkuOptions.Menu, {L["ignore sender"]}, SkuGenericMenuItem)
-					tNewMenuEntry.OnEnter = function(self, aValue, aName)
-						tSkuCurrentLineDatalinktTextFirstLine, tSkuCurrentLineDatalinktTextFull, tSkuCurrentLineDatalinktItemId = "", "", ""
-					end
-						tNewMenuEntry.isSelect = true
+					tNewMenuEntry.isSelect = true
 					tNewMenuEntry.OnAction = function(self)
 						PlaySound(88)
 						if tLineData.arg2 then
@@ -2666,9 +1854,6 @@ function SkuChat:OnInitialize()
 				end	
 
 				local tNewMenuEntry = SkuOptions:InjectMenuItems(SkuOptions.Menu, {L["Clear history"]}, SkuGenericMenuItem)
-				tNewMenuEntry.OnEnter = function(self, aValue, aName)
-					tSkuCurrentLineDatalinktTextFirstLine, tSkuCurrentLineDatalinktTextFull, tSkuCurrentLineDatalinktItemId = "", "", ""
-				end
 				tNewMenuEntry.isSelect = true
 				tNewMenuEntry.OnAction = function(self)
 					PlaySound(88)
@@ -2686,9 +1871,6 @@ function SkuChat:OnInitialize()
 				end
 
 				local tNewMenuEntry = SkuOptions:InjectMenuItems(SkuOptions.Menu, {L["Delete tab"]}, SkuGenericMenuItem)
-				tNewMenuEntry.OnEnter = function(self, aValue, aName)
-					tSkuCurrentLineDatalinktTextFirstLine, tSkuCurrentLineDatalinktTextFull, tSkuCurrentLineDatalinktItemId = "", "", ""
-				end
 				tNewMenuEntry.isSelect = true
 				tNewMenuEntry.OnAction = function(self)
 					PlaySound(88)
@@ -2700,81 +1882,6 @@ function SkuChat:OnInitialize()
 				SkuOptions.Voice:OutputStringBTtts(SkuOptions.Menu[1].name, true, true, 0.3, nil, nil, nil, 2)
 
 			--more chat/tab navigation
-
-
-
-
-
-
-
-			elseif aKey ==  "SHIFT-UP" then
-				SkuOptions.currentMenuPosition = SkuOptions.currentMenuPosition or {}
-				SkuOptions.currentMenuPosition.textFull = tSkuCurrentLineDatalinktTextFull
-				if SkuOptions.currentMenuPosition.textFull ~= "" then
-					local tTextFull = SkuOptions:AddExtraTooltipData(SkuOptions.currentMenuPosition.textFull, tSkuCurrentLineDatalinktItemId)
-					if not SkuOptions.TTS:IsVisible() then
-						SkuOptions.TTS:Output(tTextFull, 1000)
-					end
-					SkuOptions.currentMenuPosition.links = {}
-					SkuOptions.currentMenuPosition.linksSelected = 0
-					if SkuOptions.TTS:IsAutoRead() == true then
-						SkuOptions.TTS:ToggleAutoRead()
-						SkuOptions.TTS.AutoReadEventFlag = nil
-					end					
-					SkuOptions.TTS:PreviousLine(SkuOptions.currentMenuPosition.ttsEngine)
-				end
-			
-			elseif aKey ==  "SHIFT-DOWN" then
-				SkuOptions.currentMenuPosition = SkuOptions.currentMenuPosition or {}
-				SkuOptions.currentMenuPosition.textFull = tSkuCurrentLineDatalinktTextFull
-				if SkuOptions.currentMenuPosition.textFull ~= "" then
-					local tTextFull = SkuOptions:AddExtraTooltipData(SkuOptions.currentMenuPosition.textFull, tSkuCurrentLineDatalinktItemId)
-					if SkuOptions.TTS:IsVisible() == false then
-						SkuOptions.TTS:Output(tTextFull, 1000)
-					end
-					SkuOptions.currentMenuPosition.links = {}
-					SkuOptions.currentMenuPosition.linksSelected = 0
-					if SkuOptions.TTS:IsAutoRead() == true then
-						SkuOptions.TTS:ToggleAutoRead()
-						SkuOptions.TTS.AutoReadEventFlag = nil
-					end					
-					SkuOptions.TTS:NextLine(SkuOptions.currentMenuPosition.ttsEngine)
-				end
-			
-			elseif aKey ==  "CTRL-SHIFT-UP" then
-				SkuOptions.currentMenuPosition = SkuOptions.currentMenuPosition or {}
-				SkuOptions.currentMenuPosition.textFull = tSkuCurrentLineDatalinktTextFull
-				if SkuOptions.currentMenuPosition.textFull ~= "" then
-					local tTextFull = SkuOptions:AddExtraTooltipData(SkuOptions.currentMenuPosition.textFull, tSkuCurrentLineDatalinktItemId)
-					if not SkuOptions.TTS:IsVisible() then
-						SkuOptions.TTS:Output(tTextFull, 1000)
-					end
-					SkuOptions.currentMenuPosition.links = {}
-					SkuOptions.currentMenuPosition.linksSelected = 0
-					if SkuOptions.TTS:IsAutoRead() == true then
-						SkuOptions.TTS:ToggleAutoRead()
-						SkuOptions.TTS.AutoReadEventFlag = nil
-					end					
-					SkuOptions.TTS:PreviousSection(SkuOptions.currentMenuPosition.ttsEngine)
-				end
-			
-			elseif aKey ==  "CTRL-SHIFT-DOWN" then
-				SkuOptions.currentMenuPosition = SkuOptions.currentMenuPosition or {}
-				SkuOptions.currentMenuPosition.textFull = tSkuCurrentLineDatalinktTextFull
-				if SkuOptions.currentMenuPosition.textFull ~= "" then
-					local tTextFull = SkuOptions:AddExtraTooltipData(SkuOptions.currentMenuPosition.textFull, tSkuCurrentLineDatalinktItemId)
-					if not SkuOptions.TTS:IsVisible() then
-						SkuOptions.TTS:Output(tTextFull, 1000)
-					end
-					SkuOptions.currentMenuPosition.links = {}
-					SkuOptions.currentMenuPosition.linksSelected = 0
-					if SkuOptions.TTS:IsAutoRead() == true then
-						SkuOptions.TTS:ToggleAutoRead()
-						SkuOptions.TTS.AutoReadEventFlag = nil
-					end					
-					SkuOptions.TTS:NextSection(SkuOptions.currentMenuPosition.ttsEngine)
-				end
-			
 			elseif aKey == "UP" then
 			--elseif aKey == SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_CHAT_LINEPREV"].key then
 			local tHistoryCurrentLine = SkuOptions.db.profile["SkuChat"].tabs[SkuChat.currentTab].historyCurrentLine
@@ -2782,23 +1889,17 @@ function SkuChat:OnInitialize()
 					SkuOptions.db.profile["SkuChat"].tabs[SkuChat.currentTab].historyCurrentLine = tHistoryCurrentLine - 1
 				end
 				SkuChat:ReadLine(SkuChat.currentTab, SkuOptions.db.profile["SkuChat"].tabs[SkuChat.currentTab].historyCurrentLine)
-				local tLineData = SkuOptions.db.profile["SkuChat"].tabs[SkuChat.currentTab].history[SkuOptions.db.profile["SkuChat"].tabs[SkuChat.currentTab].historyCurrentLine]
-				if (not tLineData.itemLinks or #tLineData.itemLinks == 0) and self.menuOpen == false then
-					tSkuCurrentLineDatalinktTextFirstLine, tSkuCurrentLineDatalinktTextFull, tSkuCurrentLineDatalinktItemId = "", "", ""
-				end
 
 			elseif aKey == "DOWN" then
+			--elseif aKey == SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_CHAT_LINENEXT"].key then
 				local tHistoryCurrentLine = SkuOptions.db.profile["SkuChat"].tabs[SkuChat.currentTab].historyCurrentLine
 				if tHistoryCurrentLine < #SkuOptions.db.profile["SkuChat"].tabs[SkuChat.currentTab].history then
 					SkuOptions.db.profile["SkuChat"].tabs[SkuChat.currentTab].historyCurrentLine = tHistoryCurrentLine + 1
 				end
 				SkuChat:ReadLine(SkuChat.currentTab, SkuOptions.db.profile["SkuChat"].tabs[SkuChat.currentTab].historyCurrentLine)
-				local tLineData = SkuOptions.db.profile["SkuChat"].tabs[SkuChat.currentTab].history[SkuOptions.db.profile["SkuChat"].tabs[SkuChat.currentTab].historyCurrentLine]
-				if (not tLineData.itemLinks or #tLineData.itemLinks == 0) and self.menuOpen == false then
-					tSkuCurrentLineDatalinktTextFirstLine, tSkuCurrentLineDatalinktTextFull, tSkuCurrentLineDatalinktItemId = "", "", ""
-				end
 
 			elseif aKey == "LEFT" then
+			--elseif aKey == SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_CHAT_TABPREV"].key then
 				if SkuChat.currentTab > 1 then
 					SkuChat.currentTab = SkuChat.currentTab - 1
 				else
@@ -2808,12 +1909,9 @@ function SkuChat:OnInitialize()
 					SkuOptions.db.profile["SkuChat"].tabs[SkuChat.currentTab].historyCurrentLine = 1
 				end
 				SkuChat:ReadLine(SkuChat.currentTab, SkuOptions.db.profile["SkuChat"].tabs[SkuChat.currentTab].historyCurrentLine, true)
-				local tLineData = SkuOptions.db.profile["SkuChat"].tabs[SkuChat.currentTab].history[SkuOptions.db.profile["SkuChat"].tabs[SkuChat.currentTab].historyCurrentLine]
-				if (not tLineData.itemLinks or #tLineData.itemLinks == 0) and self.menuOpen == false then
-					tSkuCurrentLineDatalinktTextFirstLine, tSkuCurrentLineDatalinktTextFull, tSkuCurrentLineDatalinktItemId = "", "", ""
-				end
 
 			elseif aKey == "RIGHT" then
+			--elseif aKey == SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_CHAT_TABNEXT"].key then
 				if SkuChat.currentTab < #SkuOptions.db.profile["SkuChat"].tabs then
 					SkuChat.currentTab = SkuChat.currentTab + 1
 				else
@@ -2823,10 +1921,6 @@ function SkuChat:OnInitialize()
 					SkuOptions.db.profile["SkuChat"].tabs[SkuChat.currentTab].historyCurrentLine = 1
 				end
 				SkuChat:ReadLine(SkuChat.currentTab, SkuOptions.db.profile["SkuChat"].tabs[SkuChat.currentTab].historyCurrentLine, true)
-				local tLineData = SkuOptions.db.profile["SkuChat"].tabs[SkuChat.currentTab].history[SkuOptions.db.profile["SkuChat"].tabs[SkuChat.currentTab].historyCurrentLine]
-				if (not tLineData.itemLinks or #tLineData.itemLinks == 0) and self.menuOpen == false then
-					tSkuCurrentLineDatalinktTextFirstLine, tSkuCurrentLineDatalinktTextFull, tSkuCurrentLineDatalinktItemId = "", "", ""
-				end
 
 			end
 
@@ -2834,6 +1928,7 @@ function SkuChat:OnInitialize()
 		else
 			--if user is leaving the line menu with SKU_KEY_CHAT_TABPREV
 			if aKey == "LEFT" and self.menuOpen == true then
+			--if aKey == SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_CHAT_TABPREV"].key and self.menuOpen == true then
 				CloseChatMenuHelper()
 				SkuChat:ReadLine(SkuChat.currentTab, SkuOptions.db.profile["SkuChat"].tabs[SkuChat.currentTab].historyCurrentLine)
 			end
@@ -2845,21 +1940,22 @@ function SkuChat:OnInitialize()
 					SkuOptions:VocalizeCurrentMenuName(true)
 				end
 				if aKey == "UP" then
+				--if aKey == SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_CHAT_LINEPREV"].key then
 					SkuOptions.currentMenuPosition:OnPrev()
 					SkuOptions:VocalizeCurrentMenuName(true)
 				end
 				if aKey == "DOWN" then
+				--if aKey == SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_CHAT_LINENEXT"].key then
 					SkuOptions.currentMenuPosition:OnNext()
 					SkuOptions:VocalizeCurrentMenuName(true)
 				end
 				--menu entry selected
 				if aKey == "CTRL-ENTER" then
+				--if aKey == SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_CHAT_LINEMENU"].key then
 					SkuOptions.currentMenuPosition:OnAction()
 				end
-
 			end
 		end
-
 	end)
 end
 
@@ -2885,10 +1981,6 @@ function SkuChat:OnEnable()
 			self:SetBindingClick(true, self:GetAttribute("SKU_KEY_CHAT_TABPREV"), "OnSkuChatToggle", self:GetAttribute("SKU_KEY_CHAT_TABPREV"))
 			self:SetBindingClick(true, self:GetAttribute("SKU_KEY_CHAT_TABNEXT"), "OnSkuChatToggle", self:GetAttribute("SKU_KEY_CHAT_TABNEXT"))
 			self:SetBindingClick(true, self:GetAttribute("SKU_KEY_CHAT_LINEMENU"), "OnSkuChatToggle", self:GetAttribute("SKU_KEY_CHAT_LINEMENU"))
-			self:SetBindingClick(true, self:GetAttribute("SHIFT-DOWN"), "OnSkuChatToggle", self:GetAttribute("SHIFT-DOWN"))
-			self:SetBindingClick(true, self:GetAttribute("SHIFT-UP"), "OnSkuChatToggle", self:GetAttribute("SHIFT-UP"))
-			self:SetBindingClick(true, self:GetAttribute("CTRL-SHIFT-DOWN"), "OnSkuChatToggle", self:GetAttribute("CTRL-SHIFT-DOWN"))
-			self:SetBindingClick(true, self:GetAttribute("CTRL-SHIFT-UP"), "OnSkuChatToggle", self:GetAttribute("CTRL-SHIFT-UP"))
 			self:SetBindingClick(true, self:GetAttribute("ESCAPE"), "OnSkuChatToggleSecureHandler", self:GetAttribute("ESCAPE"))
 			self:SetAttribute("ChatOpen", true)
 		else
@@ -2899,10 +1991,6 @@ function SkuChat:OnEnable()
 				self:ClearBinding(self:GetAttribute("SKU_KEY_CHAT_TABPREV"))
 				self:ClearBinding(self:GetAttribute("SKU_KEY_CHAT_TABNEXT"))
 				self:ClearBinding(self:GetAttribute("SKU_KEY_CHAT_LINEMENU"))
-				self:ClearBinding(self:GetAttribute("SHIFT-DOWN"))
-				self:ClearBinding(self:GetAttribute("SHIFT-UP"))
-				self:ClearBinding(self:GetAttribute("CTRL-SHIFT-DOWN"))
-				self:ClearBinding(self:GetAttribute("CTRL-SHIFT-UP"))
 				self:ClearBinding(self:GetAttribute("ESCAPE"))
 				self:SetAttribute("ChatOpen", false)
 			end
@@ -2913,15 +2001,19 @@ function SkuChat:OnEnable()
 	b:Hide()
 
 	-- attributes with button names for SetBindingClick. can only be updated ooc
+	--[[
+	b:SetAttribute("SKU_KEY_CHAT_LINEPREV", SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_CHAT_LINEPREV"].key)
+	b:SetAttribute("SKU_KEY_CHAT_LINENEXT", SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_CHAT_LINENEXT"].key)
+	b:SetAttribute("SKU_KEY_CHAT_TABPREV", SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_CHAT_TABPREV"].key)
+	b:SetAttribute("SKU_KEY_CHAT_TABNEXT", SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_CHAT_TABNEXT"].key)
+	b:SetAttribute("SKU_KEY_CHAT_LINEMENU", SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_CHAT_LINEMENU"].key)
+	]]
 	b:SetAttribute("SKU_KEY_CHAT_LINEPREV", "UP")
 	b:SetAttribute("SKU_KEY_CHAT_LINENEXT", "DOWN")
 	b:SetAttribute("SKU_KEY_CHAT_TABPREV", "LEFT")
 	b:SetAttribute("SKU_KEY_CHAT_TABNEXT", "RIGHT")
 	b:SetAttribute("SKU_KEY_CHAT_LINEMENU", "CTRL-ENTER")
-	b:SetAttribute("SHIFT-DOWN", "SHIFT-DOWN")
-	b:SetAttribute("SHIFT-UP", "SHIFT-UP")
-	b:SetAttribute("CTRL-SHIFT-DOWN", "CTRL-SHIFT-DOWN")
-	b:SetAttribute("CTRL-SHIFT-UP", "CTRL-SHIFT-UP")
+
 	b:SetAttribute("ESCAPE", "ESCAPE")
 	b:SetAttribute("ChatOpen", false)
 
@@ -2964,8 +2056,6 @@ end
 function SkuChat:NewWhisperTab(aType, ...)
 	if SkuOptions.db.profile[MODULE_NAME].chatSettings.openWhispersInNewTab == true then
 		local event, text, playerName, languageName, channelName, playerName2, specialFlags, zoneChannelID, channelIndex, channelBaseName, languageID, lineID, guid, bnSenderID, isMobile, isSubtitle, hideSenderInLetterbox, supressRaidIcons = ...
-
-		--print("NewWhisperTab", aType, event, text, playerName, languageName, channelName, playerName2, specialFlags, zoneChannelID, channelIndex, channelBaseName, languageID, lineID, guid, bnSenderID, isMobile, isSubtitle, hideSenderInLetterbox, supressRaidIcons)
 
 		playerName = SkuChat:GetFullPlayerName(playerName)
 		playerName2 = SkuChat:GetFullPlayerName(playerName2)
@@ -3023,13 +2113,8 @@ function SkuChat:NewWhisperTab(aType, ...)
 			SkuOptions.db.profile["SkuChat"].tabs[tTabNumber].channels = {}
 			SkuChat:InitTab(tTabNumber)
 
-			C_Timer.After(0.1, function() 
-				--print("cu", SkuOptions.db.profile["SkuChat"].tabs[tTabNumber].history[1])
-				if SkuOptions.db.profile["SkuChat"].tabs[tTabNumber].history[1] and SkuOptions.db.profile["SkuChat"].tabs[tTabNumber].history[1].body == L["Empty"] then
-					--print("C_Timer.After", _G[SkuOptions.db.profile["SkuChat"].tabs[tTabNumber].frameName], event, text, playerName, languageName, channelName, playerName2, specialFlags, zoneChannelID, channelIndex, channelBaseName, languageID, lineID, guid, bnSenderID, isMobile, isSubtitle, hideSenderInLetterbox, supressRaidIcons)
-					SkuChat_MessageEventHandler(_G[SkuOptions.db.profile["SkuChat"].tabs[tTabNumber].frameName], event, text, playerName, languageName, channelName, playerName2, specialFlags, zoneChannelID, channelIndex, channelBaseName, languageID, lineID, guid, bnSenderID, isMobile, isSubtitle, hideSenderInLetterbox, supressRaidIcons)
-				end
-			end)
+			
+			SkuChat_MessageEventHandler(_G[SkuOptions.db.profile["SkuChat"].tabs[tTabNumber].frameName], ...)
 		end
 
 		return tTabNumber
@@ -3054,13 +2139,10 @@ function SkuChat:DEFAULT_CHAT_FRAME_AddMessage(...)
 	end
 	--SkuCore:Debug((a or "nil").." "..(b or "nil").." "..(c or "nil").." "..(d or "nil").." "..(e or "nil").." "..(f or "nil"))
 	for i, v in pairs(SkuOptions.db.profile["SkuChat"].tabs) do
-
-		if v.name ~= L["Combat Log"] and v.name ~= L["Audio Log"] then
-			if _G[v.frameName] then
-				if _G[v.frameName].AddMessage then
-					if b == nil and c == nil and  d == nil and  e == nil and  f == nil then
-						_G[v.frameName]:AddMessage("ADDON", a, 1, 1, 1, 0, 0, 0, "AddMessage")
-					end
+		if _G[v.frameName] then
+			if _G[v.frameName].AddMessage then
+				if b == nil and c == nil and  d == nil and  e == nil and  f == nil then
+					_G[v.frameName]:AddMessage("ADDON", a, 1, 1, 1, 0, 0, 0, "AddMessage")
 				end
 			end
 		end
@@ -3068,24 +2150,7 @@ function SkuChat:DEFAULT_CHAT_FRAME_AddMessage(...)
 end
 
 ---------------------------------------------------------------------------------------------------------------------------------------
-function SkuChat:VARIABLES_LOADED(...)
-
-end
-
----------------------------------------------------------------------------------------------------------------------------------------
 function SkuChat:PLAYER_LOGIN(...)
-	SkuCore.outputSoundFiles["sound-newChatLine"] =L["aura;sound"].."#"..L["default new Chat Line sound"]
-	SkuCore.outputSoundFiles["sound-silence0.1"] = L["aura;sound"].."#"..L["silent"]
-	if SkuOptions.db.profile["SkuChat"].tabs then
-		for x = 1, #SkuOptions.db.profile["SkuChat"].tabs do
-			if SkuOptions.db.profile["SkuChat"].tabs[x].audioOnNewMessage == true then
-				SkuOptions.db.profile["SkuChat"].tabs[x].audioOnNewMessage = "sound-newChatLine"
-			elseif SkuOptions.db.profile["SkuChat"].tabs[x].audioOnNewMessage == false then
-				SkuOptions.db.profile["SkuChat"].tabs[x].audioOnNewMessage = "sound-silence0.1"
-			end
-		end
-	end
-
 	hooksecurefunc(DEFAULT_CHAT_FRAME, "AddMessage", SkuChat.DEFAULT_CHAT_FRAME_AddMessage)
 
 	ChatFrame1:HookScript("OnShow", function(self)
@@ -3145,317 +2210,10 @@ function SkuChat:JoinOrLeaveSkuChatChannel()
 end
 
 ---------------------------------------------------------------------------------------------------------------------------------------
-function SkuChat:CombatLogTabIndex()
-	for x = 1, #SkuOptions.db.profile["SkuChat"].tabs do
-		if SkuOptions.db.profile["SkuChat"].tabs[x].name == L["Combat Log"] then
-			return x
-		end
-	end
-end
-
----------------------------------------------------------------------------------------------------------------------------------------
-function SkuChat:InitCombatLogTab()
-	if SkuOptions.db.profile["SkuChat"].CombatLog.enabled == true then
-		if not SkuChat:CombatLogTabIndex() then
-
-			local tabIndex = SkuChat:NewTab(L["Combat Log"])
-			for i, v in pairs(SkuOptions.db.profile["SkuChat"].tabs[tabIndex].messageTypes) do
-				for u = 1, #v do
-					v[u] = false
-				end
-			end
-			for i, v in pairs(SkuOptions.db.profile["SkuChat"].tabs[tabIndex].channels) do
-				v.status = false
-			end
-
-			SkuOptions.db.profile["SkuChat"].tabs[tabIndex].audioOnNewMessage = "sound-silence0.1"
-			SkuOptions.db.profile["SkuChat"].tabs[tabIndex].messageTypes["SKU"][1] = true
-
-			SkuChat:InitTab(tabIndex)
-		end
-	else
-		if SkuChat:CombatLogTabIndex() then
-			SkuChat:DeleteTab(SkuChat:CombatLogTabIndex())
-		end
-	end
-end
-
----------------------------------------------------------------------------------------------------------------------------------------
-function SkuChat:AudioLogTabIndex()
-	for x = 1, #SkuOptions.db.profile["SkuChat"].tabs do
-		if SkuOptions.db.profile["SkuChat"].tabs[x].name == L["Audio Log"] then
-			return x
-		end
-	end
-end
-
----------------------------------------------------------------------------------------------------------------------------------------
-function SkuChat:InitAudioLogTab()
-	if SkuOptions.db.profile["SkuChat"].AudioLog.enabled == true then
-		if not SkuChat:AudioLogTabIndex() then
-			local tabIndex = SkuChat:NewTab(L["Audio Log"])
-			for i, v in pairs(SkuOptions.db.profile["SkuChat"].tabs[tabIndex].messageTypes) do
-				for u = 1, #v do
-					v[u] = false
-				end
-			end
-			for i, v in pairs(SkuOptions.db.profile["SkuChat"].tabs[tabIndex].channels) do
-				v.status = false
-			end
-
-			SkuOptions.db.profile["SkuChat"].tabs[tabIndex].audioOnNewMessage = "sound-silence0.1"
-			SkuOptions.db.profile["SkuChat"].tabs[tabIndex].messageTypes["SKU"][2] = true
-
-			SkuChat:InitTab(tabIndex)
-		end
-	else
-		if SkuChat:AudioLogTabIndex() then
-			SkuChat:DeleteTab(SkuChat:AudioLogTabIndex())
-		end
-	end			
-end
-
----------------------------------------------------------------------------------------------------------------------------------------
-local function CreateSkuDefaultFilters()
-	SkuOptions.db.global["SkuChat"] = SkuOptions.db.global["SkuChat"] or {}
-	SkuOptions.db.global["SkuChat"].CombatLogFilters = SkuOptions.db.global["SkuChat"].CombatLogFilters or {
-		[1] = {
-			custom = false,
-			name = "Everything",
-			hasQuickButton = true,
-			quickButtonName = "Everything",
-			quickButtonDisplay = {
-				solo = true,
-				party = true,
-				raid = true,
-			},
-			tooltip = "Everything",
-			settings = CopyTable(COMBATLOG_DEFAULT_SETTINGS),
-			colors = CopyTable(COMBATLOG_DEFAULT_COLORS),
-			filters = {
-				[1] = {
-					eventList = Blizzard_CombatLog_GenerateFullEventList(),
-					sourceFlags = {
-						--[COMBATLOG_FILTER_ME] = true,
-						[COMBATLOG_FILTER_MINE] = true,
-						[COMBATLOG_FILTER_MY_PET] = true,
-						[COMBATLOG_FILTER_FRIENDLY_UNITS] = true,
-						[COMBATLOG_FILTER_HOSTILE_PLAYERS] = true,
-						[COMBATLOG_FILTER_HOSTILE_UNITS] = true,
-						[COMBATLOG_FILTER_NEUTRAL_UNITS] = true,
-						[COMBATLOG_FILTER_UNKNOWN_UNITS] = true,
-						--[COMBATLOG_FILTER_EVERYTHING] = false,
-					},
-				},
-				[2] = {
-					eventList = Blizzard_CombatLog_GenerateFullEventList(),
-					destFlags = {
-						--[COMBATLOG_FILTER_ME] = true,
-						[COMBATLOG_FILTER_MINE] = true,
-						[COMBATLOG_FILTER_MY_PET] = true,
-						[COMBATLOG_FILTER_FRIENDLY_UNITS] = true,
-						[COMBATLOG_FILTER_HOSTILE_PLAYERS] = true,
-						[COMBATLOG_FILTER_HOSTILE_UNITS] = true,
-						[COMBATLOG_FILTER_NEUTRAL_UNITS] = true,
-						[COMBATLOG_FILTER_UNKNOWN_UNITS] = true,
-						--[COMBATLOG_FILTER_EVERYTHING] = false,
-					},
-				},				
-			},
-		},
-		[2] = {
-			custom = false,
-			name = "My actions",
-			hasQuickButton = true,
-			quickButtonName = "My actions",
-			quickButtonDisplay = {
-				solo = true,
-				party = true,
-				raid = true,
-			},
-			tooltip = "My actions",
-			settings = CopyTable(COMBATLOG_DEFAULT_SETTINGS),
-			colors = CopyTable(COMBATLOG_DEFAULT_COLORS),
-			filters = {
-				[1] = {
-					eventList = {
-						["ENVIRONMENTAL_DAMAGE"] = false,
-						["SWING_DAMAGE"] = true,
-						["SWING_MISSED"] = false,
-						["RANGE_DAMAGE"] = true,
-						["RANGE_MISSED"] = false,
-						--["SPELL_CAST_START"] = true,
-						--["SPELL_CAST_SUCCESS"] = true,
-						--["SPELL_CAST_FAILED"] = true,
-						["SPELL_MISSED"] = false,
-						["SPELL_DAMAGE"] = true,
-						["SPELL_HEAL"] = true,
-						["SPELL_ENERGIZE"] = true,
-						["SPELL_DRAIN"] = false,
-						["SPELL_LEECH"] = false,
-						["SPELL_INSTAKILL"] = false,
-						["SPELL_INTERRUPT"] = false,
-						["SPELL_EXTRA_ATTACKS"] = false,
-						["SPELL_DURABILITY_DAMAGE"] = false,
-						["SPELL_DURABILITY_DAMAGE_ALL"] = false,
-						["SPELL_AURA_APPLIED"] = false,
-						["SPELL_AURA_APPLIED_DOSE"] = false,
-						["SPELL_AURA_REMOVED"] = false,
-						["SPELL_AURA_REMOVED_DOSE"] = false,
-						["SPELL_AURA_BROKEN"] = false,
-					  ["SPELL_AURA_BROKEN_SPELL"] = false,
-					  ["SPELL_AURA_REFRESH"] = false,
-						["SPELL_DISPEL"] = false,
-						["SPELL_STOLEN"] = false,
-						["ENCHANT_APPLIED"] = false,
-						["ENCHANT_REMOVED"] = false,
-						["SPELL_PERIODIC_MISSED"] = false,
-						["SPELL_PERIODIC_DAMAGE"] = true,
-						["SPELL_PERIODIC_HEAL"] = true,
-						["SPELL_PERIODIC_ENERGIZE"] = true,
-						["SPELL_PERIODIC_DRAIN"] = false,
-						["SPELL_PERIODIC_LEECH"] = false,
-						["SPELL_DISPEL_FAILED"] = false,
-						--["DAMAGE_SHIELD"] = true,
-						--["DAMAGE_SHIELD_MISSED"] = true,
-						["DAMAGE_SPLIT"] = true,
-						["PARTY_KILL"] = true,
-						["UNIT_DIED"] = false,
-						["UNIT_DESTROYED"] = true,
-						["UNIT_DISSIPATES"] = true,
-					  ["UNIT_LOYALTY"] = false
-					};
-					sourceFlags = {
-						[COMBATLOG_FILTER_MINE] = true
-					};
-					destFlags = nil;
-				},
-				[2] = {
-					eventList = {
-						--["ENVIRONMENTAL_DAMAGE"] = true,
-						["SWING_DAMAGE"] = true,
-						["SWING_MISSED"] = true,
-						["RANGE_DAMAGE"] = true,
-						["RANGE_MISSED"] = true,
-						--["SPELL_CAST_START"] = true,
-						--["SPELL_CAST_SUCCESS"] = true,
-						--["SPELL_CAST_FAILED"] = true,
-						["SPELL_MISSED"] = true,
-						["SPELL_DAMAGE"] = true,
-						["SPELL_HEAL"] = true,
-						["SPELL_ENERGIZE"] = true,
-						["SPELL_DRAIN"] = true,
-						["SPELL_LEECH"] = true,
-						["SPELL_INSTAKILL"] = true,
-						["SPELL_INTERRUPT"] = true,
-						["SPELL_EXTRA_ATTACKS"] = true,
-						["SPELL_DURABILITY_DAMAGE"] = true,
-						["SPELL_DURABILITY_DAMAGE_ALL"] = true,
-						--["SPELL_AURA_APPLIED"] = true,
-						--["SPELL_AURA_APPLIED_DOSE"] = true,
-						--["SPELL_AURA_REMOVED"] = true,
-						--["SPELL_AURA_REMOVED_DOSE"] = true,
-						["SPELL_DISPEL"] = true,
-						["SPELL_STOLEN"] = true,
-						["ENCHANT_APPLIED"] = true,
-						["ENCHANT_REMOVED"] = true,
-						--["SPELL_PERIODIC_MISSED"] = true,
-						--["SPELL_PERIODIC_DAMAGE"] = true,
-						--["SPELL_PERIODIC_HEAL"] = true,
-						--["SPELL_PERIODIC_ENERGIZE"] = true,
-						--["SPELL_PERIODIC_DRAIN"] = true,
-						--["SPELL_PERIODIC_LEECH"] = true,
-						["SPELL_DISPEL_FAILED"] = true,
-						--["DAMAGE_SHIELD"] = true,
-						--["DAMAGE_SHIELD_MISSED"] = true,
-						["DAMAGE_SPLIT"] = true,
-						["PARTY_KILL"] = true,
-						["UNIT_DIED"] = true,
-						["UNIT_DESTROYED"] = true,
-						["UNIT_DISSIPATES"] = true,
-					  ["UNIT_LOYALTY"] = false
-					};
-					sourceFlags = nil;
-					destFlags =  {
-						[COMBATLOG_FILTER_MINE] = false,
-						[COMBATLOG_FILTER_MY_PET] = false;
-					};
-				},				
-			},
-		},
-		[3] = {
-			custom = false,
-			name = "What happend to me",
-			hasQuickButton = true,
-			quickButtonName = "What happend to me",
-			quickButtonDisplay = {
-				solo = true,
-				party = true,
-				raid = true,
-			},
-			tooltip = "What happend to me",
-			settings = CopyTable(COMBATLOG_DEFAULT_SETTINGS),
-			colors = CopyTable(COMBATLOG_DEFAULT_COLORS),
-			filters = {
-				[1] = {
-					eventList = {
-					      ["ENVIRONMENTAL_DAMAGE"] = true,
-					      ["SWING_DAMAGE"] = true,
-					      ["RANGE_DAMAGE"] = true,
-					      ["SPELL_DAMAGE"] = true,
-					      ["SPELL_HEAL"] = true,
-					      ["SPELL_PERIODIC_DAMAGE"] = true,
-					      ["SPELL_PERIODIC_HEAL"] = true,
-					      ["DAMAGE_SPLIT"] = true,
-					      ["UNIT_DIED"] = true,
-					      ["UNIT_DESTROYED"] = true,
-					      ["UNIT_DISSIPATES"] = true
-					};
-					sourceFlags = Blizzard_CombatLog_GenerateFullFlagList(false);
-					destFlags = nil;
-				};
-				[2] = {
-					eventList = Blizzard_CombatLog_GenerateFullEventList();
-					sourceFlags = nil;
-					destFlags =  {
-						[COMBATLOG_FILTER_MINE] = true,
-						[COMBATLOG_FILTER_MY_PET] = false;
-					};
-				};
-			},
-		},				
-	}
-end
-
----------------------------------------------------------------------------------------------------------------------------------------
 local SkuChatEditboxHookFlag = false
 function SkuChat:PLAYER_ENTERING_WORLD(...)
 	local event, isInitialLogin, isReloadingUi = ...
 
-	--init combat log stuff
-	SkuOptions.db.profile["SkuChat"].CombatLog = SkuOptions.db.profile["SkuChat"].CombatLog or {
-		enabled = false,
-		currentFilter = 1,
-	}
-
-	-- we need to delay this to entering world because of global constants availablity
-	CreateSkuDefaultFilters()
-
-	if not SkuOptions.db.global["SkuChat"].CombatLogFilters[SkuOptions.db.profile["SkuChat"].CombatLog.currentFilter] then
-		SkuOptions.db.profile["SkuChat"].CombatLog.currentFilter = 1
-	end
-
-	Blizzard_CombatLog_CurrentSettings = SkuOptions.db.global["SkuChat"].CombatLogFilters[SkuOptions.db.profile["SkuChat"].CombatLog.currentFilter]
-	Blizzard_CombatLog_ApplyFilters(Blizzard_CombatLog_CurrentSettings)
-	
-
-	--init audio log stuff
-	SkuOptions.db.profile["SkuChat"].AudioLog = SkuOptions.db.profile["SkuChat"].AudioLog or {
-		enabled = false,
-	}
-
-
-	--remove aws polly dev voices on my system
 	SkuChat.WowTtsVoices = {}
 	for i, v in pairs(C_VoiceChat.GetTtsVoices()) do
 		if not string.find(v.name, "Polly") then
@@ -3464,20 +2222,9 @@ function SkuChat:PLAYER_ENTERING_WORLD(...)
 	end
 	SkuChat.options.args.WowTtsVoice.values = SkuChat.WowTtsVoices
 
-	--create default tabs
 	if not SkuOptions.db.profile["SkuChat"].tabs or #SkuOptions.db.profile["SkuChat"].tabs == 0 then
 		SkuOptions.db.profile["SkuChat"].tabs = {}
 		SkuChat:NewTab(L["Default"])
-		SkuChat:NewTab(L["Communication"])
-		SkuChat:NewTab(L["Other"])
-	end
-
-	--init filters
-	if not SkuOptions.db.profile["SkuChat"].chatSettings.filter then
-		SkuOptions.db.profile["SkuChat"].chatSettings.filter = {}
-	end
-	if not SkuOptions.db.profile["SkuChat"].chatSettings.filter.terms then
-		SkuOptions.db.profile["SkuChat"].chatSettings.filter.terms = {}
 	end
 
 	--update types for existing tabs; just to add new types with new releases
@@ -3508,13 +2255,7 @@ function SkuChat:PLAYER_ENTERING_WORLD(...)
 
 	SkuChat.currentTab = 1
 
-	--add new - because we want them at the last position
-	SkuChat:InitAudioLogTab()
-	SkuChat:InitCombatLogTab()	
-
-	
-	--delete history of all tabs if required
-	if SkuOptions.db.profile["SkuChat"].chatSettings.deleteHistoryOnLogin == true  and isInitialLogin == true then
+	if SkuOptions.db.profile["SkuChat"].chatSettings.deleteHistoryOnLogin == true then
 		for x = 1, #SkuOptions.db.profile["SkuChat"].tabs do
 			SkuOptions.db.profile["SkuChat"].tabs[x].history = {}
 			table.insert(SkuOptions.db.profile["SkuChat"].tabs[x].history, 1, {
@@ -3580,9 +2321,11 @@ function SkuChat:CHAT_MSG_CHANNEL_NOTICE(...)
 		for z = 1, #SkuOptions.db.profile["SkuChat"].tabs do
 			local tExists
 			for y = 1, #SkuOptions.db.profile["SkuChat"].tabs[1].channels do
-				if string.lower(SkuOptions.db.profile["SkuChat"].tabs[1].channels[y].name) == string.lower(tInternalChannelName) then
-					tExists = true
-					break
+				if SkuOptions.db.profile["SkuChat"].tabs[1].channels[y].name then
+					if string.lower(SkuOptions.db.profile["SkuChat"].tabs[1].channels[y].name) == string.lower(tInternalChannelName) then
+						tExists = true
+						break
+					end
 				end
 			end
 			if not tExists then
@@ -3602,9 +2345,11 @@ function SkuChat:CHAT_MSG_CHANNEL_NOTICE(...)
 		C_Timer.After(0, function() --we need to delay this to the next frame, as we first need the message to be processed with the channel still active for the tab
 			for x = 1, #SkuOptions.db.profile["SkuChat"].tabs do
 				for y = 1, #SkuOptions.db.profile["SkuChat"].tabs[x].channels do
-					if string.lower(SkuOptions.db.profile["SkuChat"].tabs[x].channels[y].name) == string.lower(tInternalChannelName) then
-						table.remove(SkuOptions.db.profile["SkuChat"].tabs[x].channels, y)
-						break
+					if SkuOptions.db.profile["SkuChat"].tabs[x].channels[y].name then
+						if string.lower(SkuOptions.db.profile["SkuChat"].tabs[x].channels[y].name or "one") == string.lower(tInternalChannelName or "two") then
+							table.remove(SkuOptions.db.profile["SkuChat"].tabs[x].channels, y)
+							break
+						end
 					end
 				end
 			end
@@ -3622,7 +2367,6 @@ end
 
 ---------------------------------------------------------------------------------------------------------------------------------------
 function SkuChat:ResetTab(aIndex)
-	--print("ResetTab", aIndex)
 	--set default message groups
 	if not SkuOptions.db.profile["SkuChat"].tabs[aIndex] then
 		return
@@ -3632,36 +2376,20 @@ function SkuChat:ResetTab(aIndex)
 	local tTab = SkuOptions.db.profile["SkuChat"].tabs[aIndex]
 	for tCatName, tData in pairs(SkuChat.ChatFrameMessageTypes) do
 		for x = 1, #tData do
-			if SkuChat.ChatFrameDefaultTabs[tTab.name] and SkuChat.ChatFrameDefaultTabs[tTab.name][tCatName] then
-				tTab.messageTypes[tCatName][x] = SkuChat.ChatFrameDefaultTabs[tTab.name][tCatName][x].default
-			else
-				tTab.messageTypes[tCatName][x] = tData[x].default
-			end
+			tTab.messageTypes[tCatName][x] = tData[x].default
 		end
 	end
 
 	--set default channels
-	if tTab.name == L["Default"] then
-		tTab.channels = {
-			[1] = {name = "General", status = true},
-			[2] = {name = "Trade", status = true},
-			[3] = {name = "LocalDefense", status = true},
-			[4] = {name = "WorldDefense", status = true},
-			[5] = {name = "GuildRecruitment", status = true},
-			[6] = {name = "LookingForGroup", status = true},
-			[7] = {name = "SkuChat", status = play},
-		}
-	else
-		tTab.channels = {
-			[1] = {name = "General", status = false},
-			[2] = {name = "Trade", status = false},
-			[3] = {name = "LocalDefense", status = false},
-			[4] = {name = "WorldDefense", status = false},
-			[5] = {name = "GuildRecruitment", status = false},
-			[6] = {name = "LookingForGroup", status = false},
-			[7] = {name = "SkuChat", status = false},
-		}
-	end
+	tTab.channels = {
+		[1] = {name = "General", status = true},
+		[2] = {name = "Trade", status = true},
+		[3] = {name = "LocalDefense", status = true},
+		[4] = {name = "WorldDefense", status = true},
+		[5] = {name = "GuildRecruitment", status = true},
+		[6] = {name = "LookingForGroup", status = true},
+		[7] = {name = "SkuChat", status = play},
+	}
 
 	--set custom channels
 	local tChannelList = {GetChannelList()}
@@ -3673,19 +2401,14 @@ function SkuChat:ResetTab(aIndex)
 			end
 		end
 		if not tExists then
-			if tTab.name == L["Default"] then
-				tTab.channels[#tTab.channels + 1] = {name = tChannelList[x + 1], status = true}
-			else
-				tTab.channels[#tTab.channels + 1] = {name = tChannelList[x + 1], status = false}
-			end
+			tTab.channels[#tTab.channels + 1] = {name = tChannelList[x + 1], status = true}
 		end
 	end
 
 	tTab.privateMessages = nil
 	tTab.excludePrivateMessages = nil
 
-	
-	tTab.history = tTab.history or {}
+	tTab.history = {}
 	table.insert(tTab.history, 1, {
 		body = L["Empty"], 
 		messageTypeGroup = "SAY", 
@@ -3695,7 +2418,6 @@ function SkuChat:ResetTab(aIndex)
 		arg2 = nil, 
 		time = time(),
 	})		
-	
 
 	return true
 end
@@ -3729,7 +2451,6 @@ end
 
 ---------------------------------------------------------------------------------------------------------------------------------------
 function SkuChat:InitTab(tNewTabIndex)
-	--print("InitTab")
 	--build virtual chat frame that is registering chat events
 	local a = _G[SkuOptions.db.profile["SkuChat"].tabs[tNewTabIndex].frameName] or CreateFrame("Button", SkuOptions.db.profile["SkuChat"].tabs[tNewTabIndex].frameName, UIParent, "SecureActionButtonTemplate")
 	a.tab = SkuOptions.db.profile["SkuChat"].tabs[tNewTabIndex]
@@ -3774,35 +2495,18 @@ function SkuChat:InitTab(tNewTabIndex)
 	SkuChat_RemoveAllMessageGroups(a)
 	for tCName, tData in pairs(SkuOptions.db.profile["SkuChat"].tabs[tNewTabIndex].messageTypes) do
 		for x = 1, #tData do
-			if tData[x] ~= false or (tCName == "CREATURE_MESSAGES" and x == 4) then
+			if tData[x] ~= false then
 				if SkuChatChatTypeGroup[SkuChat.ChatFrameMessageTypes[tCName][x].type] then
 					SkuChat_AddMessageGroup(a, SkuChat.ChatFrameMessageTypes[tCName][x].type)
 				else
 					SkuChat_AddSingleMessageType(a, SkuChat.ChatFrameMessageTypes[tCName][x].type)
 				end
-
 			end
 		end
 	end
 
 	--AddMessage handler
 	function a:AddMessage(messageTypeGroup, body, r, g, b, id, accessID, typeID, arg2)
-		
-		if messageTypeGroup ~= "ADDON" then
-			--print(messageTypeGroup, body, r, g, b, id, accessID, typeID, arg2)
-		end
-		
-		local tLink = string.match(body, "|Hitem:(.+)|h%[")
-		if tLink then
-			tLink = "item:"..tLink
-		end
-
-		local tItemLinks = {}
-		for i in string.gmatch(body, "|Hitem:([^Hitem]+)|h%[") do
-			tItemLinks[#tItemLinks + 1] = "item:"..i
-			dprint(string.gsub(i, "|", "!"))
-		end
-		
 		if not body then
 			return
 		end
@@ -3810,8 +2514,6 @@ function SkuChat:InitTab(tNewTabIndex)
 		if body == "" or body == " " then
 			return
 		end
-
-
 
 		--mask bnet names
 		local tNewBody
@@ -3832,10 +2534,6 @@ function SkuChat:InitTab(tNewTabIndex)
 					tAudio = a.tab.channels[x].status
 				end
 			end
-		end
-
-		if string.find(body, "Debug:") then
-			tAudio = false
 		end
 
 		--process
@@ -3862,21 +2560,17 @@ function SkuChat:InitTab(tNewTabIndex)
 				SkuOptions.Voice:OutputStringBTtts(tFlatBody, false, true, 0.2, nil, nil, nil, 2)
 			end
 
-			if a.tab.audioOnNewMessage then
+			if a.tab.audioOnNewMessage == true then
 				if SkuCore.inCombat == true then
 					SkuChatNewLineInCombat = true
 				else
-					if SkuOptions.db.profile["SkuChat"].tabs[tNewTabIndex].audioOnNewMessage ~= "sound-silence0.1" then
-						SkuOptions.Voice:OutputString(SkuOptions.db.profile["SkuChat"].tabs[tNewTabIndex].audioOnNewMessage, false, true, 0.1)
-					end
+					SkuOptions.Voice:OutputString("sound-newChatLine", false, true, 0.1)
 				end
 			end
 
 			--add to history
 			table.insert(a.tab.history, 1, {
 				body = tFlatBody,
-				link = tLink,
-				itemLinks = tItemLinks,
 				messageTypeGroup = messageTypeGroup, 
 				audio = tAudio, 
 				accessID = accessID, 
@@ -3888,9 +2582,7 @@ function SkuChat:InitTab(tNewTabIndex)
 			--change the current line if the chat is open
 			if SkuChat.ChatOpen == true then
 				if a.tab.historyCurrentLine < #a.tab.history then
-					if _G["OnSkuChatToggle"].menuOpen ~= true then
-						a.tab.historyCurrentLine = a.tab.historyCurrentLine + 1
-					end
+					a.tab.historyCurrentLine = a.tab.historyCurrentLine + 1
 				end
 			end
 
@@ -3918,7 +2610,6 @@ function SkuChat:NewTab(aName)
 				PVP = {},
 				SYSTEM = {},
 				COMBAT = {},
-				SKU = {},
 			},
 			channels = {},
 			privateMessages = {},
@@ -3926,7 +2617,7 @@ function SkuChat:NewTab(aName)
 			history = {},
 			historyCurrentLine = 1,
 			historyMax = SkuChat.defaultHistoryMax,
-			audioOnNewMessage = "sound-newChatLine",--SkuOptions.db.profile[MODULE_NAME].chatSettings.audioOnNewMessage,
+			audioOnNewMessage = SkuOptions.db.profile[MODULE_NAME].chatSettings.audioOnNewMessage,
 			createdAt = time(),
 			lastActivityAt = time(),
 		}
