@@ -4,6 +4,10 @@
 
 
 -------------------------------------------------------------------------------------------------------
+Changes in Sku Era r32.32
+	- Fixed a bug with resource scanning and notifications on resources.
+
+-------------------------------------------------------------------------------------------------------
 Changes in Sku Era r32.31
 	- Updated the chat module to the current Wrath version (including Read Chat Links feature in line context menu, etc.)
 

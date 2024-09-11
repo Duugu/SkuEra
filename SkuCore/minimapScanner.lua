@@ -476,6 +476,13 @@ function SkuCore:MinimapScanFast()
       Questie.db.global.enableMiniMapIcons = false
    end
 
+   --the tracking frame is blocking the scan in era
+   if _G["MiniMapTrackingFrame"] then
+      if _G["MiniMapTrackingFrame"]:IsShown() == true then
+         _G["MiniMapTrackingFrame"]:Hide()
+      end
+   end
+
    if not tInitialCenterMouse then
       tInitialCenterMouse = true
       SkuCore:GameWorldObjectsCenterMouseCursor(0.5)
