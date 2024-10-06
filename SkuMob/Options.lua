@@ -109,10 +109,85 @@ function SkuMob:MenuBuilder(aParentEntry)
 	--dprint("SkuMob:MenuBuilder", aParentEntry)
 	local tNewSubMenuEntry = SkuOptions:InjectMenuItems(aParentEntry, {L["Target menu"]}, SkuGenericMenuItem)
 	if _G["TargetFrame"] then
-		tNewSubMenuEntry.macrotext = "/click TargetFrame RightButton\r\n/script SkuCore:CheckFrames() C_Timer.After(0.8, function() _G[\"DropDownList1\"]:GetScript(\"OnEnter\")(_G[\"DropDownList1\"]) end)"
+		tNewSubMenuEntry.macrotext = "/click TargetFrame RightButton"
 	end
 
 	local tNewMenuEntry =  SkuOptions:InjectMenuItems(aParentEntry, {L["Options"]}, SkuGenericMenuItem)
 	tNewMenuEntry.filterable = true
 	SkuOptions:IterateOptionsArgs(SkuMob.options.args, tNewMenuEntry, SkuOptions.db.profile[MODULE_NAME])
+end
+
+---------------------------------------------------------------------------------------------------------------------------------------
+--hook CreateContextMenu to get notified
+local thooked = MenuUtil.CreateContextMenu
+local function hooknew(a, b, c, d)
+	print("CreateContextMenu", a, b, c, d)
+	C_Timer.After(0.1, function()
+		SkuMob:CreateAndUpdateSkuMenuFrame()
+	end)
+	local result = thooked(a, b, c, d)
+	return result
+end
+MenuUtil.CreateContextMenu = hooknew
+
+---------------------------------------------------------------------------------------------------------------------------------------
+-- build SABs to be mapped to unnamed menu entries to reference them by a name
+function SkuMob:CreateAndUpdateSkuMenuFrame()
+	if SkuCore.inCombat == true then
+		return
+	end
+	
+	if not _G["SkuMenuFrame"] then
+		local tSkuMenuFrame = CreateFrame("Button", "SkuMenuFrame", _G["UIParent"])
+		tSkuMenuFrame:SetPoint("CENTER", _G["UIParent"], "CENTER")
+		tSkuMenuFrame:SetSize(0, 0)
+		tSkuMenuFrame:Hide()
+
+		for x = 1, 100 do
+			local tFrame = CreateFrame("Button", "SkuCoreSecureMenuButton"..x, tSkuMenuFrame, "SecureActionButtonTemplate, UIPanelButtonTemplate")
+			tFrame:SetAttribute("type", "click")
+			tFrame:SetAttribute("clickbutton", nil)		
+			tFrame:SetPoint("CENTER", _G["SkuMenuFrame"], "CENTER", 0, -(x * 20))
+			tFrame:SetSize(0, 0)
+			tFrame:SetText("")
+			tFrame:RegisterForClicks("AnyDown", "AnyUp")
+			tFrame:Hide()
+		end
+	end
+
+	if _G["SkuMenuFrame"]:IsShown() then
+		_G["SkuMenuFrame"]:Hide()
+	end
+	for x = 1, 100 do
+		if _G["SkuCoreSecureMenuButton"..x]:IsShown() then
+			_G["SkuCoreSecureMenuButton"..x]:Hide()
+		end
+	end
+
+	if not Menu.GetManager() then
+		return
+	end
+	if not Menu.GetManager():GetOpenMenu() then
+		return
+	end
+	if not Menu.GetManager():GetOpenMenu():GetLayoutChildren() then
+		return
+	end
+
+	local counter = 1
+	for i, child in ipairs(Menu.GetManager():GetOpenMenu():GetLayoutChildren()) do
+		if child.frameTemplateOrFrameType == "Button" then
+			if child.fontString then
+				if child.fontString.GetText then
+					_G["SkuMenuFrame"]:Show()
+					local tFrame = _G["SkuCoreSecureMenuButton"..counter]
+					tFrame:SetAttribute("type", "click")
+					tFrame:SetAttribute("clickbutton", child)
+					tFrame:SetText(child.fontString:GetText())
+					tFrame:Show()
+					counter = counter + 1
+				end
+			end
+		end
+	end
 end

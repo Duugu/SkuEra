@@ -3177,7 +3177,7 @@ function SkuCore:QuestFrame(aParentChilds)
 			local tQuestInfoRewardsFrameChilds = aParent[tFriendlyName].childs
 
 			local tc = 1
-			if QuestInfoRewardsFrame.spellHeaderPool then
+			if QuestInfoRewardsFrame.spellHeaderPool and QuestInfoRewardsFrame.spellHeaderPool.numActiveObjects then
 				if QuestInfoRewardsFrame.spellHeaderPool.numActiveObjects > 0 then
 					for i, v in QuestInfoRewardsFrame.spellHeaderPool:EnumerateActive() do
 						local tButton = i
@@ -3208,7 +3208,7 @@ function SkuCore:QuestFrame(aParentChilds)
 			end
 
 			local tc = 1
-			if QuestInfoRewardsFrame.spellRewardPool then
+			if QuestInfoRewardsFrame.spellRewardPool and QuestInfoRewardsFrame.spellRewardPool.numActiveObjects then
 				if QuestInfoRewardsFrame.spellRewardPool.numActiveObjects > 0 then
 					for i, v in QuestInfoRewardsFrame.spellRewardPool:EnumerateActive() do
 						local tButton = i

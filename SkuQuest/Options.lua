@@ -1628,12 +1628,14 @@ function SkuQuest:GetUnsortedAvailableQuestsTable()
 			if SkuDB.NpcData.Data[tQuestGiverID][SkuDB.NpcData.Keys["spawns"]] then
 				if SkuDB.NpcData.Data[tQuestGiverID][SkuDB.NpcData.Keys["spawns"]][tUiMap] then
 					local tSpawnX, tSpawnY = SkuDB.NpcData.Data[tQuestGiverID][SkuDB.NpcData.Keys["spawns"]][tUiMap][1][1], SkuDB.NpcData.Data[tQuestGiverID][SkuDB.NpcData.Keys["spawns"]][tUiMap][1][2]
-					local tContintentId = select(3, SkuNav:GetAreaData(is))
-					local _, worldPosition = C_Map.GetWorldPosFromMapPos(SkuNav:GetUiMapIdFromAreaId(tUiMap), CreateVector2D(tonumber(tSpawnX) / 100, tonumber(tSpawnY) / 100))
-					local tX, tY = worldPosition:GetXY()
-					local tDistance, _  = SkuNav:Distance(tPlayX, tPlayY, tX, tY)
-					tUnSortedTable[SkuDB.questLookup[Sku.Loc][i][1]] = {tDistance, tX, tY, i}
-					tIdTable[tDistance..L[";Meter"].."#"..SkuDB.questLookup[Sku.Loc][i][1]] = i
+					if tSpawnX ~= -1 and tSpawnY ~= -1 then
+						local tContintentId = select(3, SkuNav:GetAreaData(is))
+						local _, worldPosition = C_Map.GetWorldPosFromMapPos(SkuNav:GetUiMapIdFromAreaId(tUiMap), CreateVector2D(tonumber(tSpawnX) / 100, tonumber(tSpawnY) / 100))
+						local tX, tY = worldPosition:GetXY()
+						local tDistance, _  = SkuNav:Distance(tPlayX, tPlayY, tX, tY)
+						tUnSortedTable[SkuDB.questLookup[Sku.Loc][i][1]] = {tDistance, tX, tY, i}
+						tIdTable[tDistance..L[";Meter"].."#"..SkuDB.questLookup[Sku.Loc][i][1]] = i
+					end
 				end
 			end
 		elseif SkuDB.questDataTBC[i] and SkuDB.questDataTBC[i][SkuDB.questKeys["startedBy"]] and SkuDB.questDataTBC[i][SkuDB.questKeys["startedBy"]][2] then
@@ -1643,12 +1645,14 @@ function SkuQuest:GetUnsortedAvailableQuestsTable()
 			if tObjectSpawns then
 				if tObjectSpawns[tUiMap] then
 					local tSpawnX, tSpawnY = tObjectSpawns[tUiMap][1][1], tObjectSpawns[tUiMap][1][2]
-					local tContintentId = select(3, SkuNav:GetAreaData(is))
-					local _, worldPosition = C_Map.GetWorldPosFromMapPos(SkuNav:GetUiMapIdFromAreaId(tUiMap), CreateVector2D(tonumber(tSpawnX) / 100, tonumber(tSpawnY) / 100))
-					local tX, tY = worldPosition:GetXY()
-					local tDistance, _  = SkuNav:Distance(tPlayX, tPlayY, tX, tY)
-					tUnSortedTable[SkuDB.questLookup[Sku.Loc][i][1]] = {tDistance, tX, tY, i}
-					tIdTable[tDistance..L[";Meter"].."#"..SkuDB.questLookup[Sku.Loc][i][1]] = i
+					if tSpawnX ~= -1 and tSpawnY ~= -1 then
+						local tContintentId = select(3, SkuNav:GetAreaData(is))
+						local _, worldPosition = C_Map.GetWorldPosFromMapPos(SkuNav:GetUiMapIdFromAreaId(tUiMap), CreateVector2D(tonumber(tSpawnX) / 100, tonumber(tSpawnY) / 100))
+						local tX, tY = worldPosition:GetXY()
+						local tDistance, _  = SkuNav:Distance(tPlayX, tPlayY, tX, tY)
+						tUnSortedTable[SkuDB.questLookup[Sku.Loc][i][1]] = {tDistance, tX, tY, i}
+						tIdTable[tDistance..L[";Meter"].."#"..SkuDB.questLookup[Sku.Loc][i][1]] = i
+					end
 				end
 			end
 		else

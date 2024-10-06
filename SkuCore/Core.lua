@@ -194,6 +194,7 @@ SkuCore.interactFramesList = {
 	--"ContainerFrame5",
 	--"ContainerFrame6",
 	"DropDownList1",
+	"SkuMenuFrame",
 	"TalentFrame",
 	--"AuctionFrame",
 	"ClassTrainerFrame",
@@ -877,26 +878,28 @@ function SkuCore:OnEnable()
 	local tTrainerSkillsUpdated
 	local ttime = 0
 	local f = _G["SkuCoreControl"] or CreateFrame("Frame", "SkuCoreControl", UIParent)
+	local tClassTrainerFrameHooked = false
 	f:SetScript("OnUpdate", function(self, time)
-		if ClassTrainerFrame then
-			if ClassTrainerFrame:IsShown() == true and tTrainerSkillsUpdated == nil then
-				tTrainerSkillsUpdated = true
-				C_Timer.After(0.2, function() 
-					ClassTrainerFrameFilterDropDownButton:Click()
-					C_Timer.After(0.2, function() 
-						if DropDownList1Button1.checked ~= 1 then 
-							DropDownList1Button1:Click()
-						end
-						if DropDownList1Button2.checked == 1 then 
-							DropDownList1Button2:Click()
-						end
-						if DropDownList1Button3.checked == 1 then 
-							DropDownList1Button3:Click()
-						end
-						ClassTrainerFrameFilterDropDownButton:Click()
-					end)
+		if ClassTrainerFrame and tClassTrainerFrameHooked == false then
+			tClassTrainerFrameHooked = true
+			SetTrainerServiceTypeFilter("available", true)
+			SetTrainerServiceTypeFilter("unavailable", false)
+			SetTrainerServiceTypeFilter("used", false)
+			if _G["ClassTrainerSkill2"] then
+				C_Timer.After(0.1, function()
+					_G["ClassTrainerSkill2"]:Click("LeftMouse")
 				end)
 			end
+			ClassTrainerFrame:HookScript("OnShow", function()
+				SetTrainerServiceTypeFilter("available", true)
+				SetTrainerServiceTypeFilter("unavailable", false)
+				SetTrainerServiceTypeFilter("used", false)
+				if _G["ClassTrainerSkill2"] then
+					C_Timer.After(0.1, function()
+						_G["ClassTrainerSkill2"]:Click("LeftMouse")
+					end)
+				end
+			end)
 		end
 
 		if _G["StaticPopup1Button2"] then
@@ -2480,6 +2483,7 @@ local friendlyFrameNames = {
 	["PetStableFrame"] = L["Pet Stable"],
 	["MailFrame"] = L["Mail"],
 	["ContainerFrame1"] = L["local Bags"],
+	["SkuMenuFrame"] = L["Dropdown Menu"],
 	--["ContainerFrame2"] = L["Bag 2"],
 	--["ContainerFrame3"] = L["Bag 3"],
 	--["ContainerFrame4"] = L["Bag 4"],
@@ -2953,6 +2957,8 @@ function SkuCore:CheckFrames(aForceLocalRoot, aDontClose)
 		return
 	end
 	
+	SkuMob:CreateAndUpdateSkuMenuFrame()
+
 	SkuCore.GossipList = {}
 	C_Timer.After(0.01, function() --This is because the content of some frames is not instantly available on show. We do need to wait a few milliseconds on it.
 		SkuCore.GossipList = {}

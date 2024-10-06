@@ -5,13 +5,7 @@
 
 -------------------------------------------------------------------------------------------------------
 Changes in Sku Era r32.32
-	- toc updated
 	- Fixed a bug with resource scanning and notifications on resources.
-	- Fixed the trainer frame.
-	- Fixed a bug with deeprun tram zone.
-	- Fixed a bug with the quest rewards frame.
-	- Fixed the Mob > Target Menu feature.
-
 
 -------------------------------------------------------------------------------------------------------
 Changes in Sku Era r32.31

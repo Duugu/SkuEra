@@ -1,4 +1,4 @@
-## Interface-Classic: 11505
+## Interface-Classic: 11500
 ## Title: SkuEra (32.32)
 ## SavedVariables: SkuOptionsDB, SkuTranslatedData
 ## Dependencies: SkuBeaconSoundsets
