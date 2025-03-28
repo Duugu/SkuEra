@@ -2,6 +2,13 @@
 - Sku Era Addon Release Notes
 -------------------------------------------------------------------------------------------------------	
 
+-------------------------------------------------------------------------------------------------------
+Changes in Sku Era r32.33
+	- Toc updated
+	- Fixed an issue with Blizzard interface options API
+	- Atlas Loot integration added for Era realms (Core > Atlas Loot). You need to download this Atlas Loot version for Era: https://www.curseforge.com/wow/addons/atlaslootclassic-erahcsod
+		No idea if it is working with other versions for SoD, etc.
+
 
 -------------------------------------------------------------------------------------------------------
 Changes in Sku Era r32.32

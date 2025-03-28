@@ -2108,6 +2108,7 @@ function SkuCore:PLAYER_ENTERING_WORLD(...)
 		SkuCore:AuctionHouseOnLogin()
 		SkuCore:MinimapScannerOnLogin()
 		SkuCore:DialogKeyLogin()
+		SkuCore:alItegrationLogin()
 
 		if not SkuOptions.db.char[MODULE_NAME] then
 			SkuOptions.db.char[MODULE_NAME] = {}

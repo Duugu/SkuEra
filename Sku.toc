@@ -1,8 +1,8 @@
-## Interface-Classic: 11505
-## Title: SkuEra (32.32)
+## Interface-Classic: 11507
+## Title: SkuEra (32.33)
 ## SavedVariables: SkuOptionsDB, SkuTranslatedData
 ## Dependencies: SkuBeaconSoundsets
-## Version: 32.32
+## Version: 32.33
 
 SkuAudioData\assets\SkuAudioFileIndex.lua
 SkuAudioData\assets\SkuAudioDataLenIndex.lua
@@ -41,6 +41,7 @@ SkuCore\aq.lua
 SkuCore\aqCombat.lua
 SkuCore\dialogkey.lua
 SkuCore\damageMeter.lua
+SkuCore\alIntegration.lua
 SkuCore\turnToUnit.lua
 SkuCore\Options.lua
 SkuCore\Macro.lua

@@ -186,10 +186,7 @@ do
 
 		frame:SetScript("OnShow",frameOnShow)
 		frame:SetScript("OnHide",frameOnClose)
-		--frame:SetResizeBounds(240,240)
-		frame:SetMinResize(240,240)
-		frame:SetMaxResize(500,500)
-
+		frame:SetResizeBounds(240,240)
 		frame:SetToplevel(true)
 
 		local titlebg = frame:CreateTexture(nil, "BACKGROUND")

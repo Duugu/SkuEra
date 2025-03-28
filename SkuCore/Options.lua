@@ -2525,6 +2525,13 @@ function SkuCore:MenuBuilder(aParentEntry)
 	tNewMenuParentEntry.filterable = true
 	tNewMenuParentEntry.BuildChildren = SkuCore.MacroMenuBuilder
 
+	
+	local tNewMenuParentEntry =  SkuOptions:InjectMenuItems(aParentEntry, {L["Atlas Loot"]}, SkuGenericMenuItem)
+	tNewMenuParentEntry.dynamic = true
+	tNewMenuParentEntry.filterable = true
+	tNewMenuParentEntry.BuildChildren = SkuCore.alIntegrationMenuBuilder	
+	
+
 	--[[
 	if Sku.IsEraSoD == true then
 		local tNewMenuParentEntry =  SkuOptions:InjectMenuItems(aParentEntry, {L["Runes"]}, SkuGenericMenuItem)
