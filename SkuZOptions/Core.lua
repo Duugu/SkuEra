@@ -2953,11 +2953,11 @@ function SkuOptions:OnEnable()
 	end
 
 	if SkuOptions.db.profile["SkuOptions"].soundChannels.MasterVolume == -1 then
-		SkuOptions.db.profile["SkuOptions"].soundChannels.MasterVolume = math.floor(GetCVar("Sound_MasterVolume") * 100)
-		SkuOptions.db.profile["SkuOptions"].soundChannels.SFXVolume = math.floor(GetCVar("Sound_SFXVolume") * 100)
-		SkuOptions.db.profile["SkuOptions"].soundChannels.MusicVolume = math.floor(GetCVar("Sound_MusicVolume") * 100)
-		SkuOptions.db.profile["SkuOptions"].soundChannels.AmbienceVolume = math.floor(GetCVar("Sound_AmbienceVolume") * 100)
-		SkuOptions.db.profile["SkuOptions"].soundChannels.DialogVolume = math.floor(GetCVar("Sound_DialogVolume") * 100)
+		SkuOptions.db.profile["SkuOptions"].soundChannels.MasterVolume = math.floor(C_CVar.GetCVar("Sound_MasterVolume") * 100)
+		SkuOptions.db.profile["SkuOptions"].soundChannels.SFXVolume = math.floor(C_CVar.GetCVar("Sound_SFXVolume") * 100)
+		SkuOptions.db.profile["SkuOptions"].soundChannels.MusicVolume = math.floor(C_CVar.GetCVar("Sound_MusicVolume") * 100)
+		SkuOptions.db.profile["SkuOptions"].soundChannels.AmbienceVolume = math.floor(C_CVar.GetCVar("Sound_AmbienceVolume") * 100)
+		SkuOptions.db.profile["SkuOptions"].soundChannels.DialogVolume = math.floor(C_CVar.GetCVar("Sound_DialogVolume") * 100)
 
 		SkuOptions.db.profile["SkuOptions"].soundSettings.Sound_EnableReverb = C_CVar.GetCVar("Sound_EnableReverb") == "1"
 		SkuOptions.db.profile["SkuOptions"].soundSettings.Sound_EnablePositionalLowPassFilter = C_CVar.GetCVar("Sound_EnablePositionalLowPassFilter") == "1"
@@ -2968,11 +2968,11 @@ function SkuOptions:OnEnable()
 	end
 
 	--set the sound channel volumes
-	GetCVar("Sound_MasterVolume", SkuOptions.db.profile["SkuOptions"].soundChannels.MasterVolume / 100)
-	GetCVar("Sound_SFXVolume", SkuOptions.db.profile["SkuOptions"].soundChannels.SFXVolume / 100)
-	GetCVar("Sound_MusicVolume", SkuOptions.db.profile["SkuOptions"].soundChannels.MusicVolume / 100)
-	GetCVar("Sound_AmbienceVolume", SkuOptions.db.profile["SkuOptions"].soundChannels.AmbienceVolume / 100)
-	GetCVar("Sound_DialogVolume", SkuOptions.db.profile["SkuOptions"].soundChannels.DialogVolume / 100)
+	C_CVar.SetCVar("Sound_MasterVolume", SkuOptions.db.profile["SkuOptions"].soundChannels.MasterVolume / 100)
+	C_CVar.SetCVar("Sound_SFXVolume", SkuOptions.db.profile["SkuOptions"].soundChannels.SFXVolume / 100)
+	C_CVar.SetCVar("Sound_MusicVolume", SkuOptions.db.profile["SkuOptions"].soundChannels.MusicVolume / 100)
+	C_CVar.SetCVar("Sound_AmbienceVolume", SkuOptions.db.profile["SkuOptions"].soundChannels.AmbienceVolume / 100)
+	C_CVar.SetCVar("Sound_DialogVolume", SkuOptions.db.profile["SkuOptions"].soundChannels.DialogVolume / 100)
 
 	--set more sound options
 	local tbValues = {["true"] = "1", ["false"] = "0"}

@@ -125,7 +125,7 @@ SkuOptions.options = {
 						type = "range",
 						set = function(info,val)
 							SkuOptions.db.profile[MODULE_NAME].soundChannels.MasterVolume = val
-							BlizzardOptionsPanel_SetCVarSafe("Sound_MasterVolume", SkuOptions.db.profile["SkuOptions"].soundChannels.MasterVolume / 100)
+							C_CVar.SetCVar("Sound_MasterVolume", SkuOptions.db.profile["SkuOptions"].soundChannels.MasterVolume / 100)
 						end,
 						get = function(info)
 							return SkuOptions.db.profile[MODULE_NAME].soundChannels.MasterVolume
@@ -138,7 +138,7 @@ SkuOptions.options = {
 						type = "range",
 						set = function(info,val)
 							SkuOptions.db.profile[MODULE_NAME].soundChannels.SFXVolume = val
-							BlizzardOptionsPanel_SetCVarSafe("Sound_SFXVolume", SkuOptions.db.profile["SkuOptions"].soundChannels.SFXVolume / 100)
+							C_CVar.SetCVar("Sound_SFXVolume", SkuOptions.db.profile["SkuOptions"].soundChannels.SFXVolume / 100)
 						end,
 						get = function(info)
 							return SkuOptions.db.profile[MODULE_NAME].soundChannels.SFXVolume
@@ -151,7 +151,7 @@ SkuOptions.options = {
 						type = "range",
 						set = function(info,val)
 							SkuOptions.db.profile[MODULE_NAME].soundChannels.MusicVolume = val
-							BlizzardOptionsPanel_SetCVarSafe("Sound_MusicVolume", SkuOptions.db.profile["SkuOptions"].soundChannels.MusicVolume / 100)
+							C_CVar.SetCVar("Sound_MusicVolume", SkuOptions.db.profile["SkuOptions"].soundChannels.MusicVolume / 100)
 						end,
 						get = function(info)
 							return SkuOptions.db.profile[MODULE_NAME].soundChannels.MusicVolume
@@ -164,7 +164,7 @@ SkuOptions.options = {
 						type = "range",
 						set = function(info,val)
 							SkuOptions.db.profile[MODULE_NAME].soundChannels.AmbienceVolume = val
-							BlizzardOptionsPanel_SetCVarSafe("Sound_AmbienceVolume", SkuOptions.db.profile["SkuOptions"].soundChannels.AmbienceVolume / 100)
+							C_CVar.SetCVar("Sound_AmbienceVolume", SkuOptions.db.profile["SkuOptions"].soundChannels.AmbienceVolume / 100)
 						end,
 						get = function(info)
 							return SkuOptions.db.profile[MODULE_NAME].soundChannels.AmbienceVolume
@@ -177,7 +177,7 @@ SkuOptions.options = {
 						type = "range",
 						set = function(info,val)
 							SkuOptions.db.profile[MODULE_NAME].soundChannels.DialogVolume = val
-							BlizzardOptionsPanel_SetCVarSafe("Sound_DialogVolume", SkuOptions.db.profile["SkuOptions"].soundChannels.DialogVolume / 100)
+							C_CVar.SetCVar("Sound_DialogVolume", SkuOptions.db.profile["SkuOptions"].soundChannels.DialogVolume / 100)
 						end,
 						get = function(info)
 							return SkuOptions.db.profile[MODULE_NAME].soundChannels.DialogVolume

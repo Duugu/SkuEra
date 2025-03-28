@@ -3,6 +3,11 @@
 -------------------------------------------------------------------------------------------------------	
 
 -------------------------------------------------------------------------------------------------------
+Changes in Sku Era r32.34
+	- Fixed an errors with sounds channel settings (Options > Options > Audio Channels)
+	
+
+-------------------------------------------------------------------------------------------------------
 Changes in Sku Era r32.33
 	- Toc updated
 	- Fixed an issue with Blizzard interface options API
