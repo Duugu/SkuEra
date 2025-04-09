@@ -938,7 +938,7 @@ function SkuCore:OnEnable()
 			if IsFalling() == true and SkuStatus.fallingSoundJump ~= true then
 				SkuStatus.fallingSound = SkuStatus.fallingSound or GetTime()
 				if (GetTime() - SkuStatus.fallingSound) > (SkuOptions.db.profile[MODULE_NAME].fallSettings.delay / 1000) then
-					if math.floor(((GetTime() - SkuStatus.fallingSound) - (SkuOptions.db.profile[MODULE_NAME].fallSettings.delay / 1000)) / 0.05) > tLastFallSoundNum then
+					if tLastFallSoundNum and (math.floor(((GetTime() - SkuStatus.fallingSound) - (SkuOptions.db.profile[MODULE_NAME].fallSettings.delay / 1000)) / 0.05) > tLastFallSoundNum) then
 						tLastFallSoundNum = tLastFallSoundNum + 1
 						if tLastFallSoundNum > 99 then
 							tLastFallSoundNum = 99

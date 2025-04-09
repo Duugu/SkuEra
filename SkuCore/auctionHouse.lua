@@ -878,7 +878,7 @@ OnEnterAllFlag = nil
                            _G[aGossipItemTable.containerFrameName]:GetScript("OnDragStart")(_G[aGossipItemTable.containerFrameName], "LeftButton") 
                            ClickAuctionSellItemButton() 
                      
-                           PostAuction(tCopperStartBid, tCopperBuyout, tDuration, tAmount, tNumAuctions)
+                           PostAuction(tCopperStartBid, tCopperBuyout, tDuration, tAmount, tNumAuctions, true)
                      
                            if tNumAuctions == 1 then
                               SkuOptions.Voice:OutputStringBTtts(L["Auktion erstellt"], false, true, 0.1, nil, nil, nil, 1)

@@ -3580,7 +3580,7 @@ function SkuChat:CHAT_MSG_CHANNEL_NOTICE(...)
 		for z = 1, #SkuOptions.db.profile["SkuChat"].tabs do
 			local tExists
 			for y = 1, #SkuOptions.db.profile["SkuChat"].tabs[1].channels do
-				if string.lower(SkuOptions.db.profile["SkuChat"].tabs[1].channels[y].name) == string.lower(tInternalChannelName) then
+				if SkuOptions.db.profile["SkuChat"].tabs[1].channels[y].name and string.lower(SkuOptions.db.profile["SkuChat"].tabs[1].channels[y].name) == string.lower(tInternalChannelName) then
 					tExists = true
 					break
 				end
@@ -3602,7 +3602,7 @@ function SkuChat:CHAT_MSG_CHANNEL_NOTICE(...)
 		C_Timer.After(0, function() --we need to delay this to the next frame, as we first need the message to be processed with the channel still active for the tab
 			for x = 1, #SkuOptions.db.profile["SkuChat"].tabs do
 				for y = 1, #SkuOptions.db.profile["SkuChat"].tabs[x].channels do
-					if string.lower(SkuOptions.db.profile["SkuChat"].tabs[x].channels[y].name) == string.lower(tInternalChannelName) then
+					if SkuOptions.db.profile["SkuChat"].tabs[x] ~= nil and SkuOptions.db.profile["SkuChat"].tabs[x].channels[y] ~= nil and SkuOptions.db.profile["SkuChat"].tabs[x].channels[y].name and string.lower(SkuOptions.db.profile["SkuChat"].tabs[x].channels[y].name) == string.lower(tInternalChannelName) then
 						table.remove(SkuOptions.db.profile["SkuChat"].tabs[x].channels, y)
 						break
 					end
@@ -3848,8 +3848,8 @@ function SkuChat:InitTab(tNewTabIndex)
 			end
 
 			--remove empty if this is the first line for the history
-			if a.tab.history[1] then
-				if a.tab.history[1].body == L["Empty"] then
+			if a.tab and a.tab.history and a.tab.history[1] then
+				if a.tab.history[1].body and a.tab.history[1].body == L["Empty"] then
 					a.tab.history = {}
 				end
 			end

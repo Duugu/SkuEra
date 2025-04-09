@@ -327,6 +327,10 @@ function SkuCore:aqCombatIsPartyOrRaidMember(aUnitId, aUnitGUID)
 
    if aUnitId then
       local aUnitIdGuid = UnitGUID(aUnitId)
+
+      if not aUnitIdGuid then
+         return
+      end
       
       if aqCombatIsPartyOrRaidMemberCache[aUnitIdGuid] then
          return aqCombatIsPartyOrRaidMemberCache[aUnitIdGuid]
