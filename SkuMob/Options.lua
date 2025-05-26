@@ -121,7 +121,7 @@ end
 --hook CreateContextMenu to get notified
 local thooked = MenuUtil.CreateContextMenu
 local function hooknew(a, b, c, d)
-	print("CreateContextMenu", a, b, c, d)
+	--print("CreateContextMenu", a, b, c, d)
 	C_Timer.After(0.1, function()
 		SkuMob:CreateAndUpdateSkuMenuFrame()
 	end)
