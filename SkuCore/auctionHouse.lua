@@ -162,6 +162,10 @@ end
 
 ---------------------------------------------------------------------------------------------------------------------------------------
 function SkuCore:AUCTION_HOUSE_SHOW()
+   -- this is a temp fix to avoid some blizzard bug
+   PriceDropdown = BrowsePrevPageButton
+   --
+
    SkuOptions.db.char[MODULE_NAME].AuctionLastFullScanTime = SkuOptions.db.char[MODULE_NAME].AuctionLastFullScanTime or 0
    SkuOptions.db.char[MODULE_NAME].AuctionCurrentFilter = {
       ["LevelMin"] = nil,

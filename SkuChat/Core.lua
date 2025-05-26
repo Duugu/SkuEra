@@ -3580,7 +3580,7 @@ function SkuChat:CHAT_MSG_CHANNEL_NOTICE(...)
 		for z = 1, #SkuOptions.db.profile["SkuChat"].tabs do
 			local tExists
 			for y = 1, #SkuOptions.db.profile["SkuChat"].tabs[1].channels do
-				if SkuOptions.db.profile["SkuChat"].tabs[1].channels[y].name and string.lower(SkuOptions.db.profile["SkuChat"].tabs[1].channels[y].name) == string.lower(tInternalChannelName) then
+				if tInternalChannelName and SkuOptions.db.profile["SkuChat"].tabs[1].channels[y] and SkuOptions.db.profile["SkuChat"].tabs[1].channels[y].name and string.lower(SkuOptions.db.profile["SkuChat"].tabs[1].channels[y].name) == string.lower(tInternalChannelName) then
 					tExists = true
 					break
 				end

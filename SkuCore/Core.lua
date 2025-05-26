@@ -2650,240 +2650,247 @@ function SkuCore:IterateChildren(t, tab)
 		
 		local tEmptyCounter = 1
 		for x = 1, #dtc do
-			if validTypes[dtc[x]:GetObjectType()] then
-				if dtc[x]:IsVisible() == true then
-					local tEnabled = true
-					if dtc[x].IsEnabled then tEnabled = dtc[x]:IsEnabled() end
-					if tEnabled == true then
-						local fName = GetTableID(dtc[x])
-						--dprint(tab.."   ", fName, dtc[x]:GetObjectType())
-						table.insert(tResults, fName)
-						tResults[fName] = {
-							frameName = fName,
-							RoC = "Child",
-							type = dtc[x]:GetObjectType(),
-							obj = dtc[x],
-							textFirstLine = "",
-							textFull = "",
-							childs = {},
-							itemId = dtc[x].itemId,
-							}
-						--get the onclick func if there is one
-						if tResults[fName].obj:IsMouseClickEnabled() == true then
-							if tResults[fName].obj:GetObjectType() == "Button" then
-								tResults[fName].func = tResults[fName].obj:GetScript("OnClick")
-							end
-							tResults[fName].containerFrameName = fName
-							tResults[fName].onActionFunc = function(self, aTable, aChildName)
-								--empty
-							end
-							if tResults[fName].func then
-								tResults[fName].click = true
-							end
-						end
-						--text from fs available?
-						if dtc[x].GetText then
-							if dtc[x]:GetText() then
-								local tText = SkuChat:Unescape(dtc[x]:GetText())
-								tResults[fName].textFirstLine, tResults[fName].textFull = SkuCore:ItemName_helper(tText)
-							end
-						end
+			local isTradeframe = false
+			if TradeFrame and TradeFrame:IsVisible() == true then
+				isTradeframe = true
+			end
 
-						--text from tooltip available?
-						if tResults[fName].textFirstLine == "" and tResults[fName].textFull == "" then
-							if string.find(fName, "ContainerFrame") then
-								_G["SkuScanningTooltip"]:ClearLines()
-								local hsd, rc = _G["SkuScanningTooltip"]:SetBagItem(tResults[fName].obj:GetParent():GetID(), tResults[fName].obj:GetID())
-								if TooltipLines_helper(_G["SkuScanningTooltip"]:GetRegions()) ~= "asd" then
-									if TooltipLines_helper(_G["SkuScanningTooltip"]:GetRegions()) ~= "" then
-										local tText = SkuChat:Unescape(TooltipLines_helper(_G["SkuScanningTooltip"]:GetRegions()))
-										
-										if tResults[fName].obj.info then
-											if tResults[fName].obj.info.id then
-												tResults[fName].itemId = tResults[fName].obj.info.id
-												tResults[fName].textFirstLine = SkuCore:ItemName_helper(tText)
-												tResults[fName].textFull = SkuCore:AuctionHouseGetAuctionPriceHistoryData(tResults[fName].obj.info.id)
+			if (isTradeframe == true and x ~= 31) or isTradeframe == false then
+				if validTypes[dtc[x]:GetObjectType()] then
+					if dtc[x]:IsVisible() == true then
+						local tEnabled = true
+						if dtc[x].IsEnabled then tEnabled = dtc[x]:IsEnabled() end
+						if tEnabled == true then
+							local fName = GetTableID(dtc[x])
+							--dprint(tab.."   ", fName, dtc[x]:GetObjectType())
+							table.insert(tResults, fName)
+							tResults[fName] = {
+								frameName = fName,
+								RoC = "Child",
+								type = dtc[x]:GetObjectType(),
+								obj = dtc[x],
+								textFirstLine = "",
+								textFull = "",
+								childs = {},
+								itemId = dtc[x].itemId,
+								}
+							--get the onclick func if there is one
+							if tResults[fName].obj:IsMouseClickEnabled() == true then
+								if tResults[fName].obj:GetObjectType() == "Button" then
+									tResults[fName].func = tResults[fName].obj:GetScript("OnClick")
+								end
+								tResults[fName].containerFrameName = fName
+								tResults[fName].onActionFunc = function(self, aTable, aChildName)
+									--empty
+								end
+								if tResults[fName].func then
+									tResults[fName].click = true
+								end
+							end
+							--text from fs available?
+							if dtc[x].GetText then
+								if dtc[x]:GetText() then
+									local tText = SkuChat:Unescape(dtc[x]:GetText())
+									tResults[fName].textFirstLine, tResults[fName].textFull = SkuCore:ItemName_helper(tText)
+								end
+							end
+
+							--text from tooltip available?
+							if tResults[fName].textFirstLine == "" and tResults[fName].textFull == "" then
+								if string.find(fName, "ContainerFrame") then
+									_G["SkuScanningTooltip"]:ClearLines()
+									local hsd, rc = _G["SkuScanningTooltip"]:SetBagItem(tResults[fName].obj:GetParent():GetID(), tResults[fName].obj:GetID())
+									if TooltipLines_helper(_G["SkuScanningTooltip"]:GetRegions()) ~= "asd" then
+										if TooltipLines_helper(_G["SkuScanningTooltip"]:GetRegions()) ~= "" then
+											local tText = SkuChat:Unescape(TooltipLines_helper(_G["SkuScanningTooltip"]:GetRegions()))
+											
+											if tResults[fName].obj.info then
+												if tResults[fName].obj.info.id then
+													tResults[fName].itemId = tResults[fName].obj.info.id
+													tResults[fName].textFirstLine = SkuCore:ItemName_helper(tText)
+													tResults[fName].textFull = SkuCore:AuctionHouseGetAuctionPriceHistoryData(tResults[fName].obj.info.id)
+												end
+											end
+											if not tResults[fName].textFull then
+												tResults[fName].textFull = {}
+											end
+											local tFirst, tFull = SkuCore:ItemName_helper(tText)
+											tResults[fName].textFirstLine = tFirst
+											if type(tResults[fName].textFull) ~= "table" then
+												tResults[fName].textFull = {(tResults[fName].textFull or tResults[fName].textFirstLine or ""),}
+											end
+											table.insert(tResults[fName].textFull, 1, tFull)
+										end
+									end
+
+									if tResults[fName].textFirstLine == "" and tResults[fName].textFull == "" and tResults[fName].obj.ShowTooltip then
+										GameTooltip:ClearLines()
+										tResults[fName].obj:ShowTooltip()
+										if TooltipLines_helper(GameTooltip:GetRegions()) ~= "asd" then
+											if TooltipLines_helper(GameTooltip:GetRegions()) ~= "" then
+												local tText = SkuChat:Unescape(TooltipLines_helper(GameTooltip:GetRegions()))
+												tResults[fName].textFirstLine, tResults[fName].textFull = SkuCore:ItemName_helper(tText)
 											end
 										end
-										if not tResults[fName].textFull then
-											tResults[fName].textFull = {}
-										end
-										local tFirst, tFull = SkuCore:ItemName_helper(tText)
-										tResults[fName].textFirstLine = tFirst
-										if type(tResults[fName].textFull) ~= "table" then
-											tResults[fName].textFull = {(tResults[fName].textFull or tResults[fName].textFirstLine or ""),}
-										end
-										table.insert(tResults[fName].textFull, 1, tFull)
 									end
-								end
 
-								if tResults[fName].textFirstLine == "" and tResults[fName].textFull == "" and tResults[fName].obj.ShowTooltip then
+								elseif string.find(fName, "ItemButton") and string.find(fName, "MerchantItem") then
+									_G["SkuScanningTooltip"]:ClearLines()
+									local hsd, rc = _G["SkuScanningTooltip"]:SetMerchantItem(tResults[fName].obj:GetID())
+									if TooltipLines_helper(_G["SkuScanningTooltip"]:GetRegions()) ~= "asd" then
+										if TooltipLines_helper(_G["SkuScanningTooltip"]:GetRegions()) ~= "" then
+											local tText = SkuChat:Unescape(TooltipLines_helper(_G["SkuScanningTooltip"]:GetRegions()))
+											tResults[fName].textFirstLine, tResults[fName].textFull = SkuCore:ItemName_helper(tText)
+											if "table" ~= type(tResults[fName].textFull) then
+												tResults[fName].textFull = {tResults[fName].textFull}
+											end
+											if tResults[fName].obj and tResults[fName].obj.link then
+												local itemID = GetItemInfoInstant(tResults[fName].obj.link)
+												if itemID then
+													SkuCore:InsertComparisnSections(itemID, tResults[fName].textFull, inventoryTooltipTextCache)
+												end
+											end
+										end
+									end
+								else
 									GameTooltip:ClearLines()
-									tResults[fName].obj:ShowTooltip()
+									if tResults[fName].obj:GetScript("OnEnter") then
+										tResults[fName].obj:GetScript("OnEnter")(tResults[fName].obj)
+									end
 									if TooltipLines_helper(GameTooltip:GetRegions()) ~= "asd" then
 										if TooltipLines_helper(GameTooltip:GetRegions()) ~= "" then
 											local tText = SkuChat:Unescape(TooltipLines_helper(GameTooltip:GetRegions()))
 											tResults[fName].textFirstLine, tResults[fName].textFull = SkuCore:ItemName_helper(tText)
 										end
 									end
+									GameTooltip:SetOwner(UIParent, "Center")
+									GameTooltip:Hide()
+									if tResults[fName].obj:GetScript("OnLeave") then
+										tResults[fName].obj:GetScript("OnLeave")(tResults[fName].obj)
+									end
 								end
+							end
 
-							elseif string.find(fName, "ItemButton") and string.find(fName, "MerchantItem") then
-								_G["SkuScanningTooltip"]:ClearLines()
-								local hsd, rc = _G["SkuScanningTooltip"]:SetMerchantItem(tResults[fName].obj:GetID())
-								if TooltipLines_helper(_G["SkuScanningTooltip"]:GetRegions()) ~= "asd" then
-									if TooltipLines_helper(_G["SkuScanningTooltip"]:GetRegions()) ~= "" then
-										local tText = SkuChat:Unescape(TooltipLines_helper(_G["SkuScanningTooltip"]:GetRegions()))
-										tResults[fName].textFirstLine, tResults[fName].textFull = SkuCore:ItemName_helper(tText)
-										if "table" ~= type(tResults[fName].textFull) then
-											tResults[fName].textFull = {tResults[fName].textFull}
+							--iterate children if there are any
+							if dtc[x] then
+								if not tResults[fName].func then
+									if (dtc[x]:GetNumRegions() + dtc[x]:GetNumChildren()) > 0 then
+										local tChildsResult = SkuCore:IterateChildren(dtc[x], tab.."  ")
+										--if there is only one child, set its content directly to this item; except it's a money frame, then there may just one item
+										if #tChildsResult == 1 and not string.find(fName, "Money") then
+											tResults[fName].childs = tChildsResult[tChildsResult[1]].childs
+										--otherwise add them to childs
+										elseif #tChildsResult > 1 or string.find(fName, "Money") then
+											tResults[fName].childs = tChildsResult
 										end
-										if tResults[fName].obj and tResults[fName].obj.link then
-											local itemID = GetItemInfoInstant(tResults[fName].obj.link)
-											if itemID then
-												SkuCore:InsertComparisnSections(itemID, tResults[fName].textFull, inventoryTooltipTextCache)
+									end
+								end							
+							end
+
+							--check if there are buttons w/o text and childs with string in first item
+							--if: move string from child[1] to parent
+							if tResults[fName].textFirstLine == "" and tResults[fName].textFull == "" and #tResults[fName].childs > 0 then
+								if tResults[fName].childs[tResults[fName].childs[1]].type == "FontString" then
+									local tFlag = true
+									if string.len(tResults[fName].childs[tResults[fName].childs[1]].textFirstLine) > SkuCore.maxItemNameLength then
+										tFlag = false
+									end
+									if #tResults[fName].childs > 1 then
+										for q = 2, #tResults[fName].childs do
+											if tResults[fName].childs[tResults[fName].childs[q]].type == "FontString" then
+												--tFlag = false
 											end
 										end
 									end
-								end
-							else
-								GameTooltip:ClearLines()
-								if tResults[fName].obj:GetScript("OnEnter") then
-									tResults[fName].obj:GetScript("OnEnter")(tResults[fName].obj)
-								end
-								if TooltipLines_helper(GameTooltip:GetRegions()) ~= "asd" then
-									if TooltipLines_helper(GameTooltip:GetRegions()) ~= "" then
-										local tText = SkuChat:Unescape(TooltipLines_helper(GameTooltip:GetRegions()))
-										tResults[fName].textFirstLine, tResults[fName].textFull = SkuCore:ItemName_helper(tText)
+									if tFlag == true then
+										--moveit
+										local tString = tResults[fName].childs[tResults[fName].childs[1]].textFirstLine
+										tResults[fName].textFirstLine = tString
+										--tResults[fName].childs[tResults[fName].childs[1]] = nil
+										--table.remove(tResults[fName].childs, 1)
 									end
-								end
-								GameTooltip:SetOwner(UIParent, "Center")
-								GameTooltip:Hide()
-								if tResults[fName].obj:GetScript("OnLeave") then
-									tResults[fName].obj:GetScript("OnLeave")(tResults[fName].obj)
 								end
 							end
-						end
 
-						--iterate children if there are any
-						if dtc[x] then
-							if not tResults[fName].func then
-								if (dtc[x]:GetNumRegions() + dtc[x]:GetNumChildren()) > 0 then
-									local tChildsResult = SkuCore:IterateChildren(dtc[x], tab.."  ")
-									--if there is only one child, set its content directly to this item; except it's a money frame, then there may just one item
-									if #tChildsResult == 1 and not string.find(fName, "Money") then
-										tResults[fName].childs = tChildsResult[tChildsResult[1]].childs
-									--otherwise add them to childs
-									elseif #tChildsResult > 1 or string.find(fName, "Money") then
-										tResults[fName].childs = tChildsResult
-									end
-								end
-							end							
-						end
-
-						--check if there are buttons w/o text and childs with string in first item
-						--if: move string from child[1] to parent
-						if tResults[fName].textFirstLine == "" and tResults[fName].textFull == "" and #tResults[fName].childs > 0 then
-							if tResults[fName].childs[tResults[fName].childs[1]].type == "FontString" then
-								local tFlag = true
-								if string.len(tResults[fName].childs[tResults[fName].childs[1]].textFirstLine) > SkuCore.maxItemNameLength then
-									tFlag = false
-								end
-								if #tResults[fName].childs > 1 then
-									for q = 2, #tResults[fName].childs do
-										if tResults[fName].childs[tResults[fName].childs[q]].type == "FontString" then
-											--tFlag = false
+							--check for buttons without text, add text if they are known
+							if tResults[fName] then
+								if tResults[fName].textFirstLine == "" and tResults[fName].textFull == "" then
+									for iq, vq in pairs(tButtonsWoFontstrings) do
+										if string.find(fName, iq) then
+											tResults[fName].textFirstLine, tResults[fName].textFull = SkuCore:ItemName_helper(vq)
 										end
 									end
-								end
-								if tFlag == true then
-									--moveit
-									local tString = tResults[fName].childs[tResults[fName].childs[1]].textFirstLine
-									tResults[fName].textFirstLine = tString
-									--tResults[fName].childs[tResults[fName].childs[1]] = nil
-									--table.remove(tResults[fName].childs, 1)
-								end
-							end
-						end
-
-						--check for buttons without text, add text if they are known
-						if tResults[fName] then
-							if tResults[fName].textFirstLine == "" and tResults[fName].textFull == "" then
-								for iq, vq in pairs(tButtonsWoFontstrings) do
-									if string.find(fName, iq) then
-										tResults[fName].textFirstLine, tResults[fName].textFull = SkuCore:ItemName_helper(vq)
-									end
-								end
-								--if there are childs but no text > try to find the best/friendly name via the frame name
-								if tResults[fName].textFirstLine == "" and tResults[fName].textFull == "" and #tResults[fName].childs > 0 then
-									local tText = friendlyFrameNames[fName] or ""
-									if tText == "" then
-										for i, v in pairs(friendlyFrameNamesParts) do
-											if string.find(fName, i) then
-												tText = v
+									--if there are childs but no text > try to find the best/friendly name via the frame name
+									if tResults[fName].textFirstLine == "" and tResults[fName].textFull == "" and #tResults[fName].childs > 0 then
+										local tText = friendlyFrameNames[fName] or ""
+										if tText == "" then
+											for i, v in pairs(friendlyFrameNamesParts) do
+												if string.find(fName, i) then
+													tText = v
+												end
 											end
 										end
+										if tText ~= "" then
+											tResults[fName].textFirstLine, tResults[fName].textFull = SkuCore:ItemName_helper(tText)
+										else
+											--no friendly name > name as Container x
+											tResults[fName].textFirstLine = L["Container"].." "..x --fName
+										end
 									end
-									if tText ~= "" then
-										tResults[fName].textFirstLine, tResults[fName].textFull = SkuCore:ItemName_helper(tText)
-									else
-										--no friendly name > name as Container x
-										tResults[fName].textFirstLine = L["Container"].." "..x --fName
+									--if there is no text/childs > remove
+									if tResults[fName].textFirstLine == "" and tResults[fName].textFull == "" and #tResults[fName].childs == 0 then
+										if string.find(fName, "ContainerFrame") then
+											tResults[fName].textFirstLine = L["Empty"].." "
+										else
+											tResults[fName] = nil
+											table.remove(tResults, #tResults)
+										end
 									end
 								end
-								--if there is no text/childs > remove
-								if tResults[fName].textFirstLine == "" and tResults[fName].textFull == "" and #tResults[fName].childs == 0 then
-									if string.find(fName, "ContainerFrame") then
-										tResults[fName].textFirstLine = L["Empty"].." "
-									else
+							end
+							--if blocked widget strings
+							if tResults[fName] then
+								if tResults[fName].textFirstLine ~= "" then
+									if blockedWidgetStrings[tResults[fName].textFirstLine] then
 										tResults[fName] = nil
 										table.remove(tResults, #tResults)
 									end
 								end
 							end
-						end
-						--if blocked widget strings
-						if tResults[fName] then
-							if tResults[fName].textFirstLine ~= "" then
-								if blockedWidgetStrings[tResults[fName].textFirstLine] then
-									tResults[fName] = nil
-									table.remove(tResults, #tResults)
-								end
-							end
-						end
 
-						if string.find(fName, "ContainerFrame") or string.find(fName, "ItemButton") or string.find(fName, "QuestInfoItem")  then
-							if _G[fName.."Count"] and not _G[fName].info then
-								if tResults[fName] and _G[fName.."Count"]:GetText() then
-									if not string.find(tResults[fName].textFirstLine, L["Empty"].." ") then
-										tResults[fName].textFirstLine = tResults[fName].textFirstLine.." ".._G[fName.."Count"]:GetText()
-									else
-										tResults[fName].textFirstLine = tResults[fName].textFirstLine
+							if string.find(fName, "ContainerFrame") or string.find(fName, "ItemButton") or string.find(fName, "QuestInfoItem")  then
+								if _G[fName.."Count"] and not _G[fName].info then
+									if tResults[fName] and _G[fName.."Count"]:GetText() then
+										if not string.find(tResults[fName].textFirstLine, L["Empty"].." ") then
+											tResults[fName].textFirstLine = tResults[fName].textFirstLine.." ".._G[fName.."Count"]:GetText()
+										else
+											tResults[fName].textFirstLine = tResults[fName].textFirstLine
+										end
 									end
 								end
-							end
-							if tResults[fName] and string.find(fName, "ContainerFrame") then
-								if tResults[fName].textFirstLine then
-									tResults[fName].textFirstLine = tEmptyCounter.." "..tResults[fName].textFirstLine
-									tEmptyCounter = tEmptyCounter + 1
-								end
-							end
-							if _G[fName.."Count"] and tResults[fName] then
-								tResults[fName].stackSize = _G[fName.."Count"]:GetText()
-							end
-							if _G[fName].info then
-								tResults[fName].itemId = _G[fName].info.id
-								if not _G[fName].info.count then
-									tResults[fName].textFirstLine = tResults[fName].textFirstLine
-								else
-									if not string.find(tResults[fName].textFirstLine, L["Empty"].." ") and _G[fName].info.count > 1 then
-										tResults[fName].textFirstLine = tResults[fName].textFirstLine.." ".._G[fName].info.count
-									else
-										tResults[fName].textFirstLine = tResults[fName].textFirstLine
+								if tResults[fName] and string.find(fName, "ContainerFrame") then
+									if tResults[fName].textFirstLine then
+										tResults[fName].textFirstLine = tEmptyCounter.." "..tResults[fName].textFirstLine
+										tEmptyCounter = tEmptyCounter + 1
 									end
-								end								
-							end							
+								end
+								if _G[fName.."Count"] and tResults[fName] then
+									tResults[fName].stackSize = _G[fName.."Count"]:GetText()
+								end
+								if _G[fName].info then
+									tResults[fName].itemId = _G[fName].info.id
+									if not _G[fName].info.count then
+										tResults[fName].textFirstLine = tResults[fName].textFirstLine
+									else
+										if not string.find(tResults[fName].textFirstLine, L["Empty"].." ") and _G[fName].info.count > 1 then
+											tResults[fName].textFirstLine = tResults[fName].textFirstLine.." ".._G[fName].info.count
+										else
+											tResults[fName].textFirstLine = tResults[fName].textFirstLine
+										end
+									end								
+								end							
 
+							end
 						end
 					end
 				end
