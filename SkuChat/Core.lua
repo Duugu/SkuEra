@@ -1196,6 +1196,11 @@ end
 
 function SkuChat_AddChannel(chatFrame, channel)
 	local channelIndex = nil 
+
+	if channel == nil then
+		return
+	end
+
 	local zoneChannel =  zoneChannels[string.lower(channel)]  --AddChatWindowChannel(chatFrame:GetID(), channel) 
 
 	local i = 1 
@@ -3764,7 +3769,9 @@ function SkuChat:InitTab(tNewTabIndex)
 	for i, v in pairs(SkuOptions.db.profile["SkuChat"].tabs[tNewTabIndex].channels) do
 		if v.status ~= false then
 			if SkuChat_ContainsChannel(a, v.name) ~= true then
-				SkuChat_AddChannel(a, v.name)
+				if v and v.name then
+					SkuChat_AddChannel(a, v.name)
+				end
 			end
 		end
 	end

@@ -4521,7 +4521,7 @@ function SkuOptions:ImportWpAndLinkData()
 	end)
 end
 
----------------------------------------------------------------------------------------------------------------------------------------
+--[[-------------------------------------------------------------------------------------------------------------------------------------
 function SkuOptions:ExportWpAndLinkData()
 	SkuNav:SaveLinkDataToProfile()
 
@@ -4560,4 +4560,66 @@ function SkuOptions:ExportWpAndLinkData()
 	--setmetatable(tExportDataTable, SkuPrintMT)
 	--SkuOptions:EditBoxShow(tostring(tExportDataTable), function(self) PlaySound(89) end)
 	SkuOptions:EditBoxShow(SkuOptions:Serialize(tExportDataTable.version, tExportDataTable.links, tExportDataTable.waypoints), function(self) PlaySound(89) end)
+end
+]]
+
+
+
+
+
+
+
+---------------------------------------------------------------------------------------------------------------------------------------
+function SkuOptions:ExportWpAndLinkData()
+	SkuNav:SaveLinkDataToProfile()
+
+	local tExportDataTable = {
+		version = GetAddOnMetadata("SkuMapper", "Version"),
+		links = {},
+		waypoints = {},
+		SequenceNumbers = {},
+	}
+
+	--build Links
+	tExportDataTable.links = SkuDB.SessionRouteData.Links
+
+	--SequenceNumbers
+	tExportDataTable.SequenceNumbers = SkuDB.routedata["global"].SequenceNumbers or {}
+	
+	--build Waypoints
+	for i, v in ipairs(SkuDB.SessionRouteData.Waypoints) do
+		local tWpData = SkuDB.SessionRouteData.Waypoints[i]
+		if tWpData then
+			tWpData.comments = nil
+			tWpData.createdAt = nil
+			table.insert(tExportDataTable.waypoints, tWpData)
+		end
+	end
+	
+	tExportDataTable.WaypointLevels = SkuDB.routedata["global"].WaypointLevels or {}
+
+	--complete export
+	PlaySound(88)
+	local tCount = 0
+	for _, _ in pairs(tExportDataTable.links) do
+		tCount = tCount + 1
+	end
+	print("Links exported:", tCount)
+	tCount = 0
+	for _, _ in pairs(tExportDataTable.waypoints) do
+		tCount = tCount + 1
+	end
+	print("Waypoints exported", tCount)
+	tCount = 0
+	for _, _ in pairs(tExportDataTable.SequenceNumbers) do
+		tCount = tCount + 1
+	end
+	print("Sequence Numbers exported", tCount)
+	tCount = 0
+	for _, _ in pairs(tExportDataTable.WaypointLevels) do
+		tCount = tCount + 1
+	end
+	print("Waypoint layers exported", tCount)
+	
+	SkuOptions:EditBoxShow(SkuOptions:Serialize(tExportDataTable.version, tExportDataTable.links, tExportDataTable.waypoints, tExportDataTable.SequenceNumbers, tExportDataTable.WaypointLevels), function(self) PlaySound(89) end)
 end

@@ -2037,7 +2037,6 @@ function SkuCore:AUCTION_ITEM_LIST_UPDATE_BUY()
                               SkuOptions:VocalizeCurrentMenuName()
                               SkuOptions.Voice:OutputStringBTtts(L["Fertig. Alle gekauft"], false, true, 0.1, nil, nil, nil, 1)
                            end)
-
                         end
                      end)
                   end,

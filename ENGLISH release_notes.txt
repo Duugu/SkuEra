@@ -3,6 +3,15 @@
 -------------------------------------------------------------------------------------------------------	
 
 -------------------------------------------------------------------------------------------------------
+Changes in Sku Era r32.37
+	- Bug in SkuChat fixed
+	- Routes for western and eastern plaguelands added
+	- Broken route from Timbermaw Hold to Winterspring fixed
+	- Routes to Captain Ironhill, Muren Stormpike, Hulfdan Blackbeard, Dar, and Foreman Cozzle added
+	- Routes to the beach in Swamps of Sorrow added
+
+
+-------------------------------------------------------------------------------------------------------
 Changes in Sku Era r32.36
 	- fixed a trade bug
 
