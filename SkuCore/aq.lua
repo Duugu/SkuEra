@@ -1382,6 +1382,8 @@ function SkuCore:UNIT_HEALTH(eventName, aUnitID)
 				local tminAbsoluteSincePrevEventValue = SkuOptions.db.char[MODULE_NAME].aq[SkuCore.talentSet].party.health2.eventOutputFilters[tRoleID][tEventOutputFilters["minAbsoluteSincePrevEvent"].id]
 				local tminStepsSincePrevEventValue = SkuOptions.db.char[MODULE_NAME].aq[SkuCore.talentSet].party.health2.eventOutputFilters[tRoleID][tEventOutputFilters["minStepsSincePrevEvent"].id]
 
+				SkuOptions.db.char[MODULE_NAME].aq[SkuCore.talentSet].party.health2.prevHealth[aUnitID].absolute = SkuOptions.db.char[MODULE_NAME].aq[SkuCore.talentSet].party.health2.prevHealth[aUnitID].absolute or 100
+
 				if (
 						SkuOptions.db.char[MODULE_NAME].aq[SkuCore.talentSet].party.health2.prevHealth[aUnitID].absolute - tHealthAbsoluteValue >= tminAbsoluteSincePrevEventValue 
 						or 
@@ -1443,6 +1445,8 @@ function SkuCore:UNIT_HEALTH(eventName, aUnitID)
 				
 				local tminAbsoluteSincePrevEventValue = SkuOptions.db.char[MODULE_NAME].aq[SkuCore.talentSet].raid.health2.eventOutputFilters[tRoleID][tEventOutputFilters["minAbsoluteSincePrevEvent"].id]
 				local tminStepsSincePrevEventValue = SkuOptions.db.char[MODULE_NAME].aq[SkuCore.talentSet].raid.health2.eventOutputFilters[tRoleID][tEventOutputFilters["minStepsSincePrevEvent"].id]
+
+				SkuOptions.db.char[MODULE_NAME].aq[SkuCore.talentSet].raid.health2.prevHealth[aUnitID].absolute = SkuOptions.db.char[MODULE_NAME].aq[SkuCore.talentSet].raid.health2.prevHealth[aUnitID].absolute or 100
 
 				if (
 						SkuOptions.db.char[MODULE_NAME].aq[SkuCore.talentSet].raid.health2.prevHealth[aUnitID].absolute - tHealthAbsoluteValue >= tminAbsoluteSincePrevEventValue 

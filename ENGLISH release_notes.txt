@@ -2,6 +2,14 @@
 - Sku Era Addon Release Notes
 -------------------------------------------------------------------------------------------------------	
 
+
+-------------------------------------------------------------------------------------------------------
+Changes in Sku Era r32.39
+	- Fixed errors with static popups like group invite, resurrect, etc.
+	- Fixed the broken overview page
+	- Fix for some strange issue with party health monitor in very rare scenarios
+
+
 -------------------------------------------------------------------------------------------------------
 Changes in Sku Era r32.38
 	- Fix for new routes from r32.37 :)

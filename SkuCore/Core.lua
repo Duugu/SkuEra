@@ -2648,6 +2648,11 @@ function SkuCore:IterateChildren(t, tab)
 			dtc = { t.IconFrame, t.NeedButton, t.GreedButton, t.PassButton }
 		end
 		
+		if t:GetName() == "StaticPopup1" then
+			--dprint(tab.."   ", t:GetName(), t.NeedButton, t.NeedButton:GetObjectType())
+			dtc = { StaticPopup1:GetButton1(), StaticPopup1:GetButton2(), StaticPopup1:GetButton3(), StaticPopup1:GetButton4() }
+		end
+		
 		local tEmptyCounter = 1
 		for x = 1, #dtc do
 			local isTradeframe = false

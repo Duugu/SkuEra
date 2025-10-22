@@ -642,14 +642,14 @@ function SkuOptions:UpdateOverviewText(aPageId)
 
 	--loot
 	local lootStrings = 	{
-		["freeforall"] = L["Jeder gegen jeden"],
-		["roundrobin"] = L["Reihum"],
-		["group"] = L["Als Gruppe"],
-		["needbeforegreed"] = L["Bedarf bevor Gier"],
-		["master"] = L["Plündermeister"],
-		["personalloot"] = L["Persönliche Beute"],
+		[0] = L["Jeder gegen jeden"],
+		[1] = L["Reihum"],
+		[2] = L["Plündermeister"],
+		[3] = L["Als Gruppe"],
+		[4] = L["Bedarf bevor Gier"],
+		[5] = L["Persönliche Beute"],
 	}
-	local lootmethod, masterlooterPartyID, masterlooterRaidID = GetLootMethod()
+	local lootmethod, masterlooterPartyID, masterlooterRaidID = C_PartyInfo.GetLootMethod()
 
 	if tTmpText and SkuOptions.db.profile["SkuOptions"].overviewPages[aPageId].overviewSections["party"].pos ~= 999 then
 		tSectionRepo[SkuOptions.db.profile["SkuOptions"].overviewPages[aPageId].overviewSections["party"].pos] = L["Gruppe"].."\r\n"..tTmpText..L["\r\nPlündern: "]..lootStrings[lootmethod]
