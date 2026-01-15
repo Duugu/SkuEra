@@ -89,6 +89,10 @@ Sku.testMode = false
 ---------------------------------------------------------------------------------------------------------------------------------------
 -- tmp fixes for 11404 ptr
 Sku.toc = select(4, GetBuildInfo())
+if Sku.toc >= 20505 then
+	Sku.isTBC = true
+end
+
 if Sku.toc > 11403 then
 	PickupContainerItem = C_Container.PickupContainerItem
 	GetContainerNumSlots = C_Container.GetContainerNumSlots

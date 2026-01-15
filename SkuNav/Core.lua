@@ -3133,8 +3133,14 @@ function SkuNav:LoadDefaultMapData(aForce)
 	--if SkuOptions.db.global["SkuNav"].hasCustomMapData ~= true or aForce then
 		local t = SkuDB.routedata["global"]["Waypoints"]
 		SkuDB.SessionRouteData.Waypoints = t
-		local tl = SkuDB.routedata["global"]["Links"]
-		SkuDB.SessionRouteData.Links = tl
+
+		if Sku.isTBC then
+			local tl = SkuDBTMP.routedata["global"]["Links"]
+			SkuDB.SessionRouteData.Links = tl
+		else
+			local tl = SkuDB.routedata["global"]["Links"]
+			SkuDB.SessionRouteData.Links = tl
+		end
 	--end
 end
 

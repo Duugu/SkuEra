@@ -2,6 +2,17 @@
 - Sku Era Addon Release Notes
 -------------------------------------------------------------------------------------------------------	
 
+-------------------------------------------------------------------------------------------------------
+Changes in Sku Era r32.41
+	- Fixed a bunch of issues with anniversary TBC. Like left / right click, key binding, missing routes, range check, character frame, etc.
+		There may be many more. Please report them via the Sku Dicord.
+
+
+-------------------------------------------------------------------------------------------------------
+Changes in Sku Era r32.40
+	- Removed some outdated lib references that lead to fatalitys on login.
+	- Added support for layer info from Nova World Buffs. If you have the Nova World Buffs addon installed (https://www.curseforge.com/wow/addons/nova-world-buffs), the overview page is showing your layer (last item in general section).
+		
 
 -------------------------------------------------------------------------------------------------------
 Changes in Sku Era r32.39

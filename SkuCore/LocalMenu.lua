@@ -1941,35 +1941,119 @@ function SkuCore:Build_CharacterFrame(aParentChilds)
 		}   
 		local tParentStats = aParentChilds[tFriendlyName].childs
 
-		local tStatFrames = {
-			"CharacterStatFrame1",
-			"CharacterStatFrame2",
-			"CharacterStatFrame3",
-			"CharacterStatFrame4",
-			"CharacterStatFrame5",
-			"CharacterArmorFrame",
-			"CharacterAttackFrame",
-			"CharacterAttackPowerFrame",
-			"CharacterDamageFrame",
-			"CharacterRangedAttackFrame",
-			"CharacterRangedAttackPowerFrame",
-			"CharacterRangedDamageFrame",
-		}
-
-		for i, v in pairs(tStatFrames) do
-			local tFrameName = v
-			local tFriendlyName = SkuChat:Unescape(_G[v.."Label"]:GetText().." ".._G[v.."StatText"]:GetText())
-			table.insert(tParentStats, tFriendlyName)
-			tParentStats[tFriendlyName] = {
-				frameName = tFrameName,
-				RoC = "Child",
-				type = "Button",
-				obj = _G[tFrameName],
-				textFirstLine = tFriendlyName,
-				textFull = "",
-				childs = {},
-				--click = true,
+		if not Sku.isTBC then
+			local tStatFrames = {
+				"CharacterStatFrame1",
+				"CharacterStatFrame2",
+				"CharacterStatFrame3",
+				"CharacterStatFrame4",
+				"CharacterStatFrame5",
+				"CharacterArmorFrame",
+				"CharacterAttackFrame",
+				"CharacterAttackPowerFrame",
+				"CharacterDamageFrame",
+				"CharacterRangedAttackFrame",
+				"CharacterRangedAttackPowerFrame",
+				"CharacterRangedDamageFrame",
 			}
+
+			for i, v in pairs(tStatFrames) do
+				local tFrameName = v
+				local tFriendlyName = SkuChat:Unescape(_G[v.."Label"]:GetText().." ".._G[v.."StatText"]:GetText())
+				table.insert(tParentStats, tFriendlyName)
+				tParentStats[tFriendlyName] = {
+					frameName = tFrameName,
+					RoC = "Child",
+					type = "Button",
+					obj = _G[tFrameName],
+					textFirstLine = tFriendlyName,
+					textFull = "",
+					childs = {},
+					--click = true,
+				}
+
+			end
+		else
+			local tUpdateCode = {
+				[PLAYERSTAT_BASE_STATS] = {
+					[[PaperDollFrame_SetStat(PlayerStatFrameLeft1, 1)]],
+					[[PaperDollFrame_SetStat(PlayerStatFrameLeft1, 2)]],
+					[[PaperDollFrame_SetStat(PlayerStatFrameLeft1, 3)]],
+					[[PaperDollFrame_SetStat(PlayerStatFrameLeft1, 4)]],
+					[[PaperDollFrame_SetStat(PlayerStatFrameLeft1, 5)]],
+					[[PaperDollFrame_SetArmor(PlayerStatFrameLeft1)]],
+				},
+				[PLAYERSTAT_MELEE_COMBAT] = {
+					[[PaperDollFrame_SetDamage(PlayerStatFrameLeft1) PlayerStatFrameLeft1:SetScript("OnEnter", CharacterDamageFrame_OnEnter)]],
+					[[PaperDollFrame_SetAttackSpeed(PlayerStatFrameLeft1)]],
+					[[PaperDollFrame_SetAttackPower(PlayerStatFrameLeft1)]],
+					[[PaperDollFrame_SetRating(PlayerStatFrameLeft1, CR_HIT_MELEE)]],
+					[[PaperDollFrame_SetMeleeCritChance(PlayerStatFrameLeft1)]],
+					[[PaperDollFrame_SetExpertise(PlayerStatFrameLeft1)]],
+				},
+				[PLAYERSTAT_RANGED_COMBAT] = {
+					[[PaperDollFrame_SetRangedDamage(PlayerStatFrameLeft1) PlayerStatFrameLeft1:SetScript("OnEnter", CharacterRangedDamageFrame_OnEnter)]],
+					[[PaperDollFrame_SetRangedAttackSpeed(PlayerStatFrameLeft1)]],
+					[[PaperDollFrame_SetRangedAttackPower(PlayerStatFrameLeft1)]],
+					[[PaperDollFrame_SetRating(PlayerStatFrameLeft1, CR_HIT_RANGED)]],
+					[[PaperDollFrame_SetRangedCritChance(PlayerStatFrameLeft1)]],
+				},
+				[PLAYERSTAT_SPELL_COMBAT] = {
+					[[PaperDollFrame_SetSpellBonusDamage(PlayerStatFrameLeft1) PlayerStatFrameLeft1:SetScript("OnEnter", CharacterSpellBonusDamage_OnEnter)]],
+					[[PaperDollFrame_SetSpellBonusHealing(PlayerStatFrameLeft1)]],
+					[[PaperDollFrame_SetRating(PlayerStatFrameLeft1, CR_HIT_SPELL)]],
+					[[PaperDollFrame_SetSpellCritChance(PlayerStatFrameLeft1) PlayerStatFrameLeft1:SetScript("OnEnter", CharacterSpellCritChance_OnEnter)]],
+					[[PaperDollFrame_SetSpellHaste(PlayerStatFrameLeft1)]],
+					[[PaperDollFrame_SetManaRegen(PlayerStatFrameLeft1)]],
+				},
+				[PLAYERSTAT_DEFENSES] = {
+					[[PaperDollFrame_SetArmor(PlayerStatFrameLeft1)]],
+					[[PaperDollFrame_SetDefense(PlayerStatFrameLeft1)]],
+					[[PaperDollFrame_SetDodge(PlayerStatFrameLeft1)]],
+					[[PaperDollFrame_SetParry(PlayerStatFrameLeft1)]],
+					[[PaperDollFrame_SetBlock(PlayerStatFrameLeft1)]],
+					[[PaperDollFrame_SetResilience(PlayerStatFrameLeft1)]],
+				},
+			}
+			
+			for i, v in pairs(tUpdateCode) do
+				local tFrameName = i
+				local tFriendlyName = i
+				table.insert(tParentStats, tFriendlyName)
+				tParentStats[tFriendlyName] = {
+					frameName = tFrameName,
+					RoC = "Child",
+					type = "Button",
+					obj = _G[tFrameName],
+					textFirstLine = i,
+					textFull = "",
+					childs = {},
+					--click = true,
+				}
+
+				local tParentStatsValues = tParentStats[tFriendlyName].childs	
+				for i1, v1 in pairs(v) do
+					loadstring(v1)()
+				
+					if PlayerStatFrameLeft1Label:GetText() and PlayerStatFrameLeft1Label:GetText() ~= "" then
+						local tFrameName = v
+						local tFriendlyName = SkuChat:Unescape(PlayerStatFrameLeft1Label:GetText().." "..PlayerStatFrameLeft1StatText:GetText())
+						--local tName, tFullText = GetButtonTooltipLines(PlayerStatFrameLeft1, GameTooltip)
+
+						table.insert(tParentStatsValues, tFriendlyName)
+						tParentStatsValues[tFriendlyName] = {
+							frameName = tFrameName,
+							RoC = "Child",
+							type = "Button",
+							obj = _G[tFrameName],
+							textFirstLine = tFriendlyName,
+							textFull = "",--tFullText,
+							childs = {},
+							--click = true,
+						}				
+					end
+				end
+			end
 
 		end
 

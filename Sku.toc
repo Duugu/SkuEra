@@ -1,14 +1,16 @@
-## Interface-Classic: 11507
-## Title: SkuEra (32.39)
+## Interface-Classic: 11508
+## Title: SkuEra (32.41)
 ## SavedVariables: SkuOptionsDB, SkuTranslatedData
 ## Dependencies: SkuBeaconSoundsets
-## Version: 32.39
+## Version: 32.41
 
 SkuAudioData\assets\SkuAudioFileIndex.lua
 SkuAudioData\assets\SkuAudioDataLenIndex.lua
 SkuAudioData\Core.lua
 
 embeds.xml
+
+Libs\LibRangeCheck-2.0\LibRangeCheck-2.0.lua
 
 Libs\LibGearScore-1.0\LibGearScore.lua
 

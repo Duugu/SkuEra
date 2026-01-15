@@ -3140,7 +3140,11 @@ function SkuChat:JoinOrLeaveSkuChatChannel()
 	if SkuOptions.db.profile["SkuChat"].joinSkuChannel == true then
 		if id == 0 then
 			JoinPermanentChannel("SkuChat", nil, FCF_GetCurrentChatFrame():GetID())
-			ChatFrame_AddChannel(ChatFrame1, "SkuChat")
+			if Sku.isTBC then
+				ChatFrame1:AddChannel("SkuChat")
+			else
+				ChatFrame_AddChannel(ChatFrame1, "SkuChat")
+			end
 		end
 	else
 		if id ~= 0 then

@@ -13,7 +13,12 @@ SkuOptions.TTS = LibStub("SkuTTS-1.0"):Create("SkuOptions", false)
 SkuOptions.Voice = LibStub("SkuVoice-1.0"):Create("SkuOptions", false)
 SkuOptions.BeaconLib = LibStub("SkuBeacon-1.0"):Create("SkuOptions", false)
 SkuOptions.Serializer = LibStub("AceSerializer-3.0")
-SkuOptions.RangeCheck = LibStub("LibRangeCheck-2.0")
+if Sku.isTBC then
+	SkuOptions.RangeCheck = LibStub("LibRangeCheck-3.0")
+else
+	SkuOptions.RangeCheck = LibStub("LibRangeCheck-2.0")
+end
+
 SkuOptions.LGS = LibStub:GetLibrary("LibGearScore.1000",true)
 
 SkuOptions.Menu = {}
@@ -753,6 +758,17 @@ function SkuOptions:UpdateOverviewText(aPageId)
 		tGeneral = tGeneral.."\r\n"..L["Gearscore: "]..gearScore.GearScore.." ("..gearScore.Description..L[", average item level "]..gearScore.AvgItemLevel..")"
 	end
 
+	-- layer from NWB 
+	local NWB = LibStub("AceAddon-3.0"):GetAddon("NovaWorldBuffs", true)
+	if NWB then
+		local currentLayer = NWB.currentLayer
+		if currentLayer and currentLayer > 0 then
+			tGeneral = tGeneral.."\r\n".."Layer: "..currentLayer
+		else
+			tGeneral = tGeneral.."\r\n".."Layer: no data available yet"
+		end
+	end
+
 	--table.insert(tSections, tGeneral)
 	if SkuOptions.db.profile["SkuOptions"].overviewPages[aPageId].overviewSections["general"].pos ~= 999 then
 		tSectionRepo[SkuOptions.db.profile["SkuOptions"].overviewPages[aPageId].overviewSections["general"].pos] = tGeneral
@@ -1011,7 +1027,10 @@ function SkuOptions:UpdateOverviewText(aPageId)
 
 	--guild members
 	SetGuildRosterShowOffline(false)
-	GuildRoster()
+
+	if not Sku.isTBC then
+		GuildRoster()
+	end
 	local tTmpText = ""
 	for x = 1, GetNumGuildMembers() do
 		local name, rankName, rankIndex, level, classDisplayName, zone, publicNote, officerNote, isOnline, status, class, achievementPoints, achievementRank, isMobile, canSoR, repStanding, GUID = GetGuildRosterInfo(x)
@@ -2562,6 +2581,8 @@ function SkuOptions:CreateMenuFrame()
 	tFrame = CreateFrame("Button", "SecureOnSkuOptionsMainOption1", _G["OnSkuOptionsMain"], "SecureActionButtonTemplate")
 	tFrame:SetText("SecureOnSkuOptionsMainOption1")
 	tFrame:SetPoint("TOP", _G["OnSkuOptionsMain"], "BOTTOM", 0, 0)
+	tFrame:RegisterForClicks("AnyUp", "AnyDown")
+
 	tFrame:SetScript("OnShow", function(self)
 		SetOverrideBindingClick(self, true, "ENTER", "SecureOnSkuOptionsMainOption1", "ENTER")
 	end)

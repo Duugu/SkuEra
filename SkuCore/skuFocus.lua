@@ -48,6 +48,7 @@ function SkuCore.SkuFocus:OnLogin()
          _G["focus"..x] = tmp
          _G["focus"..x]:SetAttribute("type1", "macro") 
          _G["focus"..x]:SetAttribute("macrotext1", "")
+         _G["focus"..x]:RegisterForClicks("AnyUp", "AnyDown")
       end
 
       --control frame
@@ -55,6 +56,7 @@ function SkuCore.SkuFocus:OnLogin()
       tFrame:SetSize(80, 22)
       tFrame:SetText("SkuCoreSkuFocusControl")
       tFrame:SetPoint("TOP", _G["SkuCoreControl"], "BOTTOM", 0, 0)
+      tFrame:RegisterForClicks("AnyUp", "AnyDown")
       tFrame:SetScript("OnClick", function(self, aKey, aB)
          for x = 1, 8 do
             if aKey == SkuOptions.db.profile["SkuOptions"].SkuKeyBinds["SKU_KEY_FOCUSSET"..x].key then

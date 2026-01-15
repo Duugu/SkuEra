@@ -824,6 +824,8 @@ function SkuCore:OnEnable()
 	local tFrame = CreateFrame("Button", "SkuCoreSecureTabButton", _G["UIParent"], "SecureActionButtonTemplate")
 	tFrame:SetSize(1, 1)
 	tFrame:SetPoint("TOPLEFT", _G["UIParent"], "TOPLEFT", 0, 0)
+	tFrame:RegisterForClicks("AnyUp", "AnyDown")
+
 	tFrame:Show()
 	tFrame:SetAttribute("type1", "macro") 
 	tFrame:SetAttribute("macrotext1", "")
@@ -2667,7 +2669,7 @@ function SkuCore:IterateChildren(t, tab)
 						if dtc[x].IsEnabled then tEnabled = dtc[x]:IsEnabled() end
 						if tEnabled == true then
 							local fName = GetTableID(dtc[x])
-							--dprint(tab.."   ", fName, dtc[x]:GetObjectType())
+							--print(tab.."   ", fName, dtc[x]:GetObjectType())
 							table.insert(tResults, fName)
 							tResults[fName] = {
 								frameName = fName,
@@ -2683,6 +2685,7 @@ function SkuCore:IterateChildren(t, tab)
 							if tResults[fName].obj:IsMouseClickEnabled() == true then
 								if tResults[fName].obj:GetObjectType() == "Button" then
 									tResults[fName].func = tResults[fName].obj:GetScript("OnClick")
+									--print(tab.."      ", "OnClick func found")
 								end
 								tResults[fName].containerFrameName = fName
 								tResults[fName].onActionFunc = function(self, aTable, aChildName)
@@ -3166,11 +3169,17 @@ function SkuCore:SetBinding(aKey, aCommand)
 	
 	SkuCore:DeleteBinding(aCommand)
 
-	local tOk = SetBinding(aKey, aCommand, 1)
-	if tKey2 then
-		local tOk = SetBinding(tKey2, aCommand, 1)
+	if Sku.isTBC then
+		local tOk = SetBinding(aKey, aCommand)
+		if tKey2 then
+			local tOk = SetBinding(tKey2, aCommand)
+		end
+	else
+		local tOk = SetBinding(aKey, aCommand, 1)
+		if tKey2 then
+			local tOk = SetBinding(tKey2, aCommand, 1)
+		end
 	end
-
 	SkuCore:SaveBindings()
 end
 
@@ -3197,14 +3206,22 @@ function SkuCore:ResetBindings(aToWowDefaults)
 					if vcom.index == -1 then
 						SetBinding(vcom.key1)
 					else
-						SetBinding(vcom.key1, icom, 1)
+						if Sku.isTBC then
+							SetBinding(vcom.key1, icom)
+						else
+							SetBinding(vcom.key1, icom, 1)
+						end
 					end
 				end
 				if vcom.key2 then
 					if vcom.index == -1 then
 						SetBinding(vcom.key2)
 					else
-						SetBinding(vcom.key2, icom, 1)
+						if Sku.isTBC then
+							SetBinding(vcom.key2, icom)
+						else
+							SetBinding(vcom.key2, icom, 1)
+						end
 					end
 				end
 			end
