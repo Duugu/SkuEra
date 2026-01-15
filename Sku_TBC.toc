@@ -1,5 +1,5 @@
-## Interface-TBC: 20505
-## Title: SkuEra (32.41)
+## Interface: 20505
+## Title: SkuEra TBC (32.41)
 ## SavedVariables: SkuOptionsDB, SkuTranslatedData
 ## Dependencies: SkuBeaconSoundsets
 ## Version: 32.41
