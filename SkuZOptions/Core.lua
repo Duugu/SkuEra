@@ -13,11 +13,7 @@ SkuOptions.TTS = LibStub("SkuTTS-1.0"):Create("SkuOptions", false)
 SkuOptions.Voice = LibStub("SkuVoice-1.0"):Create("SkuOptions", false)
 SkuOptions.BeaconLib = LibStub("SkuBeacon-1.0"):Create("SkuOptions", false)
 SkuOptions.Serializer = LibStub("AceSerializer-3.0")
-if Sku.isTBC then
-	SkuOptions.RangeCheck = LibStub("LibRangeCheck-3.0")
-else
-	SkuOptions.RangeCheck = LibStub("LibRangeCheck-2.0")
-end
+SkuOptions.RangeCheck = LibStub("LibRangeCheck-3.0")
 
 SkuOptions.LGS = LibStub:GetLibrary("LibGearScore.1000",true)
 

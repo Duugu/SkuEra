@@ -1,5 +1,5 @@
-## Interface: 11508
-## Title: SkuEra Vanilla (32.41)
+## Interface-Classic: 11508, 20505
+## Title: SkuEra (32.41)
 ## SavedVariables: SkuOptionsDB, SkuTranslatedData
 ## Dependencies: SkuBeaconSoundsets
 ## Version: 32.41
@@ -10,12 +10,16 @@ SkuAudioData\Core.lua
 
 embeds.xml
 
-Libs\LibRangeCheck-2.0\LibRangeCheck-2.0.lua
+
+Libs\LibRangeCheck-3.0\LibRangeCheck-3.0.lua
+
 
 Libs\LibGearScore-1.0\LibGearScore.lua
 
 locales\enUS.lua
 locales\deDE.lua
+
+routedata_global_wotlk.lua
 
 Core.lua
 
